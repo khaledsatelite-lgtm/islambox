@@ -251,6 +251,19 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
   <div id="lockErr" style="color:var(--red);font-size:13px;min-height:18px"></div>
 </div>
 
+<!-- LOCK SETTINGS MODAL -->
+<div id="lockSetModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9998;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;width:88%;max-width:340px">
+    <div id="lockSetTitle" style="font-size:17px;font-weight:800;margin-bottom:16px;text-align:center">🔒 تفعيل قفل التطبيق</div>
+    <label style="font-size:12px;color:var(--text3);display:block;margin-bottom:6px">كلمة السر الجديدة (اتركها فارغة لإلغاء القفل)</label>
+    <input id="lockSetInput" type="password" placeholder="أدخل كلمة السر" style="width:100%;padding:12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:15px;margin-bottom:14px" onkeydown="if(event.key==='Enter')saveLockSet()"/>
+    <div style="display:flex;gap:8px">
+      <button onclick="saveLockSet()" style="flex:1;padding:11px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:none;border-radius:var(--radius-sm);font-weight:800;cursor:pointer">✅ حفظ</button>
+      <button onclick="document.getElementById('lockSetModal').style.display='none'" style="padding:11px 14px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer">إلغاء</button>
+    </div>
+  </div>
+</div>
+
 <!-- STARTUP ALERT -->
 <div id="sal">
   <div class="sal-box">
@@ -993,17 +1006,27 @@ function checkLock(){
   }
 }
 function openLockSettings(){
+  document.getElementById("lockSetModal").style.display="flex";
   var cur=localStorage.getItem("appLock");
-  var action=cur?"تغيير كلمة السر أو اكتب حذف لإلغاء القفل":"أدخل كلمة سر جديدة للتطبيق";
-  var val=prompt(action);
-  if(val===null) return;
-  if(val==="حذف"||val===""){
+  document.getElementById("lockSetTitle").textContent=cur?"🔒 تغيير أو إلغاء كلمة السر":"🔒 تفعيل قفل التطبيق";
+  document.getElementById("lockSetInput").value="";
+  setTimeout(function(){document.getElementById("lockSetInput").focus();},100);
+}
+function saveLockSet(){
+  var val=document.getElementById("lockSetInput").value.trim();
+  document.getElementById("lockSetModal").style.display="none";
+  if(val===""){
     localStorage.removeItem("appLock");
     toast("🔓 تم إلغاء قفل التطبيق");
   } else {
     localStorage.setItem("appLock",val);
-    toast("🔒 تم تفعيل القفل بنجاح!");
+    toast("🔒 تم تفعيل القفل: "+val);
   }
+}
+function removeLock(){
+  localStorage.removeItem("appLock");
+  document.getElementById("lockSetModal").style.display="none";
+  toast("🔓 تم إلغاء القفل");
 }
 
 // ══ THEME ══
