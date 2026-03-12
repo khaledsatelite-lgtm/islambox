@@ -249,7 +249,7 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
   <input id="lockInput" type="password" placeholder="كلمة السر" style="width:220px;padding:12px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:16px;text-align:center" onkeydown="if(event.key==='Enter')checkLock()"/>
   <button onclick="checkLock()" style="width:220px;padding:12px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:800;cursor:pointer">دخول 🔓</button>
   <div id="lockErr" style="color:var(--red);font-size:13px;min-height:18px"></div>
-  <button onclick="localStorage.removeItem('appLock');location.reload();" style="background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;text-decoration:underline;margin-top:8px">نسيت كلمة السر؟ (مسح القفل)</button>
+  <button onclick="resetLock()" style="background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;text-decoration:underline;margin-top:8px">نسيت كلمة السر؟ (إعادة إلى 1234)</button>
 </div>
 
 <!-- LOCK SETTINGS MODAL -->
@@ -987,12 +987,15 @@ function printInvoice(id){
 
 // ══ LOCK ══
 function initLock(){
-  var pw=localStorage.getItem("appLock");
-  if(pw){
-    var ls=document.getElementById("lockScreen");
-    ls.style.display="flex";
-    setTimeout(function(){document.getElementById("lockInput").focus();},100);
-  }
+  if(!localStorage.getItem("appLock")) localStorage.setItem("appLock","1234");
+  var ls=document.getElementById("lockScreen");
+  ls.style.display="flex";
+  setTimeout(function(){document.getElementById("lockInput").focus();},100);
+}
+function resetLock(){
+  localStorage.setItem("appLock","1234");
+  document.getElementById("lockInput").value="";
+  document.getElementById("lockErr").textContent="✅ كلمة السر أعيدت إلى: 1234";
 }
 function checkLock(){
   var pw=localStorage.getItem("appLock");
