@@ -601,7 +601,7 @@ function setL(l,btn){
 function tp(){var i=document.getElementById('fpw');i.type=i.type==='password'?'text':'password';}
 var NEO_KEY = '441cf5d57b99679f5c1faa3cc170a3b9';
 var NEO_API = 'https://4k.cms-only.ru/api/api.php';
-var PROXY = 'https://corsproxy.io/?';
+var PROXY = 'https://api.allorigins.win/raw?url=';
 
 async function fetchNeo(){
   var user = (document.getElementById('neo-user').value||'').trim();
@@ -922,7 +922,7 @@ async function importFromPanel(){
     if(!d||d.status==='false'||d.status===false){
       st.textContent='❌ لم يتم العثور على الزبون في اللوحة';st.style.color='var(--red)';return;
     }
-    alert(JSON.stringify(d));
+    alert("expire: "+d.expire);
     var already=C.find(function(c){return c.username===us;});
     if(already){
       st.textContent='⚠️ هذا الزبون موجود مسبقاً في التطبيق';st.style.color='var(--orange)';return;
