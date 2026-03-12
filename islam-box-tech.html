@@ -576,9 +576,9 @@ function rAdd(){
     '<input class="fi" type="number" id="fpd" placeholder="مثال: 5" min="1" max="31"/>'+
     '<label class="fl">نوع الاشتراك</label>'+
     '<div style="display:flex;gap:6px;margin-bottom:8px">'+
-    '<button class="db'+(subType==='user'?' on':'')+'" onclick="subType='user';render()" style="flex:1">👤 يوزر</button>'+
-    '<button class="db'+(subType==='code'?' on':'')+'" onclick="subType='code';render()" style="flex:1">🔑 كود</button>'+
-    '<button class="db'+(subType==='serial'?' on':'')+'" onclick="subType='serial';render()" style="flex:1">📱 تسلسلي</button>'+
+    '<button class="db'+(subType==='user'?' on':'')+'" onclick="setSubType(\'user\')" style="flex:1">👤 يوزر</button>'+
+    '<button class="db'+(subType==='code'?' on':'')+'" onclick="setSubType(\'code\')" style="flex:1">🔑 كود</button>'+
+    '<button class="db'+(subType==='serial'?' on':'')+'" onclick="setSubType(\'serial\')" style="flex:1">📱 تسلسلي</button>'+
     '</div>'+
     '<div class="cred-box"><div class="cred-ttl">🔐 بيانات الدخول (اختياري)</div>'+credHtml+'</div>'+
     '<label class="fl">مدة الاشتراك</label><div class="dur-row">'+db+'</div>'+
