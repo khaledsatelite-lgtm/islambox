@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -587,6 +586,7 @@ function setL(l,btn){
 function tp(){var i=document.getElementById('fpw');i.type=i.type==='password'?'text':'password';}
 var NEO_KEY = '441cf5d57b99679f5c1faa3cc170a3b9';
 var NEO_API = 'https://4k.cms-only.ru/api/api.php';
+var PROXY = 'https://corsproxy.io/?';
 
 async function fetchNeo(){
   var user = (document.getElementById('neo-user').value||'').trim();
@@ -596,7 +596,7 @@ async function fetchNeo(){
   st.textContent='⏳ جاري الجلب...';st.style.color='var(--text2)';
   try{
     var url = NEO_API+'?action=device_info&username='+encodeURIComponent(user)+'&password='+encodeURIComponent(pass)+'&api_key='+NEO_KEY;
-    var res = await fetch(url);
+    var res = await fetch(PROXY+encodeURIComponent(url));
     var data = await res.json();
     var d = Array.isArray(data)?data[0]:data;
     if(!d||d.status==='false'||d.status===false){
@@ -636,7 +636,7 @@ async function syncPanel(us, pw){
   if(!us||!pw) return;
   try{
     var url = NEO_API+'?action=device_info&username='+encodeURIComponent(us)+'&password='+encodeURIComponent(pw)+'&api_key='+NEO_KEY;
-    var res = await fetch(url);
+    var res = await fetch(PROXY+encodeURIComponent(url));
     var data = await res.json();
     var d = Array.isArray(data)?data[0]:data;
     if(d&&(d.status==='true'||d.status===true)){
@@ -896,7 +896,7 @@ async function importFromPanel(){
   st.textContent='⏳ جاري الجلب من اللوحة...';st.style.color='var(--text2)';
   try{
     var url=NEO_API+'?action=device_info&username='+encodeURIComponent(us)+'&password='+encodeURIComponent(pw)+'&api_key='+NEO_KEY;
-    var res=await fetch(url);
+    var res=await fetch(PROXY+encodeURIComponent(url));
     var data=await res.json();
     var d=Array.isArray(data)?data[0]:data;
     if(!d||d.status==='false'||d.status===false){
