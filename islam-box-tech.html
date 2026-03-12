@@ -902,7 +902,7 @@ async function importFromPanel(){
     if(!d||d.status==='false'||d.status===false){
       st.textContent='❌ لم يتم العثور على الزبون في اللوحة';st.style.color='var(--red)';return;
     }
-    console.log("expire raw:", d.expire, "keys:", Object.keys(d));
+    alert("expire: "+d.expire);
     var already=C.find(function(c){return c.username===us;});
     if(already){
       st.textContent='⚠️ هذا الزبون موجود مسبقاً في التطبيق';st.style.color='var(--orange)';return;
