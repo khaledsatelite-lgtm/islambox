@@ -224,7 +224,6 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
       <button class="hdr-btn" onclick="exportBackup()" title="نسخ احتياطي">💾</button>
       <button class="hdr-btn" onclick="document.getElementById('imp').click()" title="استيراد">📥</button>
       <input type="file" id="imp" accept=".json" style="display:none" onchange="importBackup(event)"/>
-      <button class="hdr-btn" onclick="openImportPanel()" title="استيراد من اللوحة" style="background:rgba(59,139,255,.15);border-color:var(--blue);color:var(--blue)">🔄</button>
       <button class="hdr-btn" id="theme-btn" onclick="toggleTheme()" title="تغيير الثيم">🌙</button>
     </div>
   </div>
@@ -239,26 +238,7 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
 <div id="pg"></div>
 
 
-<!-- IMPORT FROM PANEL MODAL -->
-<div class="ov" id="ipov" onclick="if(event.target===this)this.classList.remove('show')">
-  <div class="modal">
-    <div class="modal-ttl">🔄 استيراد من اللوحة</div>
-    <div style="color:var(--text2);font-size:12px;margin-bottom:14px">أدخل يوزر وباسورد الزبون من لوحة 4k.cms-only.ru</div>
-    <label class="fl">👤 اسم الزبون (في تطبيقك)</label>
-    <input class="fi" type="text" id="ip-name" placeholder="مثال: أحمد بن علي"/>
-    <label class="fl">📞 رقم الهاتف</label>
-    <input class="fi" type="text" id="ip-phone" placeholder="213550000000+"/>
-    <label class="fl">🔑 اليوزر (من اللوحة)</label>
-    <input class="fi" type="text" id="ip-user" placeholder="username" style="direction:ltr"/>
-    <label class="fl">🔒 الباسورد (من اللوحة)</label>
-    <input class="fi" type="text" id="ip-pass" placeholder="password" style="direction:ltr"/>
-    <div id="ip-status" style="margin-top:10px;font-size:12px;min-height:20px"></div>
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button onclick="importFromPanel()" style="flex:1;padding:12px;background:linear-gradient(135deg,var(--blue2),#6d28d9);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:800;font-size:14px">🔄 جلب وإضافة</button>
-      <button onclick="document.getElementById('ipov').classList.remove('show')" style="padding:12px 14px;background:var(--red-bg);color:var(--red);border:none;border-radius:var(--radius-sm);cursor:pointer">إلغاء</button>
-    </div>
-  </div>
-</div>
+
 <!-- STARTUP ALERT -->
 <div id="sal">
   <div class="sal-box">
@@ -328,7 +308,7 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
 <script>
 // ══ DATA ══
 var C = JSON.parse(localStorage.getItem('ibc')||'[]');
-var view='dash', selId=null, dur=1, lang='ar', filt='all', eid=null, mc=null, mtype='auto', salC=[], si=0, payId=null;
+var view='dash', selId=null, dur=1, lang='ar', filt='all', eid=null, mc=null, mtype='auto', salC=[], si=0, payId=null, subType='user';
 
 function sv(){ localStorage.setItem('ibc', JSON.stringify(C)); }
 
@@ -580,15 +560,30 @@ function rAdd(){
     '<label class="fl">لغة الزبون 🌍</label><div class="lb-row">'+lb+'</div>'+
     '<label class="fl">يوم الدفع الشهري (اختياري)</label>'+
     '<input class="fi" type="number" id="fpd" placeholder="مثال: 5 (يدفع كل 5 من الشهر)" min="1" max="31"/>'+
+    '<label class="fl">نوع الاشتراك</label>'+
+    '<div style="display:flex;gap:6px;margin-bottom:4px">'+
+    '<button class="db'+(subType==='user'?' on':'')+ '" onclick="setSubType('user',this)" style="flex:1">👤 يوزر</button>'+
+    '<button class="db'+(subType==='code'?' on':'')+ '" onclick="setSubType('code',this)" style="flex:1">🔑 كود</button>'+
+    '<button class="db'+(subType==='serial'?' on':'')+ '" onclick="setSubType('serial',this)" style="flex:1">📱 تسلسلي</button>'+
+    '</div>'+
     '<div class="cred-box">'+
     '<div class="cred-ttl">🔐 بيانات الدخول (اختياري)</div>'+
-    '<label class="fl" style="margin-top:0">رابط السيرفر</label><input class="fi" type="text" id="fsrv" placeholder="http://server.com:8080"/>'+
-    '<label class="fl">اسم المستخدم</label><input class="fi" type="text" id="fus" placeholder="username"/>'+
-    '<label class="fl">كلمة المرور</label>'+
-    '<div style="position:relative"><input class="fi" type="password" id="fpw" placeholder="password" style="padding-left:40px"/>'+
-    '<button type="button" onclick="tp()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px">👁</button></div></div>'+
+    (subType==='user'?
+      '<label class="fl" style="margin-top:0">رابط السيرفر</label><input class="fi" type="text" id="fsrv" placeholder="http://server.com:8080"/>'+
+      '<label class="fl">اسم المستخدم</label><input class="fi" type="text" id="fus" placeholder="username"/>'+
+      '<label class="fl">كلمة المرور</label>'+
+      '<div style="position:relative"><input class="fi" type="password" id="fpw" placeholder="password" style="padding-left:40px"/>'+
+      '<button type="button" onclick="tp()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px">👁</button></div>'
+    :subType==='code'?
+      '<label class="fl" style="margin-top:0">🔑 الكود</label><input class="fi" type="text" id="fcode" placeholder="XXXX-XXXX-XXXX" style="direction:ltr"/>'
+    :
+      '<label class="fl" style="margin-top:0">📱 الرقم التسلسلي</label><input class="fi" type="text" id="fserial" placeholder="00:11:22:33:44:55" style="direction:ltr"/>'
+    )+
+    '</div>'+
     '<label class="fl">مدة الاشتراك</label><div class="dur-row">'+db+'</div>'+
-    '<label class="fl">السعر (دج)</label><input class="fi" type="number" id="fpr" placeholder="1000"/>'+
+    '<label class="fl">السعر الكلي (دج)</label><input class="fi" type="number" id="fpr" placeholder="1000" oninput="calcRemain()"/>'+
+    '<label class="fl">المبلغ المدفوع (دج)</label><input class="fi" type="number" id="fpaid" placeholder="0" oninput="calcRemain()"/>'+
+    '<div id="fremain" class="prev-box" style="margin-top:8px"></div>'+
     '<div class="prev-box">📅 البداية: <b>'+fd(s)+'</b><br>📅 النهاية: <b>'+fd(e)+'</b></div>'+
     '<button class="sub-btn" onclick="addC()">✅ حفظ الاشتراك</button></div>';
 }
@@ -599,83 +594,46 @@ function setL(l,btn){
   btn.classList.add('on');
 }
 function tp(){var i=document.getElementById('fpw');i.type=i.type==='password'?'text':'password';}
-var NEO_KEY = '441cf5d57b99679f5c1faa3cc170a3b9';
-var NEO_API = 'https://4k.cms-only.ru/api/api.php';
-var PROXY = 'https://api.allorigins.win/raw?url=';
-
-async function fetchNeo(){
-  var user = (document.getElementById('neo-user').value||'').trim();
-  var pass = (document.getElementById('neo-pass').value||'').trim();
-  var st = document.getElementById('neo-status');
-  if(!user||!pass){st.textContent='⚠️ أدخل اليوزر والباسورد';st.style.color='var(--orange)';return;}
-  st.textContent='⏳ جاري الجلب...';st.style.color='var(--text2)';
-  try{
-    var url = NEO_API+'?action=device_info&username='+encodeURIComponent(user)+'&password='+encodeURIComponent(pass)+'&api_key='+NEO_KEY;
-    var res = await fetch(PROXY+url);
-    var data = await res.json();
-    var d = Array.isArray(data)?data[0]:data;
-    if(!d||d.status==='false'||d.status===false){
-      st.textContent='❌ لم يتم العثور على الزبون';st.style.color='var(--red)';return;
-    }
-    // fill form
-    if(d.username) document.getElementById('neo-user').value=d.username;
-    if(d.password) document.getElementById('neo-pass').value=d.password;
-    // fill credentials
-    if(d.url) document.getElementById('fsrv').value=d.url;
-    if(d.username) document.getElementById('fus').value=d.username;
-    if(d.password) document.getElementById('fpw').value=d.password;
-    // fill expiry
-    if(d.expire){
-      var exp = new Date(d.expire);
-      var now = new Date();
-      var diff = Math.round((exp-now)/(1000*60*60*24*30));
-      if(diff>0&&diff<=12){dur=diff;render();setTimeout(function(){
-        // restore neo fields after render
-        document.getElementById('neo-user').value=user;
-        document.getElementById('neo-pass').value=pass;
-        if(d.url) document.getElementById('fsrv').value=d.url;
-        if(d.username) document.getElementById('fus').value=d.username;
-        if(d.password) document.getElementById('fpw').value=d.password;
-        document.getElementById('neo-status').textContent='✅ تم الجلب! تحقق من البيانات وأكمل الإضافة';
-        document.getElementById('neo-status').style.color='var(--green)';
-      },50);}
-    } else {
-      st.textContent='✅ تم جلب البيانات!';st.style.color='var(--green)';
-    }
-  }catch(e){
-    st.textContent='❌ تعذر الاتصال بـ neo';st.style.color='var(--red)';
+function setSubType(t,btn){subType=t;render();}
+function calcRemain(){
+  var total=Number(document.getElementById('fpr').value)||0;
+  var paid=Number(document.getElementById('fpaid').value)||0;
+  var remain=total-paid;
+  var el=document.getElementById('fremain');
+  if(!el)return;
+  if(total>0){
+    el.innerHTML='💰 المدفوع: <b style="color:var(--green)">'+paid.toLocaleString()+' دج</b> &nbsp;|&nbsp; الباقي: <b style="color:'+(remain>0?'var(--red)':'var(--green)')+'">'+remain.toLocaleString()+' دج</b>';
+  } else {
+    el.innerHTML='';
   }
 }
 
-async function syncPanel(us, pw){
-  if(!us||!pw) return;
-  try{
-    var url = NEO_API+'?action=device_info&username='+encodeURIComponent(us)+'&password='+encodeURIComponent(pw)+'&api_key='+NEO_KEY;
-    var res = await fetch(PROXY+url);
-    var data = await res.json();
-    var d = Array.isArray(data)?data[0]:data;
-    if(d&&(d.status==='true'||d.status===true)){
-      toast('🔗 تم ربط الزبون باللوحة ✅');
-    }
-  }catch(e){ console.log('Panel sync:', e); }
-}
+
+
+
+
+
+
 
 function addC(){
   var name=(document.getElementById('fn').value||'').trim();
   var phone=(document.getElementById('fph').value||'').trim();
   var sub=(document.getElementById('fsn').value||'').trim();
   var payDay=parseInt(document.getElementById('fpd').value)||0;
-  var srv=(document.getElementById('fsrv').value||'').trim();
-  var us=(document.getElementById('fus').value||'').trim();
-  var pw=(document.getElementById('fpw').value||'').trim();
+  var srv=subType==='user'?(document.getElementById('fsrv').value||'').trim():'';
+  var us=subType==='user'?(document.getElementById('fus').value||'').trim():'';
+  var pw=subType==='user'?(document.getElementById('fpw').value||'').trim():'';
+  var code=subType==='code'?(document.getElementById('fcode')?document.getElementById('fcode').value||'':''):'';
+  var serial=subType==='serial'?(document.getElementById('fserial')?document.getElementById('fserial').value||'':''):'';
   var pr=Number(document.getElementById('fpr').value)||0;
+  var paid=Number(document.getElementById('fpaid')?document.getElementById('fpaid').value:0)||0;
   if(!name||!phone){alert('الرجاء إدخال الاسم ورقم الهاتف');return;}
   var s=new Date(), e=addM(s,dur);
   var pl=dur===1?'1 شهر':dur===12?'12 شهر':dur+' أشهر';
-  C.unshift({id:Date.now(),name:name,phone:phone,subName:sub,server:srv,username:us,password:pw,lang:lang,plan:pl,payDay:payDay||null,payments:[],startDate:s.toISOString().split('T')[0],endDate:e.toISOString().split('T')[0],price:pr});
-  sv(); filt='all'; dur=1; lang='ar';
+  var initPayments=paid>0?[{amount:paid,date:new Date().toISOString().split('T')[0],note:'دفعة أولى'}]:[];
+  C.unshift({id:Date.now(),name:name,phone:phone,subName:sub,server:srv,username:us,password:pw,code:code,serial:serial,subType:subType,lang:lang,plan:pl,payDay:payDay||null,payments:initPayments,startDate:s.toISOString().split('T')[0],endDate:e.toISOString().split('T')[0],price:pr});
+  sv(); filt='all'; dur=1; lang='ar'; subType='user';
   toast('✅ تم إضافة '+name+'!');
-  if(us&&pw) syncPanel(us,pw);
   // Auto WhatsApp welcome message
   var newC=C[0];
   if(confirm('📩 إرسال رسالة ترحيب عبر واتساب؟')){
@@ -692,12 +650,14 @@ function rDet(){
   var d=dl(c.endDate);
   var lf={ar:'🇩🇿 عربي',fr:'🇫🇷 Français',en:'🇬🇧 English',es:'🇪🇸 Español'};
   var cred='';
-  if(c.server||c.username||c.password){
+  if(c.server||c.username||c.password||c.code||c.serial){
     cred='<div style="background:var(--bg);border:1px solid rgba(59,139,255,.3);border-radius:var(--radius-sm);padding:12px;margin-top:8px">'+
       '<div class="cred-ttl">🔐 بيانات الدخول</div>'+
       (c.server?credRow('🌐 السيرفر',c.server):'')+
       (c.username?credRow('👤 اليوزر',c.username):'')+
       (c.password?credRowPass(c.id,c.password):'')+
+      (c.code?credRow('🔑 الكود',c.code):'')+
+      (c.serial?credRow('📱 الرقم التسلسلي',c.serial):'')+
       '<button onclick="sendCred('+c.id+')" style="width:100%;margin-top:8px;padding:9px;background:rgba(59,139,255,.1);color:var(--blue);border:1px solid rgba(59,139,255,.3);border-radius:var(--radius-sm);cursor:pointer;font-size:12px;font-weight:700">📩 إرسال بيانات الدخول</button></div>';
   }
   var pays=c.payments||[];
@@ -896,64 +856,9 @@ function sendAll(){
 
 
 // ══ IMPORT FROM PANEL ══
-function openImportPanel(){
-  document.getElementById('ip-name').value='';
-  document.getElementById('ip-phone').value='';
-  document.getElementById('ip-user').value='';
-  document.getElementById('ip-pass').value='';
-  document.getElementById('ip-status').textContent='';
-  document.getElementById('ipov').classList.add('show');
-}
 
-async function importFromPanel(){
-  var name=(document.getElementById('ip-name').value||'').trim();
-  var phone=(document.getElementById('ip-phone').value||'').trim();
-  var us=(document.getElementById('ip-user').value||'').trim();
-  var pw=(document.getElementById('ip-pass').value||'').trim();
-  var st=document.getElementById('ip-status');
-  if(!name||!phone){st.textContent='⚠️ أدخل اسم الزبون ورقم الهاتف';st.style.color='var(--orange)';return;}
-  if(!us||!pw){st.textContent='⚠️ أدخل اليوزر والباسورد';st.style.color='var(--orange)';return;}
-  st.textContent='⏳ جاري الجلب من اللوحة...';st.style.color='var(--text2)';
-  try{
-    var url=NEO_API+'?action=device_info&username='+encodeURIComponent(us)+'&password='+encodeURIComponent(pw)+'&api_key='+NEO_KEY;
-    var res=await fetch(PROXY+url);
-    var data=await res.json();
-    var d=Array.isArray(data)?data[0]:data;
-    if(!d||d.status==='false'||d.status===false){
-      st.textContent='❌ لم يتم العثور على الزبون في اللوحة';st.style.color='var(--red)';return;
-    }
-    alert("expire: "+d.expire);
-    var already=C.find(function(c){return c.username===us;});
-    if(already){
-      st.textContent='⚠️ هذا الزبون موجود مسبقاً في التطبيق';st.style.color='var(--orange)';return;
-    }
-    var endDate=d.expire?(d.expire.indexOf("T")>-1?d.expire.split("T")[0]:d.expire.split(" ")[0]):new Date(Date.now()+30*86400000).toISOString().split("T")[0];
-    var startDate=new Date().toISOString().split('T')[0];
-    var daysLeft=Math.ceil((new Date(endDate)-new Date())/86400000);
-    var months;
-    if(daysLeft<=35) months=1;
-    else if(daysLeft<=70) months=2;
-    else if(daysLeft<=100) months=3;
-    else if(daysLeft<=200) months=6;
-    else months=12;
-    var plan=months===1?'1 شهر':months===12?'12 شهر':months+' أشهر';
-    C.unshift({
-      id:Date.now(),name:name,phone:phone,
-      subName:'IPTV',
-      server:d.url||'',
-      username:d.username||us,
-      password:d.password||pw,
-      lang:'ar',plan:plan,
-      payDay:null,payments:[],
-      startDate:startDate,endDate:endDate,price:0
-    });
-    sv();
-    st.textContent='✅ تم الاستيراد! ينتهي: '+endDate;st.style.color='var(--green)';
-    setTimeout(function(){document.getElementById('ipov').classList.remove('show');go('list');},1500);
-  }catch(e){
-    st.textContent='❌ تعذر الاتصال باللوحة';st.style.color='var(--red)';
-  }
-}
+
+
 // ══ THEME ══
 function toggleTheme(){
   var html=document.documentElement;
