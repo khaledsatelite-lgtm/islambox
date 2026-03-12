@@ -548,9 +548,23 @@ function rPay(){
 function rAdd(){
   var s=new Date(), e=addM(s,dur);
   var durs=[1,3,6,12];
-  var db=durs.map(function(d){return '<button class="db'+(dur===d?' on':'')+'" onclick="setD('+d+')">'+(d===1?'شهر':d===12?'سنة':d+' أشهر')+'</button>';}).join('');
+  var db=durs.map(function(d){return '<button class="db'+(dur===d?' on':'')+('" onclick="setD('+d+')">')+(d===1?'شهر':d===12?'سنة':d+' أشهر')+'</button>';}).join('');
   var lf=[{v:'ar',l:'🇩🇿 عربي'},{v:'fr',l:'🇫🇷 Français'},{v:'en',l:'🇬🇧 English'},{v:'es',l:'🇪🇸 Español'}];
   var lb=lf.map(function(x){return '<button class="lb'+(lang===x.v?' on':'')+'" onclick="setL(\''+x.v+'\',this)">'+x.l+'</button>';}).join('');
+  
+  var credHtml='';
+  if(subType==='user'){
+    credHtml='<label class="fl" style="margin-top:0">رابط السيرفر</label><input class="fi" type="text" id="fsrv" placeholder="http://server.com:8080"/>'+
+    '<label class="fl">اسم المستخدم</label><input class="fi" type="text" id="fus" placeholder="username"/>'+
+    '<label class="fl">كلمة المرور</label>'+
+    '<div style="position:relative"><input class="fi" type="password" id="fpw" placeholder="password" style="padding-left:40px"/>'+
+    '<button type="button" onclick="tp()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px">👁</button></div>';
+  } else if(subType==='code'){
+    credHtml='<label class="fl" style="margin-top:0">🔑 الكود</label><input class="fi" type="text" id="fcode" placeholder="XXXX-XXXX-XXXX" style="direction:ltr"/>';
+  } else {
+    credHtml='<label class="fl" style="margin-top:0">📱 الرقم التسلسلي</label><input class="fi" type="text" id="fserial" placeholder="00:11:22:33:44:55" style="direction:ltr"/>';
+  }
+
   return '<div class="sec-ttl">➕ زبون جديد</div>'+
     '<div class="form-wrap">'+
     '<label class="fl">اسم الزبون</label><input class="fi" type="text" id="fn" placeholder="أحمد بن علي"/>'+
@@ -559,27 +573,14 @@ function rAdd(){
     '<label class="fl">اسم الاشتراك / الباقة</label><input class="fi" type="text" id="fsn" placeholder="Gold IPTV"/>'+
     '<label class="fl">لغة الزبون 🌍</label><div class="lb-row">'+lb+'</div>'+
     '<label class="fl">يوم الدفع الشهري (اختياري)</label>'+
-    '<input class="fi" type="number" id="fpd" placeholder="مثال: 5 (يدفع كل 5 من الشهر)" min="1" max="31"/>'+
+    '<input class="fi" type="number" id="fpd" placeholder="مثال: 5" min="1" max="31"/>'+
     '<label class="fl">نوع الاشتراك</label>'+
-    '<div style="display:flex;gap:6px;margin-bottom:4px">'+
-    '<button class="db'+(subType==='user'?' on':'')+ '" onclick="setSubType('user',this)" style="flex:1">👤 يوزر</button>'+
-    '<button class="db'+(subType==='code'?' on':'')+ '" onclick="setSubType('code',this)" style="flex:1">🔑 كود</button>'+
-    '<button class="db'+(subType==='serial'?' on':'')+ '" onclick="setSubType('serial',this)" style="flex:1">📱 تسلسلي</button>'+
+    '<div style="display:flex;gap:6px;margin-bottom:8px">'+
+    '<button class="db'+(subType==='user'?' on':'')+'" onclick="subType='user';render()" style="flex:1">👤 يوزر</button>'+
+    '<button class="db'+(subType==='code'?' on':'')+'" onclick="subType='code';render()" style="flex:1">🔑 كود</button>'+
+    '<button class="db'+(subType==='serial'?' on':'')+'" onclick="subType='serial';render()" style="flex:1">📱 تسلسلي</button>'+
     '</div>'+
-    '<div class="cred-box">'+
-    '<div class="cred-ttl">🔐 بيانات الدخول (اختياري)</div>'+
-    (subType==='user'?
-      '<label class="fl" style="margin-top:0">رابط السيرفر</label><input class="fi" type="text" id="fsrv" placeholder="http://server.com:8080"/>'+
-      '<label class="fl">اسم المستخدم</label><input class="fi" type="text" id="fus" placeholder="username"/>'+
-      '<label class="fl">كلمة المرور</label>'+
-      '<div style="position:relative"><input class="fi" type="password" id="fpw" placeholder="password" style="padding-left:40px"/>'+
-      '<button type="button" onclick="tp()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px">👁</button></div>'
-    :subType==='code'?
-      '<label class="fl" style="margin-top:0">🔑 الكود</label><input class="fi" type="text" id="fcode" placeholder="XXXX-XXXX-XXXX" style="direction:ltr"/>'
-    :
-      '<label class="fl" style="margin-top:0">📱 الرقم التسلسلي</label><input class="fi" type="text" id="fserial" placeholder="00:11:22:33:44:55" style="direction:ltr"/>'
-    )+
-    '</div>'+
+    '<div class="cred-box"><div class="cred-ttl">🔐 بيانات الدخول (اختياري)</div>'+credHtml+'</div>'+
     '<label class="fl">مدة الاشتراك</label><div class="dur-row">'+db+'</div>'+
     '<label class="fl">السعر الكلي (دج)</label><input class="fi" type="number" id="fpr" placeholder="1000" oninput="calcRemain()"/>'+
     '<label class="fl">المبلغ المدفوع (دج)</label><input class="fi" type="number" id="fpaid" placeholder="0" oninput="calcRemain()"/>'+
@@ -587,6 +588,7 @@ function rAdd(){
     '<div class="prev-box">📅 البداية: <b>'+fd(s)+'</b><br>📅 النهاية: <b>'+fd(e)+'</b></div>'+
     '<button class="sub-btn" onclick="addC()">✅ حفظ الاشتراك</button></div>';
 }
+
 function setD(d){dur=d;render();}
 function setL(l,btn){
   lang=l;
