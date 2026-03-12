@@ -11,6 +11,16 @@
 <link rel="manifest" href="manifest.json"/>
 <title>Islam Box Tech</title>
 <style>
+:root[data-theme="light"]{
+  --bg:#f0f4ff;--bg2:#ffffff;--bg3:#e8eeff;
+  --border:#c5d3f0;--border2:#a0b4e0;
+  --text:#1a2540;--text2:#3a5080;--text3:#7090b0;
+  --blue-glow:rgba(59,139,255,.15);
+  --green-bg:rgba(0,180,80,.1);
+  --orange-bg:rgba(255,120,0,.1);
+  --red-bg:rgba(220,50,50,.1);
+  --purple-bg:rgba(150,80,220,.1);
+}
 :root{
   --bg:#060d1a;--bg2:#0b1525;--bg3:#0f1d30;
   --border:#1a3050;--border2:#1e4060;
@@ -215,6 +225,7 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
       <button class="hdr-btn" onclick="document.getElementById('imp').click()" title="استيراد">📥</button>
       <input type="file" id="imp" accept=".json" style="display:none" onchange="importBackup(event)"/>
       <button class="hdr-btn" onclick="openImportPanel()" title="استيراد من اللوحة" style="background:rgba(59,139,255,.15);border-color:var(--blue);color:var(--blue)">🔄</button>
+      <button class="hdr-btn" id="theme-btn" onclick="toggleTheme()" title="تغيير الثيم">🌙</button>
     </div>
   </div>
   <nav>
@@ -665,6 +676,11 @@ function addC(){
   sv(); filt='all'; dur=1; lang='ar';
   toast('✅ تم إضافة '+name+'!');
   if(us&&pw) syncPanel(us,pw);
+  // Auto WhatsApp welcome message
+  var newC=C[0];
+  if(confirm('📩 إرسال رسالة ترحيب عبر واتساب؟')){
+    window.open(wl(newC.phone, wMsg(newC,'active')),'_blank');
+  }
   go('list');
 }
 
@@ -933,6 +949,22 @@ async function importFromPanel(){
     st.textContent='❌ تعذر الاتصال باللوحة';st.style.color='var(--red)';
   }
 }
+// ══ THEME ══
+function toggleTheme(){
+  var html=document.documentElement;
+  var isLight=html.getAttribute('data-theme')==='light';
+  html.setAttribute('data-theme', isLight?'dark':'light');
+  document.getElementById('theme-btn').textContent=isLight?'🌙':'☀️';
+  localStorage.setItem('theme', isLight?'dark':'light');
+}
+(function(){
+  var t=localStorage.getItem('theme')||'dark';
+  if(t==='light'){
+    document.documentElement.setAttribute('data-theme','light');
+    setTimeout(function(){var b=document.getElementById('theme-btn');if(b)b.textContent='☀️';},100);
+  }
+})();
+
 render();checkSt();
 if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").then(function(){console.log("SW registered");});}
 </script>
