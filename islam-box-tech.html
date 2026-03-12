@@ -596,7 +596,7 @@ async function fetchNeo(){
   st.textContent='⏳ جاري الجلب...';st.style.color='var(--text2)';
   try{
     var url = NEO_API+'?action=device_info&username='+encodeURIComponent(user)+'&password='+encodeURIComponent(pass)+'&api_key='+NEO_KEY;
-    var res = await fetch(PROXY+encodeURIComponent(url));
+    var res = await fetch(PROXY+url);
     var data = await res.json();
     var d = Array.isArray(data)?data[0]:data;
     if(!d||d.status==='false'||d.status===false){
@@ -636,7 +636,7 @@ async function syncPanel(us, pw){
   if(!us||!pw) return;
   try{
     var url = NEO_API+'?action=device_info&username='+encodeURIComponent(us)+'&password='+encodeURIComponent(pw)+'&api_key='+NEO_KEY;
-    var res = await fetch(PROXY+encodeURIComponent(url));
+    var res = await fetch(PROXY+url);
     var data = await res.json();
     var d = Array.isArray(data)?data[0]:data;
     if(d&&(d.status==='true'||d.status===true)){
@@ -896,7 +896,7 @@ async function importFromPanel(){
   st.textContent='⏳ جاري الجلب من اللوحة...';st.style.color='var(--text2)';
   try{
     var url=NEO_API+'?action=device_info&username='+encodeURIComponent(us)+'&password='+encodeURIComponent(pw)+'&api_key='+NEO_KEY;
-    var res=await fetch(PROXY+encodeURIComponent(url));
+    var res=await fetch(PROXY+url);
     var data=await res.json();
     var d=Array.isArray(data)?data[0]:data;
     if(!d||d.status==='false'||d.status===false){
