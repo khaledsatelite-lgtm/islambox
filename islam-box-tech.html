@@ -336,6 +336,14 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
     <label class="fl">اسم المستخدم</label><input class="fi" type="text" id="eu"/>
     <label class="fl">كلمة المرور</label><input class="fi" type="text" id="epw"/>
     <label class="fl">📝 ملاحظات</label><textarea class="fi" id="enotes" rows="3" placeholder="زبون وفي، متأخر في الدفع..." style="resize:none;font-family:inherit"></textarea>
+    <label class="fl">📱 طريقة التواصل</label>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+      <button class="db" id="ecm-wa" onclick="setECM('wa')" style="flex:1">💬 واتساب</button>
+      <button class="db" id="ecm-viber" onclick="setECM('viber')" style="flex:1">📳 Viber</button>
+      <button class="db" id="ecm-sms" onclick="setECM('sms')" style="flex:1">💬 SMS</button>
+      <button class="db" id="ecm-call" onclick="setECM('call')" style="flex:1">📞 اتصال</button>
+    </div>
+    <input type="hidden" id="ewa-val" value="wa"/>
     <div style="display:flex;gap:8px;margin-top:14px">
       <button onclick="saveEdit()" style="flex:1;padding:12px;background:linear-gradient(135deg,var(--blue2),#6d28d9);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:800;font-size:14px">✅ حفظ</button>
       <button onclick="document.getElementById('eov').classList.remove('show')" style="padding:12px 14px;background:var(--red-bg);color:var(--red);border:none;border-radius:var(--radius-sm);cursor:pointer">إلغاء</button>
@@ -362,7 +370,7 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
 // ══ DATA ══
 var C = JSON.parse(localStorage.getItem('ibc')||'[]');
 var PKG = JSON.parse(localStorage.getItem('ibpkg')||'[]');
-var view='dash', selId=null, dur=1, lang='ar', filt='all', eid=null, mc=null, mtype='auto', salC=[], si=0, payId=null, subType='user';
+var view='dash', selId=null, dur=1, lang='ar', filt='all', eid=null, mc=null, mtype='auto', salC=[], si=0, payId=null, subType='user', contactM='wa';
 
 function sv(){ localStorage.setItem('ibc', JSON.stringify(C)); }
 function svPkg(){ localStorage.setItem('ibpkg', JSON.stringify(PKG)); }
@@ -492,7 +500,7 @@ function rDash(){
   if(exp.length){
     alerts+='<div class="alert alert-warn"><div class="alert-ttl">⚠️ تنتهي خلال 7 أيام</div>';
     exp.forEach(function(c){
-      alerts+='<div class="arow"><span><b>'+c.name+'</b><br><span style="color:var(--text3);font-size:10px">📞 '+c.phone+'</span></span><div style="display:flex;gap:5px;align-items:center">'+bdg(dl(c.endDate))+'<button class="hdr-btn" style="padding:4px 8px;font-size:11px" onclick="openModal('+c.id+')">📩</button></div></div>';
+      alerts+='<div class="arow"><span><b>'+c.name+'</b><br><span style="color:var(--text3);font-size:10px">📞 '+c.phone+'</span></span><div style="display:flex;gap:5px;align-items:center">'+bdg(dl(c.endDate))+contactIcon(c)+'</div></div>';
     });
     alerts+='</div>';
   }
@@ -528,6 +536,28 @@ function getFilt(s){
     return m;
   });
 }
+function contactBtn(c,style){
+  var cm=c.contactM||(c.hasWa!==false?'wa':'call');
+  var ph=c.phone.replace(/[^0-9]/g,'');
+  if(cm==='wa') return '<button class="btn-wa" onclick="openModal('+c.id+')"'+(style?' style="'+style+'"':'')+'>📩 واتساب</button>';
+  if(cm==='viber') return '<a class="btn-wa" href="viber://chat?number=+'+ph+'" style="text-decoration:none;text-align:center'+(style?';'+style:'')+'" target="_blank">📳 Viber</a>';
+  if(cm==='sms') return '<a class="btn-wa" href="sms:+'+ph+'" style="text-decoration:none;text-align:center'+(style?';'+style:'')+'>💬 SMS</a>';
+  return '<a class="btn-wa" href="tel:'+c.phone+'" style="text-decoration:none;text-align:center'+(style?';'+style:'')+'" >📞 اتصال</a>';
+}
+function contactIcon(c){
+  var cm=c.contactM||(c.hasWa!==false?'wa':'call');
+  var ph=c.phone.replace(/[^0-9]/g,'');
+  if(cm==='wa') return '<button class="hdr-btn" style="padding:4px 8px;font-size:11px" onclick="openModal('+c.id+')">📩</button>';
+  if(cm==='viber') return '<a class="hdr-btn" href="viber://chat?number=+'+ph+'" style="padding:4px 8px;font-size:11px;text-decoration:none" target="_blank">📳</a>';
+  if(cm==='sms') return '<a class="hdr-btn" href="sms:+'+ph+'" style="padding:4px 8px;font-size:11px;text-decoration:none">💬</a>';
+  return '<a class="hdr-btn" href="tel:'+c.phone+'" style="padding:4px 8px;font-size:11px;text-decoration:none">📞</a>';
+}
+function contactBadge(c){
+  var cm=c.contactM||(c.hasWa!==false?'wa':'call');
+  var labels={wa:'',viber:'📳 Viber',sms:'💬 SMS',call:'📞 اتصال فقط'};
+  var lbl=labels[cm];
+  return lbl?'<span style="font-size:10px;background:rgba(59,139,255,.1);color:var(--blue);border:1px solid rgba(59,139,255,.3);border-radius:4px;padding:1px 5px">'+lbl+'</span>':'';
+}
 function cHTML(c){
   var lf={ar:'🇩🇿',fr:'🇫🇷',en:'🇬🇧',es:'🇪🇸'}[c.lang||'ar']||'🇩🇿';
   var payBadge=payDue(c)?'<span class="bPD" style="margin-right:4px">💰 يوم '+c.payDay+'</span>':'';
@@ -536,7 +566,7 @@ function cHTML(c){
     '<div class="av" style="background:'+avColor(c.name)+'">'+c.name[0]+'</div>'+
     '<div style="flex:1"><div class="cc-name">'+c.name+' <span style="font-size:11px">'+lf+'</span></div>'+
     '<div class="cc-phone">📞 '+c.phone+'</div></div>'+
-    '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'+payBadge+bdg(dl(c.endDate))+'</div></div>'+
+    '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'+contactBadge(c)+payBadge+bdg(dl(c.endDate))+'</div></div>'+
     '<div class="cc-bot"><span>📦 '+c.plan+'</span>'+(c.subName?'<span>🏷️ '+c.subName+'</span>':'')+
     '<span>📅 '+fd(c.endDate)+'</span><span>💰 '+(c.price||0).toLocaleString()+' دج</span></div></div>';
 }
@@ -637,6 +667,13 @@ function rAdd(){
     '<label class="fl">رقم الهاتف</label>'+
     '<input class="fi" type="text" id="fph" placeholder="+213 550 000 000"/>'+
     '<label class="fl">اسم الاشتراك / الباقة</label><input class="fi" type="text" id="fsn" placeholder="Gold IPTV"/>'+
+    '<label class="fl">📱 طريقة التواصل</label>'+
+    '<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">'+
+    '<button class="db'+(contactM==="wa"?" on":"")+'" onclick="setContact(\'wa\')" style="flex:1">💬 واتساب</button>'+
+    '<button class="db'+(contactM==="viber"?" on":"")+'" onclick="setContact(\'viber\')" style="flex:1">📳 Viber</button>'+
+    '<button class="db'+(contactM==="sms"?" on":"")+'" onclick="setContact(\'sms\')" style="flex:1">💬 SMS</button>'+
+    '<button class="db'+(contactM==="call"?" on":"")+'" onclick="setContact(\'call\')" style="flex:1">📞 اتصال</button>'+
+    '</div>'+
     '<label class="fl">لغة الزبون 🌍</label><div class="lb-row">'+lb+'</div>'+
     '<label class="fl">يوم الدفع الشهري (اختياري)</label>'+
     '<input class="fi" type="number" id="fpd" placeholder="مثال: 5" min="1" max="31"/>'+
@@ -668,6 +705,14 @@ function setL(l,btn){
 }
 function tp(){var i=document.getElementById('fpw');i.type=i.type==='password'?'text':'password';}
 function setSubType(t,btn){subType=t;render();}
+function setContact(t){contactM=t;render();}
+function setECM(t){
+  document.getElementById('ewa-val').value=t;
+  ['wa','viber','sms','call'].forEach(function(x){
+    var b=document.getElementById('ecm-'+x);
+    if(b) b.classList.toggle('on',x===t);
+  });
+}
 function applyPkg(i){
   var p=PKG[i];
   dur=p.dur; render();
@@ -710,12 +755,13 @@ function addC(){
   var pr=Number(document.getElementById('fpr').value)||0;
   var paid=Number(document.getElementById('fpaid')?document.getElementById('fpaid').value:0)||0;
   var notes=(document.getElementById('fnotes')?document.getElementById('fnotes').value||'':'').trim();
+  var contactMethod=contactM||'wa';
   if(!name||!phone){alert('الرجاء إدخال الاسم ورقم الهاتف');return;}
   var s=new Date(), e=addM(s,dur);
   var pl=dur===1?'1 شهر':dur===12?'12 شهر':dur+' أشهر';
   var initPayments=paid>0?[{amount:paid,date:new Date().toISOString().split('T')[0],note:'دفعة أولى'}]:[];
-  C.unshift({id:Date.now(),name:name,phone:phone,subName:sub,server:srv,username:us,password:pw,code:code,serial:serial,subType:subType,lang:lang,plan:pl,payDay:payDay||null,payments:initPayments,startDate:s.toISOString().split('T')[0],endDate:e.toISOString().split('T')[0],price:pr,notes:notes});
-  sv(); filt='all'; dur=1; lang='ar'; subType='user';
+  C.unshift({id:Date.now(),name:name,phone:phone,subName:sub,server:srv,username:us,password:pw,code:code,serial:serial,subType:subType,lang:lang,plan:pl,payDay:payDay||null,payments:initPayments,startDate:s.toISOString().split('T')[0],endDate:e.toISOString().split('T')[0],price:pr,notes:notes,hasWa:contactMethod==='wa',contactM:contactMethod});
+  sv(); filt='all'; dur=1; lang='ar'; subType='user'; contactM='wa';
   toast('✅ تم إضافة '+name+'!');
   // Auto WhatsApp welcome message
   var newC=C[0];
@@ -767,7 +813,7 @@ function rDet(){
     '<div class="di"><span class="di-lbl">💰 السعر</span><b>'+(c.price||0).toLocaleString()+' دج</b></div>'+
     '</div>'+
     '<div class="det-actions">'+
-    '<button class="btn-wa" onclick="openModal('+c.id+')">📩 واتساب</button>'+
+    contactBtn(c)+
     '<button class="btn-edit" onclick="openEdit('+c.id+')">✏️ تعديل</button>'+
     '<button class="btn-del" onclick="delC('+c.id+')">🗑</button>'+
     '</div>'+
@@ -830,6 +876,12 @@ function openEdit(id){
   document.getElementById('eu').value=c.username||'';
   document.getElementById('epw').value=c.password||'';
   document.getElementById('enotes').value=c.notes||'';
+  var cm=c.contactM||(c.hasWa!==false?'wa':'call');
+  document.getElementById('ewa-val').value=cm;
+  ['wa','viber','sms','call'].forEach(function(t){
+    var b=document.getElementById('ecm-'+t);
+    if(b) b.classList.toggle('on',t===cm);
+  });
   document.getElementById('eov').classList.add('show');
 }
 function saveEdit(){
@@ -844,6 +896,8 @@ function saveEdit(){
   c.username=document.getElementById('eu').value.trim();
   c.password=document.getElementById('epw').value.trim();
   c.notes=document.getElementById('enotes').value.trim();
+  c.contactM=document.getElementById('ewa-val').value||'wa';
+  c.hasWa=c.contactM==='wa';
   sv();document.getElementById('eov').classList.remove('show');
   toast('✅ تم حفظ التعديلات!');render();
 }
