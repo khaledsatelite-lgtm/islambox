@@ -370,7 +370,7 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
 // ══ DATA ══
 var C = JSON.parse(localStorage.getItem('ibc')||'[]');
 var PKG = JSON.parse(localStorage.getItem('ibpkg')||'[]');
-var view='dash', selId=null, dur=1, lang='ar', filt='all', eid=null, mc=null, mtype='auto', salC=[], si=0, payId=null, subType='user', contactM='wa';
+var view='dash', selId=null, dur=1, lang='ar', filt='all', eid=null, mc=null, mtype='auto', salC=[], si=0, payId=null, subType='user', contactM='wa', pkgDur=1;
 
 function sv(){ localStorage.setItem('ibc', JSON.stringify(C)); }
 function svPkg(){ localStorage.setItem('ibpkg', JSON.stringify(PKG)); }
@@ -657,6 +657,10 @@ function rAdd(){
     '<button type="button" onclick="tp()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px">👁</button></div>';
   } else if(subType==='code'){
     credHtml='<label class="fl" style="margin-top:0">🔑 الكود</label><input class="fi" type="text" id="fcode" placeholder="XXXX-XXXX-XXXX" style="direction:ltr"/>';
+  } else if(subType==='m3u'){
+    credHtml='<label class="fl" style="margin-top:0">📺 رابط M3U</label><input class="fi" type="text" id="fm3u" placeholder="http://server.com:port/get.php?username=...&password=..." style="direction:ltr" oninput="extractM3U(this.value)"/>'+
+    '<label class="fl">👤 اليوزر</label><input class="fi" type="text" id="fm3u-us" placeholder="يُستخرج تلقائياً" style="direction:ltr"/>'+
+    '<label class="fl">🔑 الباسورد</label><input class="fi" type="text" id="fm3u-pw" placeholder="يُستخرج تلقائياً" style="direction:ltr"/>';
   } else {
     credHtml='<label class="fl" style="margin-top:0">📱 الرقم التسلسلي</label><input class="fi" type="text" id="fserial" placeholder="00:11:22:33:44:55" style="direction:ltr"/>';
   }
@@ -706,6 +710,26 @@ function setL(l,btn){
 function tp(){var i=document.getElementById('fpw');i.type=i.type==='password'?'text':'password';}
 function setSubType(t,btn){subType=t;render();}
 function setContact(t){contactM=t;render();}
+function extractM3U(url){
+  if(!url) return;
+  try{
+    // Try to parse as URL first
+    var us='', pw='', srv='';
+    // Extract username
+    var umatch=url.match(/[?&]username=([^&]+)/i);
+    if(umatch) us=decodeURIComponent(umatch[1]);
+    // Extract password
+    var pmatch=url.match(/[?&]password=([^&]+)/i);
+    if(pmatch) pw=decodeURIComponent(pmatch[1]);
+    // Extract server (base URL)
+    var smatch=url.match(/^(https?:\/\/[^\/]+)/i);
+    if(smatch) srv=smatch[1];
+    // Fill fields
+    if(us && document.getElementById('fm3u-us')) document.getElementById('fm3u-us').value=us;
+    if(pw && document.getElementById('fm3u-pw')) document.getElementById('fm3u-pw').value=pw;
+    if(us||pw) toast('✅ تم استخراج البيانات تلقائياً!');
+  }catch(e){}
+}
 function setECM(t){
   document.getElementById('ewa-val').value=t;
   ['wa','viber','sms','call'].forEach(function(x){
@@ -751,7 +775,7 @@ function addC(){
   var us=subType==='user'?(document.getElementById('fus').value||'').trim():'';
   var pw=subType==='user'?(document.getElementById('fpw').value||'').trim():'';
   var code=subType==='code'?(document.getElementById('fcode')?document.getElementById('fcode').value||'':''):'';
-  var serial=subType==='serial'?(document.getElementById('fserial')?document.getElementById('fserial').value||'':''):'';
+  var serial=subType==='serial'?(document.getElementById('fserial')?document.getElementById('fserial').value||'':''):'';  var m3u=subType==='m3u'?(document.getElementById('fm3u')?document.getElementById('fm3u').value||'':''):'';  var m3uUs=subType==='m3u'?(document.getElementById('fm3u-us')?document.getElementById('fm3u-us').value||'':''):'';  var m3uPw=subType==='m3u'?(document.getElementById('fm3u-pw')?document.getElementById('fm3u-pw').value||'':''):'';
   var pr=Number(document.getElementById('fpr').value)||0;
   var paid=Number(document.getElementById('fpaid')?document.getElementById('fpaid').value:0)||0;
   var notes=(document.getElementById('fnotes')?document.getElementById('fnotes').value||'':'').trim();
@@ -760,7 +784,7 @@ function addC(){
   var s=new Date(), e=addM(s,dur);
   var pl=dur===1?'1 شهر':dur===12?'12 شهر':dur+' أشهر';
   var initPayments=paid>0?[{amount:paid,date:new Date().toISOString().split('T')[0],note:'دفعة أولى'}]:[];
-  C.unshift({id:Date.now(),name:name,phone:phone,subName:sub,server:srv,username:us,password:pw,code:code,serial:serial,subType:subType,lang:lang,plan:pl,payDay:payDay||null,payments:initPayments,startDate:s.toISOString().split('T')[0],endDate:e.toISOString().split('T')[0],price:pr,notes:notes,hasWa:contactMethod==='wa',contactM:contactMethod});
+  C.unshift({id:Date.now(),name:name,phone:phone,subName:sub,server:srv,username:us,password:pw,code:code,serial:serial,subType:subType,lang:lang,plan:pl,payDay:payDay||null,payments:initPayments,startDate:s.toISOString().split('T')[0],endDate:e.toISOString().split('T')[0],price:pr,notes:notes,hasWa:contactMethod==='wa',contactM:contactMethod,m3u:m3u,m3uUs:m3uUs,m3uPw:m3uPw});
   sv(); filt='all'; dur=1; lang='ar'; subType='user'; contactM='wa';
   toast('✅ تم إضافة '+name+'!');
   // Auto WhatsApp welcome message
@@ -779,7 +803,7 @@ function rDet(){
   var d=dl(c.endDate);
   var lf={ar:'🇩🇿 عربي',fr:'🇫🇷 Français',en:'🇬🇧 English',es:'🇪🇸 Español'};
   var cred='';
-  if(c.server||c.username||c.password||c.code||c.serial){
+  if(c.server||c.username||c.password||c.code||c.serial||c.m3u){
     cred='<div style="background:var(--bg);border:1px solid rgba(59,139,255,.3);border-radius:var(--radius-sm);padding:12px;margin-top:8px">'+
       '<div class="cred-ttl">🔐 بيانات الدخول</div>'+
       (c.server?credRow('🌐 السيرفر',c.server):'')+
@@ -787,6 +811,9 @@ function rDet(){
       (c.password?credRowPass(c.id,c.password):'')+
       (c.code?credRow('🔑 الكود',c.code):'')+
       (c.serial?credRow('📱 الرقم التسلسلي',c.serial):'')+
+      (c.m3u?credRow('📺 رابط M3U',c.m3u):'')+
+      (c.m3uUs?credRow('👤 يوزر M3U',c.m3uUs):'')+
+      (c.m3uPw?credRow('🔑 باسورد M3U',c.m3uPw):'')+
       '<button onclick="sendCred('+c.id+')" style="width:100%;margin-top:8px;padding:9px;background:rgba(59,139,255,.1);color:var(--blue);border:1px solid rgba(59,139,255,.3);border-radius:var(--radius-sm);cursor:pointer;font-size:12px;font-weight:700">📩 إرسال بيانات الدخول</button></div>';
   }
   var pays=c.payments||[];
@@ -1044,14 +1071,13 @@ function rPkgs(){
       '</div></div>';
   }).join(''):'<div class="empty">لا توجد باقات بعد 📦<br><small>أضف باقاتك لتظهر عند إضافة زبون</small></div>';
 
+  var durs2=[1,3,6,12];
+  var db2=durs2.map(function(d){return '<button class="db'+(pkgDur===d?' on':'')+'" onclick="pkgDur='+d+';render()" style="flex:1">'+(d===1?'شهر':d===12?'سنة':d+' أشهر')+'</button>';}).join('');
   return '<div class="sec-ttl">💳 الباقات الجاهزة</div>'+
     '<div class="form-wrap" style="margin-bottom:14px">'+
     '<label class="fl">اسم الباقة</label><input class="fi" id="pkg-name" placeholder="Gold IPTV"/>'+
     '<label class="fl">المدة (أشهر)</label>'+
-    '<div style="display:flex;gap:6px;margin-bottom:8px">'+
-    [1,3,6,12].map(function(d){return '<button class="db" onclick="document.getElementById(\'pkg-dur\').value='+d+';this.parentElement.querySelectorAll(\'.db\').forEach(function(b){b.classList.remove(\'on\')});this.classList.add(\'on\')" style="flex:1">'+(d===1?'شهر':d===12?'سنة':d+' أشهر')+'</button>';}).join('')+
-    '</div>'+
-    '<input class="fi" id="pkg-dur" type="number" placeholder="المدة بالأشهر" min="1" style="display:none"/>'+
+    '<div style="display:flex;gap:6px;margin-bottom:8px">'+db2+'</div>'+
     '<label class="fl">السعر (دج)</label><input class="fi" id="pkg-price" type="number" placeholder="1000"/>'+
     '<button class="sub-btn" onclick="addPkg()">✅ إضافة الباقة</button>'+
     '</div>'+
@@ -1060,11 +1086,13 @@ function rPkgs(){
 }
 function addPkg(){
   var name=(document.getElementById('pkg-name').value||'').trim();
-  var dur=Number(document.getElementById('pkg-dur').value)||1;
   var price=Number(document.getElementById('pkg-price').value)||0;
   if(!name){toast('⚠️ أدخل اسم الباقة');return;}
-  PKG.push({name:name,dur:dur,price:price});
-  svPkg(); render(); toast('✅ تمت إضافة الباقة');
+  PKG.push({name:name,dur:pkgDur,price:price});
+  svPkg();
+  document.getElementById('pkg-name').value='';
+  document.getElementById('pkg-price').value='';
+  render(); toast('✅ تمت إضافة الباقة: '+name);
 }
 function delPkg(i){
   PKG.splice(i,1); svPkg(); render(); toast('🗑 تم الحذف');
@@ -1089,6 +1117,8 @@ function sendCreds(id){
     msg='السلام عليكم '+c.name+' 👋\n\n🔑 بيانات اشتراكك'+sub+':\n\nالكود: '+c.code+'\n\n📅 صالح حتى: '+fd(c.endDate)+'\n\n— Islam Box Tech Zeboudja';
   } else if(c.subType==='serial'||c.serial){
     msg='السلام عليكم '+c.name+' 👋\n\n📱 بيانات اشتراكك'+sub+':\n\nالرقم التسلسلي: '+c.serial+'\n\n📅 صالح حتى: '+fd(c.endDate)+'\n\n— Islam Box Tech Zeboudja';
+  } else if(c.subType==='m3u'||c.m3u){
+    msg='السلام عليكم '+c.name+' 👋\n\n📺 رابط M3U'+sub+':\n\n🔗 الرابط: '+c.m3u+'\n'+(c.m3uUs?'👤 اليوزر: '+c.m3uUs+'\n':'')+(c.m3uPw?'🔑 الباسورد: '+c.m3uPw+'\n':'')+'\n📅 صالح حتى: '+fd(c.endDate)+'\n\n— Islam Box Tech Zeboudja';
   } else {
     msg='السلام عليكم '+c.name+' 👋\n\n🔐 بيانات اشتراكك'+sub+':\n\n'+(c.server?'🌐 السيرفر: '+c.server+'\n':'')+
     '👤 اليوزر: '+c.username+'\n🔑 الباسورد: '+c.password+'\n\n📅 صالح حتى: '+fd(c.endDate)+'\n\n— Islam Box Tech Zeboudja';
