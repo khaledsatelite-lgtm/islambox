@@ -1321,7 +1321,8 @@ function toggleTheme(){
 })();
 
 initLock();render();checkSt();
-if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").then(function(){console.log("SW registered");});}
+// Unregister any old service workers
+if("serviceWorker" in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister();});});}
 </script>
 </body>
 </html>
