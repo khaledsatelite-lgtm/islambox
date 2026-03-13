@@ -726,9 +726,16 @@ function extractM3U(url){
     var smatch=url.match(/^(https?:\/\/[^\/]+)/i);
     if(smatch) srv=smatch[1];
     // Fill fields
-    if(us && document.getElementById('fm3u-us')) document.getElementById('fm3u-us').value=us;
-    if(pw && document.getElementById('fm3u-pw')) document.getElementById('fm3u-pw').value=pw;
-    if(us||pw) toast('✅ تم استخراج البيانات تلقائياً!');
+    if(us||pw){
+      subType='user';
+      render();
+      setTimeout(function(){
+        if(us && document.getElementById('fus')) document.getElementById('fus').value=us;
+        if(pw && document.getElementById('fpw')) document.getElementById('fpw').value=pw;
+        if(srv && document.getElementById('fsrv')) document.getElementById('fsrv').value=srv;
+        toast('✅ تم استخراج اليوزر والباسورد تلقائياً!');
+      },100);
+    }
   }catch(e){}
 }
 function setECM(t){
