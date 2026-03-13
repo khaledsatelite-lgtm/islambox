@@ -240,7 +240,7 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
   <div class="hdr-top">
     <div class="logo-wrap">
       <div class="logo-icon">📺</div>
-      <div><div class="logo-text">Islam Box Tech</div><div class="logo-sub" id="app-sub">Zeboudja — إدارة الاشتراكات — v2.0</div></div>
+      <div><div class="logo-text">Islam Box Tech</div><div class="logo-sub" id="app-sub">Zeboudja — إدارة الاشتراكات — v2.1</div></div>
     </div>
     <div class="hdr-btns">
       <button class="hdr-btn" id="uilang-btn" onclick="toggleUILang()" title="تغيير لغة الواجهة">🇩🇿</button>
@@ -1321,8 +1321,23 @@ function toggleTheme(){
 })();
 
 initLock();render();checkSt();
-// Unregister any old service workers
-if("serviceWorker" in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister();});});}
+// Auto-update check
+var APP_VERSION = "202603130331";
+var storedVersion = localStorage.getItem("appVersion");
+if(storedVersion && storedVersion !== APP_VERSION){
+  localStorage.setItem("appVersion", APP_VERSION);
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.getRegistrations().then(function(regs){
+      regs.forEach(function(r){r.unregister();});
+      window.location.reload(true);
+    });
+  }
+} else {
+  localStorage.setItem("appVersion", APP_VERSION);
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.register("sw.js");
+  }
+}
 </script>
 </body>
 </html>
