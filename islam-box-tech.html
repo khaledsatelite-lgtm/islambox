@@ -233,6 +233,7 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
     <button class="nb" onclick="go('list')"><span>👥</span>الزبائن</button>
     <button class="nb" onclick="go('pay')"><span>💰</span>الدفعات</button>
     <button class="nb" onclick="go('stats')"><span>📊</span>تقارير</button>
+    <button class="nb" onclick="go('pkgs')"><span>💳</span>باقات</button>
     <button class="nb" onclick="go('add')"><span>➕</span>جديد</button>
   </nav>
 </div>
@@ -334,9 +335,11 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
 <script>
 // ══ DATA ══
 var C = JSON.parse(localStorage.getItem('ibc')||'[]');
+var PKG = JSON.parse(localStorage.getItem('ibpkg')||'[]');
 var view='dash', selId=null, dur=1, lang='ar', filt='all', eid=null, mc=null, mtype='auto', salC=[], si=0, payId=null, subType='user';
 
 function sv(){ localStorage.setItem('ibc', JSON.stringify(C)); }
+function svPkg(){ localStorage.setItem('ibpkg', JSON.stringify(PKG)); }
 
 // ══ HELPERS ══
 function toast(m){
@@ -406,7 +409,7 @@ function wMsg(c,type){
 function go(v){
   view=v;
   document.querySelectorAll('.nb').forEach(function(b,i){
-    b.classList.toggle('on',['dash','list','pay','stats','add'][i]===v);
+    b.classList.toggle('on',['dash','list','pay','stats','pkgs','add'][i]===v);
   });
   render();
 }
@@ -417,6 +420,7 @@ function render(){
   else if(view==='list') el.innerHTML=rList();
   else if(view==='pay') el.innerHTML=rPay();
   else if(view==='stats') el.innerHTML=rStats();
+  else if(view==='pkgs') el.innerHTML=rPkgs();
   else if(view==='add') el.innerHTML=rAdd();
   else if(view==='det') el.innerHTML=rDet();
 }
@@ -601,6 +605,10 @@ function rAdd(){
     '<label class="fl">لغة الزبون 🌍</label><div class="lb-row">'+lb+'</div>'+
     '<label class="fl">يوم الدفع الشهري (اختياري)</label>'+
     '<input class="fi" type="number" id="fpd" placeholder="مثال: 5" min="1" max="31"/>'+
+    (PKG.length?'<label class="fl">اختر باقة جاهزة</label>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">'+
+    PKG.map(function(p){return '<button class="db" onclick="applyPkg('+PKG.indexOf(p)+')" style="flex:0 0 auto">'+p.name+' — '+p.price.toLocaleString()+' دج</button>';}).join('')+
+    '</div>':'')+
     '<label class="fl">نوع الاشتراك</label>'+
     '<div style="display:flex;gap:6px;margin-bottom:8px">'+
     '<button class="db'+(subType==='user'?' on':'')+'" onclick="setSubType(\'user\')" style="flex:1">👤 يوزر</button>'+
@@ -624,6 +632,15 @@ function setL(l,btn){
 }
 function tp(){var i=document.getElementById('fpw');i.type=i.type==='password'?'text':'password';}
 function setSubType(t,btn){subType=t;render();}
+function applyPkg(i){
+  var p=PKG[i];
+  dur=p.dur; render();
+  setTimeout(function(){
+    if(document.getElementById('fsn')) document.getElementById('fsn').value=p.name;
+    if(document.getElementById('fpr')) document.getElementById('fpr').value=p.price;
+    calcRemain();
+  },50);
+}
 function calcRemain(){
   var total=Number(document.getElementById('fpr').value)||0;
   var paid=Number(document.getElementById('fpaid').value)||0;
@@ -720,6 +737,7 @@ function rDet(){
     (d<0?'<button class="btn-renew" onclick="renew('+c.id+')">🔄 تجديد الاشتراك</button>':'')+
     '<button class="btn-pay" onclick="openPayModal('+c.id+')">💰 تسجيل دفعة</button>'+
     '<button class="btn-pay" onclick="printInvoice('+c.id+')" style="background:rgba(192,132,252,.1);color:var(--purple);border-color:rgba(192,132,252,.3);margin-top:6px">🧾 طباعة فاتورة</button>'+
+    ((c.username||c.code||c.serial)?'<button class="btn-pay" onclick="sendCreds('+c.id+')" style="background:rgba(0,230,118,.08);color:var(--green);border-color:rgba(0,230,118,.3);margin-top:6px">📤 إرسال البيانات للزبون</button>':'')+
     '</div>'+cred+payHist;
 }
 
@@ -889,6 +907,70 @@ function sendAll(){
 
 
 
+
+// ══ PACKAGES PAGE ══
+function rPkgs(){
+  var rows=PKG.length?PKG.map(function(p,i){
+    return '<div class="cc" style="display:flex;justify-content:space-between;align-items:center;cursor:default">'+
+      '<div><div style="font-weight:800;font-size:14px">'+p.name+'</div>'+
+      '<div style="font-size:12px;color:var(--text3)">'+p.dur+' شهر — '+p.price.toLocaleString()+' دج</div></div>'+
+      '<div style="display:flex;gap:6px">'+
+      '<button onclick="editPkg('+i+')" style="padding:6px 10px;background:var(--blue-glow);color:var(--blue);border:1px solid var(--blue);border-radius:6px;cursor:pointer;font-size:12px">✏️</button>'+
+      '<button onclick="delPkg('+i+')" style="padding:6px 10px;background:var(--red-bg);color:var(--red);border:1px solid var(--red);border-radius:6px;cursor:pointer;font-size:12px">🗑</button>'+
+      '</div></div>';
+  }).join(''):'<div class="empty">لا توجد باقات بعد 📦<br><small>أضف باقاتك لتظهر عند إضافة زبون</small></div>';
+
+  return '<div class="sec-ttl">💳 الباقات الجاهزة</div>'+
+    '<div class="form-wrap" style="margin-bottom:14px">'+
+    '<label class="fl">اسم الباقة</label><input class="fi" id="pkg-name" placeholder="Gold IPTV"/>'+
+    '<label class="fl">المدة (أشهر)</label>'+
+    '<div style="display:flex;gap:6px;margin-bottom:8px">'+
+    [1,3,6,12].map(function(d){return '<button class="db" onclick="document.getElementById(\'pkg-dur\').value='+d+';this.parentElement.querySelectorAll(\'.db\').forEach(function(b){b.classList.remove(\'on\')});this.classList.add(\'on\')" style="flex:1">'+(d===1?'شهر':d===12?'سنة':d+' أشهر')+'</button>';}).join('')+
+    '</div>'+
+    '<input class="fi" id="pkg-dur" type="number" placeholder="المدة بالأشهر" min="1" style="display:none"/>'+
+    '<label class="fl">السعر (دج)</label><input class="fi" id="pkg-price" type="number" placeholder="1000"/>'+
+    '<button class="sub-btn" onclick="addPkg()">✅ إضافة الباقة</button>'+
+    '</div>'+
+    '<div class="sec-ttl" style="font-size:14px">📋 الباقات المحفوظة</div>'+
+    rows;
+}
+function addPkg(){
+  var name=(document.getElementById('pkg-name').value||'').trim();
+  var dur=Number(document.getElementById('pkg-dur').value)||1;
+  var price=Number(document.getElementById('pkg-price').value)||0;
+  if(!name){toast('⚠️ أدخل اسم الباقة');return;}
+  PKG.push({name:name,dur:dur,price:price});
+  svPkg(); render(); toast('✅ تمت إضافة الباقة');
+}
+function delPkg(i){
+  PKG.splice(i,1); svPkg(); render(); toast('🗑 تم الحذف');
+}
+function editPkg(i){
+  var p=PKG[i];
+  document.getElementById('pkg-name').value=p.name;
+  document.getElementById('pkg-dur').value=p.dur;
+  document.getElementById('pkg-price').value=p.price;
+  PKG.splice(i,1); svPkg();
+  document.getElementById('pkg-name').focus();
+  toast('✏️ عدّل البيانات واضغط إضافة');
+}
+
+// ══ SEND CREDENTIALS ══
+function sendCreds(id){
+  var c=C.find(function(x){return x.id===id;});
+  if(!c) return;
+  var msg='';
+  var sub=c.subName?' ('+c.subName+')':'';
+  if(c.subType==='code'||c.code){
+    msg='السلام عليكم '+c.name+' 👋\n\n🔑 بيانات اشتراكك'+sub+':\n\nالكود: '+c.code+'\n\n📅 صالح حتى: '+fd(c.endDate)+'\n\n— Islam Box Tech Zeboudja';
+  } else if(c.subType==='serial'||c.serial){
+    msg='السلام عليكم '+c.name+' 👋\n\n📱 بيانات اشتراكك'+sub+':\n\nالرقم التسلسلي: '+c.serial+'\n\n📅 صالح حتى: '+fd(c.endDate)+'\n\n— Islam Box Tech Zeboudja';
+  } else {
+    msg='السلام عليكم '+c.name+' 👋\n\n🔐 بيانات اشتراكك'+sub+':\n\n'+(c.server?'🌐 السيرفر: '+c.server+'\n':'')+
+    '👤 اليوزر: '+c.username+'\n🔑 الباسورد: '+c.password+'\n\n📅 صالح حتى: '+fd(c.endDate)+'\n\n— Islam Box Tech Zeboudja';
+  }
+  window.open(wl(c.phone,msg),'_blank');
+}
 
 // ══ STATS ══
 function rStats(){
