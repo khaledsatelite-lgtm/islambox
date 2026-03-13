@@ -21,6 +21,28 @@
   --red-bg:rgba(220,50,50,.1);
   --purple-bg:rgba(150,80,220,.1);
 }
+:root[data-theme="warm"]{
+  --bg:#1a1208;--bg2:#241a0a;--bg3:#2e2010;
+  --border:#4a3010;--border2:#6a4820;
+  --blue:#f59e0b;--blue2:#d97706;--blue-glow:rgba(245,158,11,.2);
+  --green:#86efac;--green2:#4ade80;--green-bg:rgba(134,239,172,.08);
+  --orange:#fb923c;--orange-bg:rgba(251,146,60,.08);
+  --red:#f87171;--red-bg:rgba(248,113,113,.08);
+  --purple:#e879f9;--purple-bg:rgba(232,121,249,.08);
+  --text:#fef3c7;--text2:#d4a96a;--text3:#8a6030;
+  --radius:14px;--radius-sm:8px;
+}
+:root[data-theme="green"]{
+  --bg:#020f06;--bg2:#041a0a;--bg3:#062510;
+  --border:#0a3a18;--border2:#0e5022;
+  --blue:#34d399;--blue2:#10b981;--blue-glow:rgba(52,211,153,.2);
+  --green:#6ee7b7;--green2:#34d399;--green-bg:rgba(110,231,183,.08);
+  --orange:#fbbf24;--orange-bg:rgba(251,191,36,.08);
+  --red:#f87171;--red-bg:rgba(248,113,113,.08);
+  --purple:#a78bfa;--purple-bg:rgba(167,139,250,.08);
+  --text:#ecfdf5;--text2:#6ee7b7;--text3:#065f46;
+  --radius:14px;--radius-sm:8px;
+}
 :root{
   --bg:#060d1a;--bg2:#0b1525;--bg3:#0f1d30;
   --border:#1a3050;--border2:#1e4060;
@@ -218,10 +240,12 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
   <div class="hdr-top">
     <div class="logo-wrap">
       <div class="logo-icon">📺</div>
-      <div><div class="logo-text">Islam Box Tech</div><div class="logo-sub">Zeboudja — إدارة الاشتراكات</div></div>
+      <div><div class="logo-text">Islam Box Tech</div><div class="logo-sub" id="app-sub">Zeboudja — إدارة الاشتراكات</div></div>
     </div>
     <div class="hdr-btns">
+      <button class="hdr-btn" id="uilang-btn" onclick="toggleUILang()" title="تغيير لغة الواجهة">🇩🇿</button>
       <button class="hdr-btn" onclick="exportBackup()" title="نسخ احتياطي">💾</button>
+      <button class="hdr-btn" onclick="exportExcel()" title="تصدير Excel">📊</button>
       <button class="hdr-btn" onclick="document.getElementById('imp').click()" title="استيراد">📥</button>
       <input type="file" id="imp" accept=".json" style="display:none" onchange="importBackup(event)"/>
       <button class="hdr-btn" onclick="openLockSettings()" title="قفل التطبيق">🔒</button>
@@ -287,6 +311,7 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
       <button class="mt" onclick="setMT(this,'reminder')">⚠️ تذكير</button>
       <button class="mt" onclick="setMT(this,'expired')">❌ منتهي</button>
       <button class="mt" onclick="setMT(this,'active')">✅ نشط</button>
+      <button class="mt" onclick="setMT(this,'late')" style="color:#ff4444;border-color:#ff4444">🔴 متأخر</button>
     </div>
     <textarea class="msg-area" id="ma" rows="8"></textarea>
     <div class="m-actions">
@@ -310,6 +335,7 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
     <label class="fl">رابط السيرفر</label><input class="fi" type="text" id="esrv"/>
     <label class="fl">اسم المستخدم</label><input class="fi" type="text" id="eu"/>
     <label class="fl">كلمة المرور</label><input class="fi" type="text" id="epw"/>
+    <label class="fl">📝 ملاحظات</label><textarea class="fi" id="enotes" rows="3" placeholder="زبون وفي، متأخر في الدفع..." style="resize:none;font-family:inherit"></textarea>
     <div style="display:flex;gap:8px;margin-top:14px">
       <button onclick="saveEdit()" style="flex:1;padding:12px;background:linear-gradient(135deg,var(--blue2),#6d28d9);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:800;font-size:14px">✅ حفظ</button>
       <button onclick="document.getElementById('eov').classList.remove('show')" style="padding:12px 14px;background:var(--red-bg);color:var(--red);border:none;border-radius:var(--radius-sm);cursor:pointer">إلغاء</button>
@@ -374,25 +400,29 @@ var M={
     r:function(n,s,d,dt){return 'السلام عليكم '+n+' 👋\n\nتنبيه هام ⚠️\nاشتراكك'+s+' سينتهي خلال '+d+' أيام!\n📅 تاريخ الانتهاء: '+dt+'\n\nجدد الآن لا تنقطع عن المشاهدة 📺\nتواصل معنا 💰\n\n— Islam Box Tech Zeboudja';},
     e:function(n,s,dt){return 'السلام عليكم '+n+' 👋\n\nاشتراكك'+s+' قد انتهى ❌\n📅 انتهى: '+dt+'\n\nتواصل معنا للتجديد 💰\n\n— Islam Box Tech Zeboudja';},
     a:function(n,s,dt){return 'السلام عليكم '+n+' 👋\n\nشكراً على ثقتك 🙏\nاشتراكك'+s+' نشط ✅\n📅 ينتهي: '+dt+'\n\n— Islam Box Tech Zeboudja';},
-    p:function(n,day){return 'السلام عليكم '+n+' 👋\n\nتذكير بالدفع 💰\nموعد تجديد اشتراكك يوم '+day+' من الشهر\n\nتواصل معنا مسبقاً 😊\n\n— Islam Box Tech Zeboudja';}
+    p:function(n,day){return 'السلام عليكم '+n+' 👋\n\nتذكير بالدفع 💰\nموعد تجديد اشتراكك يوم '+day+' من الشهر\n\nتواصل معنا مسبقاً 😊\n\n— Islam Box Tech Zeboudja';},
+    l:function(n,s,amt){return 'السلام عليكم '+n+' 👋\n\nتذكير مهم 🔴\nلديك مبلغ متأخر بالدفع'+s+'\n💸 المبلغ المتبقي: '+amt+' دج\n\nنرجو التسوية في أقرب وقت ⏳\nتواصل معنا 📞\n\n— Islam Box Tech Zeboudja';}
   },
   fr:{
     r:function(n,s,d,dt){return 'Bonjour '+n+' 👋\n\nRappel ⚠️\nVotre abonnement'+s+' expire dans '+d+' jours!\n📅 '+dt+'\n\nRenouvelez maintenant 📺💰\n\n— Islam Box Tech Zeboudja';},
     e:function(n,s,dt){return 'Bonjour '+n+' 👋\n\nVotre abonnement'+s+' a expiré ❌\n📅 '+dt+'\n\nContactez-nous 💰\n\n— Islam Box Tech Zeboudja';},
     a:function(n,s,dt){return 'Bonjour '+n+' 👋\n\nMerci 🙏\nVotre abonnement'+s+' est actif ✅\n📅 '+dt+'\n\n— Islam Box Tech Zeboudja';},
-    p:function(n,day){return 'Bonjour '+n+' 👋\n\nRappel de paiement 💰\nVotre renouvellement est prévu le '+day+' du mois\n\n— Islam Box Tech Zeboudja';}
+    p:function(n,day){return 'Bonjour '+n+' 👋\n\nRappel de paiement 💰\nVotre renouvellement est prévu le '+day+' du mois\n\n— Islam Box Tech Zeboudja';},
+    l:function(n,s,amt){return 'Bonjour '+n+' 👋\n\nRappel important 🔴\nVous avez un montant en retard'+s+'\n💸 Montant restant: '+amt+' DA\n\nMerci de régulariser rapidement ⏳\n\n— Islam Box Tech Zeboudja';}
   },
   en:{
     r:function(n,s,d,dt){return 'Hello '+n+' 👋\n\nReminder ⚠️\nYour subscription'+s+' expires in '+d+' days!\n📅 '+dt+'\n\nRenew now 📺💰\n\n— Islam Box Tech Zeboudja';},
     e:function(n,s,dt){return 'Hello '+n+' 👋\n\nYour subscription'+s+' expired ❌\n📅 '+dt+'\n\nContact us 💰\n\n— Islam Box Tech Zeboudja';},
     a:function(n,s,dt){return 'Hello '+n+' 👋\n\nThank you 🙏\nYour subscription'+s+' is active ✅\n📅 '+dt+'\n\n— Islam Box Tech Zeboudja';},
-    p:function(n,day){return 'Hello '+n+' 👋\n\nPayment reminder 💰\nYour renewal is due on day '+day+' of the month\n\n— Islam Box Tech Zeboudja';}
+    p:function(n,day){return 'Hello '+n+' 👋\n\nPayment reminder 💰\nYour renewal is due on day '+day+' of the month\n\n— Islam Box Tech Zeboudja';},
+    l:function(n,s,amt){return 'Hello '+n+' 👋\n\nImportant reminder 🔴\nYou have a late payment'+s+'\n💸 Amount due: '+amt+' DA\n\nPlease settle as soon as possible ⏳\n\n— Islam Box Tech Zeboudja';}
   },
   es:{
     r:function(n,s,d,dt){return 'Hola '+n+' 👋\n\nRecordatorio ⚠️\nTu suscripción'+s+' vence en '+d+' días!\n📅 '+dt+'\n\nRenueva ahora 📺💰\n\n— Islam Box Tech Zeboudja';},
     e:function(n,s,dt){return 'Hola '+n+' 👋\n\nTu suscripción'+s+' expiró ❌\n📅 '+dt+'\n\nContáctanos 💰\n\n— Islam Box Tech Zeboudja';},
     a:function(n,s,dt){return 'Hola '+n+' 👋\n\nGracias 🙏\nTu suscripción'+s+' está activa ✅\n📅 '+dt+'\n\n— Islam Box Tech Zeboudja';},
-    p:function(n,day){return 'Hola '+n+' 👋\n\nRecordatorio de pago 💰\nTu renovación vence el día '+day+' del mes\n\n— Islam Box Tech Zeboudja';}
+    p:function(n,day){return 'Hola '+n+' 👋\n\nRecordatorio de pago 💰\nTu renovación vence el día '+day+' del mes\n\n— Islam Box Tech Zeboudja';},
+    l:function(n,s,amt){return 'Hola '+n+' 👋\n\nRecordatorio importante 🔴\nTienes un pago pendiente'+s+'\n💸 Monto pendiente: '+amt+' DA\n\nPor favor regulariza pronto ⏳\n\n— Islam Box Tech Zeboudja';}
   }
 };
 
@@ -402,6 +432,11 @@ function wMsg(c,type){
   if(type==='reminder'||(!type&&d>=0&&d<=7)) return m.r(c.name,sub,d,dt);
   if(type==='expired'||(!type&&d<0)) return m.e(c.name,sub,dt);
   if(type==='pay') return m.p(c.name,c.payDay||'');
+  if(type==='late'){
+    var paid=(c.payments||[]).reduce(function(s,p){return s+p.amount;},0);
+    var remain=(c.price||0)-paid;
+    return m.l(c.name,sub,remain.toLocaleString());
+  }
   return m.a(c.name,sub,dt);
 }
 
@@ -620,6 +655,7 @@ function rAdd(){
     '<label class="fl">السعر الكلي (دج)</label><input class="fi" type="number" id="fpr" placeholder="1000" oninput="calcRemain()"/>'+
     '<label class="fl">المبلغ المدفوع (دج)</label><input class="fi" type="number" id="fpaid" placeholder="0" oninput="calcRemain()"/>'+
     '<div id="fremain" class="prev-box" style="margin-top:8px"></div>'+
+    '<label class="fl">📝 ملاحظات (اختياري)</label><textarea class="fi" id="fnotes" rows="2" placeholder="زبون وفي، مصدر الزبون..." style="resize:none;font-family:inherit"></textarea>'+
     '<div class="prev-box">📅 البداية: <b>'+fd(s)+'</b><br>📅 النهاية: <b>'+fd(e)+'</b></div>'+
     '<button class="sub-btn" onclick="addC()">✅ حفظ الاشتراك</button></div>';
 }
@@ -673,11 +709,12 @@ function addC(){
   var serial=subType==='serial'?(document.getElementById('fserial')?document.getElementById('fserial').value||'':''):'';
   var pr=Number(document.getElementById('fpr').value)||0;
   var paid=Number(document.getElementById('fpaid')?document.getElementById('fpaid').value:0)||0;
+  var notes=(document.getElementById('fnotes')?document.getElementById('fnotes').value||'':'').trim();
   if(!name||!phone){alert('الرجاء إدخال الاسم ورقم الهاتف');return;}
   var s=new Date(), e=addM(s,dur);
   var pl=dur===1?'1 شهر':dur===12?'12 شهر':dur+' أشهر';
   var initPayments=paid>0?[{amount:paid,date:new Date().toISOString().split('T')[0],note:'دفعة أولى'}]:[];
-  C.unshift({id:Date.now(),name:name,phone:phone,subName:sub,server:srv,username:us,password:pw,code:code,serial:serial,subType:subType,lang:lang,plan:pl,payDay:payDay||null,payments:initPayments,startDate:s.toISOString().split('T')[0],endDate:e.toISOString().split('T')[0],price:pr});
+  C.unshift({id:Date.now(),name:name,phone:phone,subName:sub,server:srv,username:us,password:pw,code:code,serial:serial,subType:subType,lang:lang,plan:pl,payDay:payDay||null,payments:initPayments,startDate:s.toISOString().split('T')[0],endDate:e.toISOString().split('T')[0],price:pr,notes:notes});
   sv(); filt='all'; dur=1; lang='ar'; subType='user';
   toast('✅ تم إضافة '+name+'!');
   // Auto WhatsApp welcome message
@@ -738,7 +775,10 @@ function rDet(){
     '<button class="btn-pay" onclick="openPayModal('+c.id+')">💰 تسجيل دفعة</button>'+
     '<button class="btn-pay" onclick="printInvoice('+c.id+')" style="background:rgba(192,132,252,.1);color:var(--purple);border-color:rgba(192,132,252,.3);margin-top:6px">🧾 طباعة فاتورة</button>'+
     ((c.username||c.code||c.serial)?'<button class="btn-pay" onclick="sendCreds('+c.id+')" style="background:rgba(0,230,118,.08);color:var(--green);border-color:rgba(0,230,118,.3);margin-top:6px">📤 إرسال البيانات للزبون</button>':'')+
-    '</div>'+cred+payHist;
+    (function(){var paid=(c.payments||[]).reduce(function(s,p){return s+p.amount;},0);var remain=(c.price||0)-paid;return remain>0?'<button class="btn-pay" onclick="openModal('+c.id+',\'late\')" style="background:rgba(248,113,113,.1);color:var(--red);border-color:rgba(248,113,113,.3);margin-top:6px">🔴 تذكير بالدفع المتأخر ('+remain.toLocaleString()+' دج)</button>':'';})()+
+    '</div>'+cred+
+    (c.notes?'<div style="background:rgba(255,200,0,.07);border:1px solid rgba(255,200,0,.2);border-radius:var(--radius-sm);padding:10px;margin-top:8px"><div style="font-size:11px;color:var(--orange);margin-bottom:4px">📝 ملاحظات</div><div style="font-size:13px">'+c.notes+'</div></div>':'')+
+    payHist;
 }
 
 function credRow(lbl,val){
@@ -789,6 +829,7 @@ function openEdit(id){
   document.getElementById('esrv').value=c.server||'';
   document.getElementById('eu').value=c.username||'';
   document.getElementById('epw').value=c.password||'';
+  document.getElementById('enotes').value=c.notes||'';
   document.getElementById('eov').classList.add('show');
 }
 function saveEdit(){
@@ -802,6 +843,7 @@ function saveEdit(){
   c.server=document.getElementById('esrv').value.trim();
   c.username=document.getElementById('eu').value.trim();
   c.password=document.getElementById('epw').value.trim();
+  c.notes=document.getElementById('enotes').value.trim();
   sv();document.getElementById('eov').classList.remove('show');
   toast('✅ تم حفظ التعديلات!');render();
 }
@@ -832,11 +874,13 @@ function sendPayReminder(id){
 }
 
 // ══ MSG MODAL ══
-function openModal(id){
+function openModal(id,initType){
   mc=C.find(function(x){return x.id===id;});if(!mc)return;
-  mtype='auto';
+  mtype=initType||'auto';
   document.querySelectorAll('.mt').forEach(function(b){b.classList.remove('on');});
-  document.querySelector('.mt').classList.add('on');
+  var activeBtn=document.querySelector('.mt[onclick*="\''+mtype+'\'"]');
+  if(activeBtn) activeBtn.classList.add('on');
+  else document.querySelector('.mt').classList.add('on');
   document.getElementById('mt').textContent='📩 رسالة — '+mc.name;
   updM();document.getElementById('ov').classList.add('show');
 }
@@ -907,6 +951,32 @@ function sendAll(){
 
 
 
+
+// ══ EXCEL EXPORT ══
+function exportExcel(){
+  var rows=[['الاسم','الهاتف','الباقة','الاشتراك','البداية','النهاية','الأيام المتبقية','السعر','المدفوع','الباقي','اليوزر','الباسورد','الكود','التسلسلي','الحالة','ملاحظات']];
+  C.forEach(function(c){
+    var paid=(c.payments||[]).reduce(function(s,p){return s+p.amount;},0);
+    var remain=(c.price||0)-paid;
+    var days=dl(c.endDate);
+    var status=days<0?'منتهي':days<=7?'ينتهي قريباً':'نشط';
+    rows.push([
+      c.name,c.phone,c.plan||'',c.subName||'',
+      c.startDate,c.endDate,days,
+      c.price||0,paid,remain,
+      c.username||'',c.password||'',c.code||'',c.serial||'',
+      status,c.notes||''
+    ]);
+  });
+  var csv=rows.map(function(r){return r.map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var bom='\uFEFF';
+  var blob=new Blob([bom+csv],{type:'text/csv;charset=utf-8;'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='islambox-'+new Date().toISOString().split('T')[0]+'.csv';
+  a.click();
+  toast('✅ تم تصدير '+C.length+' زبون!');
+}
 
 // ══ PACKAGES PAGE ══
 function rPkgs(){
@@ -1115,20 +1185,55 @@ function removeLock(){
   toast("🔓 تم إلغاء القفل");
 }
 
+// ══ UI LANGUAGE ══
+var UI_LANG = localStorage.getItem('uilang')||'ar';
+var UI = {
+  ar:{dash:'الرئيسية',list:'الزبائن',pay:'الدفعات',stats:'تقارير',pkgs:'باقات',add:'جديد',
+      sub:'إدارة الاشتراكات',search:'ابحث...',newC:'➕ جديد',save:'✅ حفظ الاشتراك',
+      name:'اسم الزبون',phone:'رقم الهاتف',pkg:'اسم الاشتراك / الباقة',late:'🔴 متأخر بالدفع'},
+  fr:{dash:'Accueil',list:'Clients',pay:'Paiements',stats:'Rapports',pkgs:'Forfaits',add:'Nouveau',
+      sub:'Gestion des abonnements',search:'Rechercher...',newC:'➕ Nouveau',save:'✅ Enregistrer',
+      name:'Nom du client',phone:'Numéro de téléphone',pkg:'Nom de l\'abonnement',late:'🔴 Retard paiement'}
+};
+function toggleUILang(){
+  UI_LANG = UI_LANG==='ar'?'fr':'ar';
+  localStorage.setItem('uilang',UI_LANG);
+  document.getElementById('uilang-btn').textContent=UI_LANG==='ar'?'🇩🇿':'🇫🇷';
+  document.getElementById('app-sub').textContent='Zeboudja — '+(UI_LANG==='ar'?'إدارة الاشتراكات':'Gestion des abonnements');
+  document.querySelectorAll('.nb').forEach(function(b,i){
+    var keys=['dash','list','pay','stats','pkgs','add'];
+    var spans=b.querySelectorAll('span');
+    if(spans.length) b.lastChild.textContent=UI[UI_LANG][keys[i]]||'';
+  });
+  render();
+}
+(function(){
+  if(UI_LANG==='fr'){
+    setTimeout(function(){
+      var btn=document.getElementById('uilang-btn');
+      if(btn) btn.textContent='🇫🇷';
+      var sub=document.getElementById('app-sub');
+      if(sub) sub.textContent='Zeboudja — Gestion des abonnements';
+    },150);
+  }
+})();
+
 // ══ THEME ══
+var themes=['dark','light','warm','green'];
+var themeIcons=['🌙','☀️','🌅','🌿'];
 function toggleTheme(){
   var html=document.documentElement;
-  var isLight=html.getAttribute('data-theme')==='light';
-  html.setAttribute('data-theme', isLight?'dark':'light');
-  document.getElementById('theme-btn').textContent=isLight?'🌙':'☀️';
-  localStorage.setItem('theme', isLight?'dark':'light');
+  var cur=html.getAttribute('data-theme')||'dark';
+  var idx=(themes.indexOf(cur)+1)%themes.length;
+  html.setAttribute('data-theme',themes[idx]);
+  document.getElementById('theme-btn').textContent=themeIcons[idx];
+  localStorage.setItem('theme',themes[idx]);
 }
 (function(){
   var t=localStorage.getItem('theme')||'dark';
-  if(t==='light'){
-    document.documentElement.setAttribute('data-theme','light');
-    setTimeout(function(){var b=document.getElementById('theme-btn');if(b)b.textContent='☀️';},100);
-  }
+  var idx=themes.indexOf(t);if(idx<0)idx=0;
+  document.documentElement.setAttribute('data-theme',themes[idx]);
+  setTimeout(function(){var b=document.getElementById('theme-btn');if(b)b.textContent=themeIcons[idx];},100);
 })();
 
 initLock();render();checkSt();
