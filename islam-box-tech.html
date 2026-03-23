@@ -318,7 +318,7 @@ function toast(m){
   var t=document.createElement('div'); t.className='toast'; t.textContent=m;
   document.body.appendChild(t); setTimeout(function(){t.remove();},2500);
 }
-function wl(p,m){ return 'whatsapp://send?phone='+p.replace(/[^0-9]/g,'')+'&text='+encodeURIComponent(m); }
+function wl(p,m){ return 'https://wa.me/'+p.replace(/[^0-9]/g,'')+'?text='+encodeURIComponent(m); }
 function addM(d,m){ var x=new Date(d); x.setMonth(x.getMonth()+m); return x; }
 function dl(e){ return Math.ceil((new Date(e)-new Date())/86400000); }
 function fd(d){ return new Date(d).toLocaleDateString('ar-DZ',{year:'numeric',month:'long',day:'numeric'}); }
@@ -695,14 +695,7 @@ function rDet(){
 }
 
 function credRow(lbl,val){
-  var safe=val.replace(/'/g,"\\'");
-  return '<div class="cred-row"><span style="color:var(--text3)">'+lbl+'</span><div class="cred-vals"><span class="cred-v">'+val+'</span><button class="cp-btn" onclick="cpT(\''+safe+'\',this)">📋</button></div></div>';
-}
-function credRowPass(id,pw){
-  var safe=pw.replace(/'/g,"\\'");
-  return '<div class="cred-row"><span style="color:var(--text3)">🔑 الباسورد</span><div class="cred-vals"><span class="cred-v" id="pv'+id+'">••••••••</span><button class="cp-btn" onclick="tpv('+id+',\''+safe+'\')">👁</button><button class="cp-btn" onclick="cpT(\''+safe+'\',this)">📋</button></div></div>';
-}
-function tpv(id,pw){var el=document.getElementById('pv'+id);if(el)el.textContent=el.textContent==='••••••••'?pw:'••••••••';}
+  var safe=val.replace(/'/g,"\\'");\nreturn '<div class="cred-row"><span style="color:var(--text3)">'+lbl+'</span><div class="cred-vals"><span class="cred-v">'+val+'</span><button class="cp-btn" onclick="cpT(\''+safe+'\',this)">📋</button></div></div>';\n}\nfunction credRowPass(id,pw){\nvar safe=pw.replace(/'/g,"\\'");\nreturn '<div class="cred-row"><span style="color:var(--text3)">🔑 الباسورد</span><div class="cred-vals"><span class="cred-v" id="pv'+id+'">••••••••</span><button class="cp-btn" onclick="tpv('+id+',\''+safe+'\')">👁</button><button class="cp-btn" onclick="cpT(\''+safe+'\',this)">📋</button></div></div>';\n}\nfunction tpv(id,pw){var el=document.getElementById('pv'+id);if(el)el.textContent=el.textContent==='••••••••'?pw:'••••••••';}
 function cpT(txt,btn){navigator.clipboard.writeText(txt).then(function(){var o=btn.textContent;btn.textContent='✅';setTimeout(function(){btn.textContent=o;},1500);});}
 
 function sendCred(id){
@@ -837,147 +830,29 @@ var TEMPLATES = [
   {
     title: '📋 رسالة ترحيب + أسعار',
     text: function(){
-      var t = 'السلام عليكم 👋
-أهلاً بك في Islam Box Tech Zeboudja 📺
-
-';
-      t += '💎 باقاتنا:
-
-';
-      PACKAGES.forEach(function(p){
-        t += p.icon+' '+p.server+':
-';
-        p.plans.forEach(function(pl){
-          t += '   • '+pl.dur+' ← '+pl.price.toLocaleString()+' دج
-';
+      var t = 'السلام عليكم 👋\nأهلاً بك في Islam Box Tech Zeboudja 📺\n\n';\nt += '💎 باقاتنا:\n\n';\nPACKAGES.forEach(function(p){\nt += p.icon+' '+p.server+':\n';\np.plans.forEach(function(pl){\nt += '   • '+pl.dur+' ← '+pl.price.toLocaleString()+' دج\n';
         });
-        t += '
-';
+        t += '\n';
       });
-      t += '✅ جودة عالية 4K
-✅ أكثر من 10,000 قناة
-✅ دعم 24/7
-
-';
-      t += 'للطلب راسلنا مباشرة 💬
-— Islam Box Tech Zeboudja';
-      return t;
-    }
-  },
-  {
+      t += '✅ جودة عالية 4K\n✅ أكثر من 10,000 قناة\n✅ دعم 24/7\n\n';\nt += 'للطلب راسلنا مباشرة 💬\n— Islam Box Tech Zeboudja';\nreturn t;\n}\n},\n{
     title: '⚡ رسالة سريعة للأسعار فقط',
     text: function(){
-      var t = 'أسعار الاشتراكات 📺
-
-';
-      PACKAGES.forEach(function(p){
-        t += p.icon+' '+p.server+':
-';
+      var t = 'أسعار الاشتراكات 📺\n\n';\nPACKAGES.forEach(function(p){
+        t += p.icon+' '+p.server+':\n';
         p.plans.forEach(function(pl){
-          t += '• '+pl.dur+': '+pl.price.toLocaleString()+' دج
-';
+          t += '• '+pl.dur+': '+pl.price.toLocaleString()+' دج\n';
         });
-        t += '
-';
+        t += '\n';
       });
-      t += '📩 للطلب راسلنا
-— Islam Box Tech Zeboudja';
+      t += '📩 للطلب راسلنا\n— Islam Box Tech Zeboudja';
       return t;
     }
   },
   {
     title: '🎁 عرض خاص',
     text: function(){
-      return 'السلام عليكم 👋
-
-🔥 عرض خاص محدود!
-
-⭐ Neo 4K لمدة 12 شهر
-بـ 4200 دج فقط!
-(توفير 1400 دج مقارنة بالشهري)
-
-✅ جودة 4K
-✅ أكثر من 10,000 قناة
-✅ دعم فوري
-
-⏰ العرض محدود — تواصل معنا الآن!
-— Islam Box Tech Zeboudja';
-    }
-  }
-];
-
-function pkgMsg(pkg, plan){
-  return 'السلام عليكم 👋
-
-تفاصيل باقة '+pkg.server+' '+plan.dur+':
-
-'+
-    '💰 السعر: '+plan.price.toLocaleString()+' دج
-'+
-    '⏱️ المدة: '+plan.dur+'
-'+
-    '✅ جودة 4K
-✅ أكثر من 10,000 قناة
-✅ دعم 24/7
-
-'+
-    'للاشتراك راسلنا 💬
-— Islam Box Tech Zeboudja';
-}
-
-function rCat(){
-  var html = '<div class="sec-ttl">📦 الكتالوج والباقات</div>';
-
-  // Packages
-  PACKAGES.forEach(function(pkg){
-    html += '<div class="cat-section"><div class="cat-section-title">'+pkg.icon+' '+pkg.server+'</div>';
-    pkg.plans.forEach(function(plan){
-      var msg = pkgMsg(pkg, plan);
-      var msgEnc = encodeURIComponent(msg);
-      html += '<div class="pkg-card">'+
-        '<div class="pkg-top">'+
-        '<div><div class="pkg-name">'+pkg.icon+' '+pkg.server+'</div><div class="pkg-dur">'+plan.dur+'</div></div>'+
-        '<div class="pkg-price">'+plan.price.toLocaleString()+' دج</div>'+
-        '</div>'+
-        '<div class="pkg-btns">'+
-        '<button class="pkg-btn pkg-btn-copy" onclick="cpMsg(''+msg.replace(/'/g,"\'").replace(/
-/g,'\n')+'',this)">📋 نسخ</button>'+
-        '<a class="pkg-btn pkg-btn-wa" href="https://wa.me/?text='+msgEnc+'" target="_blank">💬 إرسال</a>'+
-        '</div></div>';
-    });
-    html += '</div>';
-  });
-
-  // Templates
-  html += '<div class="cat-section"><div class="cat-section-title">📋 رسائل جاهزة</div>';
-  TEMPLATES.forEach(function(t, i){
-    var msg = t.text();
-    var msgEnc = encodeURIComponent(msg);
-    html += '<div class="tmpl-card">'+
-      '<div class="tmpl-title">'+t.title+'</div>'+
-      '<div class="tmpl-preview">'+msg.substring(0,120).replace(/
-/g,'<br>')+'...</div>'+
-      '<div class="tmpl-btns">'+
-      '<button class="pkg-btn pkg-btn-copy" style="flex:1" onclick="cpMsg(''+msg.replace(/'/g,"\'").replace(/
-/g,'\n')+'',this)">📋 نسخ الرسالة</button>'+
-      '<a class="pkg-btn pkg-btn-wa" style="flex:1;text-decoration:none;display:flex;align-items:center;justify-content:center" href="https://wa.me/?text='+msgEnc+'" target="_blank">💬 إرسال واتساب</a>'+
-      '</div></div>';
-  });
-  html += '</div>';
-  return html;
-}
-
-function cpMsg(txt, btn){
-  var clean = txt.replace(/\n/g,'
-');
-  navigator.clipboard.writeText(clean).then(function(){
-    var o=btn.textContent; btn.textContent='✅ تم!';
-    setTimeout(function(){btn.textContent=o;},2000);
-  });
-}
-
-// ══ BACKUP ══
-function exportBackup(){
+      return 'السلام عليكم 👋\n\n🔥 عرض خاص محدود!\n\n⭐ Neo 4K لمدة 12 شهر\nبـ 4200 دج فقط!\n(توفير 1400 دج مقارنة بالشهري)\n\n✅ جودة 4K\n✅ أكثر من 10,000 قناة\n✅ دعم فوري\n\n⏰ العرض محدود — تواصل معنا الآن!\n— Islam Box Tech Zeboudja';\n}\n}\n];\n\nfunction pkgMsg(pkg, plan){\nreturn 'السلام عليكم 👋\n\nتفاصيل باقة '+pkg.server+' '+plan.dur+':\n\n'+\n'💰 السعر: '+plan.price.toLocaleString()+' دج\n'+\n'⏱️ المدة: '+plan.dur+'\n'+\n'✅ جودة 4K\n✅ أكثر من 10,000 قناة\n✅ دعم 24/7\n\n'+\n'للاشتراك راسلنا 💬\n— Islam Box Tech Zeboudja';\n}\n\nfunction rCat(){\nvar html = '<div class="sec-ttl">📦 الكتالوج والباقات</div>';\n\n// Packages\nPACKAGES.forEach(function(pkg){\nhtml += '<div class="cat-section"><div class="cat-section-title">'+pkg.icon+' '+pkg.server+'</div>';\npkg.plans.forEach(function(plan){\nvar msg = pkgMsg(pkg, plan);\nvar msgEnc = encodeURIComponent(msg);\nhtml += '<div class="pkg-card">'+\n'<div class="pkg-top">'+\n'<div><div class="pkg-name">'+pkg.icon+' '+pkg.server+'</div><div class="pkg-dur">'+plan.dur+'</div></div>'+\n'<div class="pkg-price">'+plan.price.toLocaleString()+' دج</div>'+\n'</div>'+\n'<div class="pkg-btns">'+\n'<button class="pkg-btn pkg-btn-copy" onclick="cpMsg(''+msg.replace(/'/g,"\'").replace(/
+/g,'\n')+'',this)">📋 نسخ</button>'+\n'<a class="pkg-btn pkg-btn-wa" href="https://wa.me/?text='+msgEnc+'" target="_blank">💬 إرسال</a>'+\n'</div></div>';\n});\nhtml += '</div>';\n});\n\n// Templates\nhtml += '<div class="cat-section"><div class="cat-section-title">📋 رسائل جاهزة</div>';\nTEMPLATES.forEach(function(t, i){\nvar msg = t.text();\nvar msgEnc = encodeURIComponent(msg);\nhtml += '<div class="tmpl-card">'+\n'<div class="tmpl-title">'+t.title+'</div>'+\n'<div class="tmpl-preview">'+msg.substring(0,120).replace(/\n/g,'<br>')+'...</div>'+\n'<div class="tmpl-btns">'+\n'<button class="pkg-btn pkg-btn-copy" style="flex:1" onclick="cpMsg(''+msg.replace(/'/g,"\'").replace(/\n/g,'\n')+'',this)">📋 نسخ الرسالة</button>'+\n'<a class="pkg-btn pkg-btn-wa" style="flex:1;text-decoration:none;display:flex;align-items:center;justify-content:center" href="https://wa.me/?text='+msgEnc+'" target="_blank">💬 إرسال واتساب</a>'+\n'</div></div>';\n});\nhtml += '</div>';\nreturn html;\n}\n\nfunction cpMsg(txt, btn){\nvar clean = txt.split('\\n').join('\n');\nnavigator.clipboard.writeText(clean).then(function(){\nvar o=btn.textContent; btn.textContent='✅ تم!';\nsetTimeout(function(){btn.textContent=o;},2000);\n});\n}\n\n// ══ BACKUP ══\nfunction exportBackup(){
   var blob=new Blob([JSON.stringify(C,null,2)],{type:'application/json'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');a.href=url;a.download='islambox-'+new Date().toISOString().split('T')[0]+'.json';
