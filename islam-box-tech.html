@@ -5,44 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="Islam Box"/>
-<meta name="theme-color" content="#060d1a"/>
-<link rel="manifest" href="manifest.json"/>
 <title>Islam Box Tech</title>
 <style>
-:root[data-theme="light"]{
-  --bg:#f0f4ff;--bg2:#ffffff;--bg3:#e8eeff;
-  --border:#c5d3f0;--border2:#a0b4e0;
-  --text:#1a2540;--text2:#3a5080;--text3:#7090b0;
-  --blue-glow:rgba(59,139,255,.15);
-  --green-bg:rgba(0,180,80,.1);
-  --orange-bg:rgba(255,120,0,.1);
-  --red-bg:rgba(220,50,50,.1);
-  --purple-bg:rgba(150,80,220,.1);
-}
-:root[data-theme="warm"]{
-  --bg:#1a1208;--bg2:#241a0a;--bg3:#2e2010;
-  --border:#4a3010;--border2:#6a4820;
-  --blue:#f59e0b;--blue2:#d97706;--blue-glow:rgba(245,158,11,.2);
-  --green:#86efac;--green2:#4ade80;--green-bg:rgba(134,239,172,.08);
-  --orange:#fb923c;--orange-bg:rgba(251,146,60,.08);
-  --red:#f87171;--red-bg:rgba(248,113,113,.08);
-  --purple:#e879f9;--purple-bg:rgba(232,121,249,.08);
-  --text:#fef3c7;--text2:#d4a96a;--text3:#8a6030;
-  --radius:14px;--radius-sm:8px;
-}
-:root[data-theme="green"]{
-  --bg:#020f06;--bg2:#041a0a;--bg3:#062510;
-  --border:#0a3a18;--border2:#0e5022;
-  --blue:#34d399;--blue2:#10b981;--blue-glow:rgba(52,211,153,.2);
-  --green:#6ee7b7;--green2:#34d399;--green-bg:rgba(110,231,183,.08);
-  --orange:#fbbf24;--orange-bg:rgba(251,191,36,.08);
-  --red:#f87171;--red-bg:rgba(248,113,113,.08);
-  --purple:#a78bfa;--purple-bg:rgba(167,139,250,.08);
-  --text:#ecfdf5;--text2:#6ee7b7;--text3:#065f46;
-  --radius:14px;--radius-sm:8px;
-}
 :root{
   --bg:#060d1a;--bg2:#0b1525;--bg3:#0f1d30;
   --border:#1a3050;--border2:#1e4060;
@@ -204,6 +168,23 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
 .sal-all{flex:1;padding:12px;background:linear-gradient(135deg,#065f46,#1e40af);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:800;font-size:13px}
 .sal-skip{padding:12px 14px;background:var(--bg);color:var(--text3);border:none;border-radius:var(--radius-sm);cursor:pointer}
 
+/* ── CATALOG ── */
+.cat-section{margin-bottom:18px}
+.cat-section-title{font-size:13px;font-weight:800;color:var(--purple);margin-bottom:10px;padding:8px 12px;background:var(--purple-bg);border:1px solid rgba(192,132,252,.3);border-radius:var(--radius-sm);display:flex;align-items:center;gap:6px}
+.pkg-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:8px;transition:border-color .2s}
+.pkg-card:hover{border-color:var(--blue)}
+.pkg-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.pkg-name{font-size:14px;font-weight:800;color:var(--text)}
+.pkg-price{font-size:18px;font-weight:900;color:var(--green)}
+.pkg-dur{font-size:11px;color:var(--text3);margin-top:2px}
+.pkg-btns{display:flex;gap:7px;flex-wrap:wrap}
+.pkg-btn{flex:1;padding:9px 8px;border-radius:var(--radius-sm);cursor:pointer;font-size:12px;font-weight:700;border:1px solid;text-align:center}
+.pkg-btn-wa{background:rgba(0,230,118,.1);color:var(--green);border-color:rgba(0,230,118,.3)}
+.pkg-btn-copy{background:rgba(59,139,255,.1);color:var(--blue);border-color:rgba(59,139,255,.3)}
+.tmpl-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:13px;margin-bottom:8px}
+.tmpl-title{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px}
+.tmpl-preview{font-size:11px;color:var(--text3);line-height:1.7;margin-bottom:10px;background:var(--bg);border-radius:6px;padding:8px}
+.tmpl-btns{display:flex;gap:7px}
 /* ── TOAST ── */
 .toast{position:fixed;bottom:75px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#065f46,#1e40af);color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:2000;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.5);animation:toastIn .25s ease}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
@@ -240,55 +221,24 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
   <div class="hdr-top">
     <div class="logo-wrap">
       <div class="logo-icon">📺</div>
-      <div><div class="logo-text">Islam Box Tech</div><div class="logo-sub" id="app-sub">Zeboudja — إدارة الاشتراكات — v2.1</div></div>
+      <div><div class="logo-text">Islam Box Tech</div><div class="logo-sub">Zeboudja — إدارة الاشتراكات</div></div>
     </div>
     <div class="hdr-btns">
-      <button class="hdr-btn" id="uilang-btn" onclick="toggleUILang()" title="تغيير لغة الواجهة">🇩🇿</button>
       <button class="hdr-btn" onclick="exportBackup()" title="نسخ احتياطي">💾</button>
-      <button class="hdr-btn" onclick="exportExcel()" title="تصدير Excel">📊</button>
       <button class="hdr-btn" onclick="document.getElementById('imp').click()" title="استيراد">📥</button>
       <input type="file" id="imp" accept=".json" style="display:none" onchange="importBackup(event)"/>
-      <button class="hdr-btn" onclick="openLockSettings()" title="قفل التطبيق">🔒</button>
-      <button class="hdr-btn" id="theme-btn" onclick="toggleTheme()" title="تغيير الثيم">🌙</button>
     </div>
   </div>
   <nav>
     <button class="nb on" onclick="go('dash')"><span>🏠</span>الرئيسية</button>
     <button class="nb" onclick="go('list')"><span>👥</span>الزبائن</button>
     <button class="nb" onclick="go('pay')"><span>💰</span>الدفعات</button>
-    <button class="nb" onclick="go('stats')"><span>📊</span>تقارير</button>
-    <button class="nb" onclick="go('pkgs')"><span>💳</span>باقات</button>
+    <button class="nb" onclick="go('cat')"><span>📦</span>الكتالوج</button>
     <button class="nb" onclick="go('add')"><span>➕</span>جديد</button>
   </nav>
 </div>
 
 <div id="pg"></div>
-
-
-
-<!-- LOCK SCREEN -->
-<div id="lockScreen" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
-  <div style="font-size:48px">🔒</div>
-  <div style="font-size:20px;font-weight:800;color:var(--text)">Islam Box Tech</div>
-  <div style="font-size:13px;color:var(--text3)">أدخل كلمة السر للدخول</div>
-  <input id="lockInput" type="password" placeholder="كلمة السر" style="width:220px;padding:12px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:16px;text-align:center" onkeydown="if(event.key==='Enter')checkLock()"/>
-  <button onclick="checkLock()" style="width:220px;padding:12px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:800;cursor:pointer">دخول 🔓</button>
-  <div id="lockErr" style="color:var(--red);font-size:13px;min-height:18px"></div>
-  <button onclick="resetLock()" style="background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;text-decoration:underline;margin-top:8px">نسيت كلمة السر؟ (إعادة إلى 1234)</button>
-</div>
-
-<!-- LOCK SETTINGS MODAL -->
-<div id="lockSetModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9998;align-items:center;justify-content:center">
-  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;width:88%;max-width:340px">
-    <div id="lockSetTitle" style="font-size:17px;font-weight:800;margin-bottom:16px;text-align:center">🔒 تفعيل قفل التطبيق</div>
-    <label style="font-size:12px;color:var(--text3);display:block;margin-bottom:6px">كلمة السر الجديدة (اتركها فارغة لإلغاء القفل)</label>
-    <input id="lockSetInput" type="password" placeholder="أدخل كلمة السر" style="width:100%;padding:12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:15px;margin-bottom:14px" onkeydown="if(event.key==='Enter')saveLockSet()"/>
-    <div style="display:flex;gap:8px">
-      <button onclick="saveLockSet()" style="flex:1;padding:11px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:none;border-radius:var(--radius-sm);font-weight:800;cursor:pointer">✅ حفظ</button>
-      <button onclick="document.getElementById('lockSetModal').style.display='none'" style="padding:11px 14px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer">إلغاء</button>
-    </div>
-  </div>
-</div>
 
 <!-- STARTUP ALERT -->
 <div id="sal">
@@ -311,7 +261,6 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
       <button class="mt" onclick="setMT(this,'reminder')">⚠️ تذكير</button>
       <button class="mt" onclick="setMT(this,'expired')">❌ منتهي</button>
       <button class="mt" onclick="setMT(this,'active')">✅ نشط</button>
-      <button class="mt" onclick="setMT(this,'late')" style="color:#ff4444;border-color:#ff4444">🔴 متأخر</button>
     </div>
     <textarea class="msg-area" id="ma" rows="8"></textarea>
     <div class="m-actions">
@@ -335,15 +284,6 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
     <label class="fl">رابط السيرفر</label><input class="fi" type="text" id="esrv"/>
     <label class="fl">اسم المستخدم</label><input class="fi" type="text" id="eu"/>
     <label class="fl">كلمة المرور</label><input class="fi" type="text" id="epw"/>
-    <label class="fl">📝 ملاحظات</label><textarea class="fi" id="enotes" rows="3" placeholder="زبون وفي، متأخر في الدفع..." style="resize:none;font-family:inherit"></textarea>
-    <label class="fl">📱 طريقة التواصل</label>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
-      <button class="db" id="ecm-wa" onclick="setECM('wa')" style="flex:1">💬 واتساب</button>
-      <button class="db" id="ecm-viber" onclick="setECM('viber')" style="flex:1">📳 Viber</button>
-      <button class="db" id="ecm-sms" onclick="setECM('sms')" style="flex:1">💬 SMS</button>
-      <button class="db" id="ecm-call" onclick="setECM('call')" style="flex:1">📞 اتصال</button>
-    </div>
-    <input type="hidden" id="ewa-val" value="wa"/>
     <div style="display:flex;gap:8px;margin-top:14px">
       <button onclick="saveEdit()" style="flex:1;padding:12px;background:linear-gradient(135deg,var(--blue2),#6d28d9);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:800;font-size:14px">✅ حفظ</button>
       <button onclick="document.getElementById('eov').classList.remove('show')" style="padding:12px 14px;background:var(--red-bg);color:var(--red);border:none;border-radius:var(--radius-sm);cursor:pointer">إلغاء</button>
@@ -369,18 +309,16 @@ nav{display:flex;gap:0;border-top:1px solid var(--border);margin:0 -14px}
 <script>
 // ══ DATA ══
 var C = JSON.parse(localStorage.getItem('ibc')||'[]');
-var PKG = JSON.parse(localStorage.getItem('ibpkg')||'[]');
-var view='dash', selId=null, dur=1, lang='ar', filt='all', eid=null, mc=null, mtype='auto', salC=[], si=0, payId=null, subType='user', contactM='wa', pkgDur=1;
+var view='dash', selId=null, dur=1, lang='ar', filt='all', eid=null, mc=null, mtype='auto', salC=[], si=0, payId=null;
 
 function sv(){ localStorage.setItem('ibc', JSON.stringify(C)); }
-function svPkg(){ localStorage.setItem('ibpkg', JSON.stringify(PKG)); }
 
 // ══ HELPERS ══
 function toast(m){
   var t=document.createElement('div'); t.className='toast'; t.textContent=m;
   document.body.appendChild(t); setTimeout(function(){t.remove();},2500);
 }
-function wl(p,m){ return 'https://wa.me/'+p.replace(/[^0-9]/g,'')+'?text='+encodeURIComponent(m); }
+function wl(p,m){ return 'whatsapp://send?phone='+p.replace(/[^0-9]/g,'')+'&text='+encodeURIComponent(m); }
 function addM(d,m){ var x=new Date(d); x.setMonth(x.getMonth()+m); return x; }
 function dl(e){ return Math.ceil((new Date(e)-new Date())/86400000); }
 function fd(d){ return new Date(d).toLocaleDateString('ar-DZ',{year:'numeric',month:'long',day:'numeric'}); }
@@ -408,29 +346,25 @@ var M={
     r:function(n,s,d,dt){return 'السلام عليكم '+n+' 👋\n\nتنبيه هام ⚠️\nاشتراكك'+s+' سينتهي خلال '+d+' أيام!\n📅 تاريخ الانتهاء: '+dt+'\n\nجدد الآن لا تنقطع عن المشاهدة 📺\nتواصل معنا 💰\n\n— Islam Box Tech Zeboudja';},
     e:function(n,s,dt){return 'السلام عليكم '+n+' 👋\n\nاشتراكك'+s+' قد انتهى ❌\n📅 انتهى: '+dt+'\n\nتواصل معنا للتجديد 💰\n\n— Islam Box Tech Zeboudja';},
     a:function(n,s,dt){return 'السلام عليكم '+n+' 👋\n\nشكراً على ثقتك 🙏\nاشتراكك'+s+' نشط ✅\n📅 ينتهي: '+dt+'\n\n— Islam Box Tech Zeboudja';},
-    p:function(n,day){return 'السلام عليكم '+n+' 👋\n\nتذكير بالدفع 💰\nموعد تجديد اشتراكك يوم '+day+' من الشهر\n\nتواصل معنا مسبقاً 😊\n\n— Islam Box Tech Zeboudja';},
-    l:function(n,s,amt){return 'السلام عليكم '+n+' 👋\n\nتذكير مهم 🔴\nلديك مبلغ متأخر بالدفع'+s+'\n💸 المبلغ المتبقي: '+amt+' دج\n\nنرجو التسوية في أقرب وقت ⏳\nتواصل معنا 📞\n\n— Islam Box Tech Zeboudja';}
+    p:function(n,day){return 'السلام عليكم '+n+' 👋\n\nتذكير بالدفع 💰\nموعد تجديد اشتراكك يوم '+day+' من الشهر\n\nتواصل معنا مسبقاً 😊\n\n— Islam Box Tech Zeboudja';}
   },
   fr:{
     r:function(n,s,d,dt){return 'Bonjour '+n+' 👋\n\nRappel ⚠️\nVotre abonnement'+s+' expire dans '+d+' jours!\n📅 '+dt+'\n\nRenouvelez maintenant 📺💰\n\n— Islam Box Tech Zeboudja';},
     e:function(n,s,dt){return 'Bonjour '+n+' 👋\n\nVotre abonnement'+s+' a expiré ❌\n📅 '+dt+'\n\nContactez-nous 💰\n\n— Islam Box Tech Zeboudja';},
     a:function(n,s,dt){return 'Bonjour '+n+' 👋\n\nMerci 🙏\nVotre abonnement'+s+' est actif ✅\n📅 '+dt+'\n\n— Islam Box Tech Zeboudja';},
-    p:function(n,day){return 'Bonjour '+n+' 👋\n\nRappel de paiement 💰\nVotre renouvellement est prévu le '+day+' du mois\n\n— Islam Box Tech Zeboudja';},
-    l:function(n,s,amt){return 'Bonjour '+n+' 👋\n\nRappel important 🔴\nVous avez un montant en retard'+s+'\n💸 Montant restant: '+amt+' DA\n\nMerci de régulariser rapidement ⏳\n\n— Islam Box Tech Zeboudja';}
+    p:function(n,day){return 'Bonjour '+n+' 👋\n\nRappel de paiement 💰\nVotre renouvellement est prévu le '+day+' du mois\n\n— Islam Box Tech Zeboudja';}
   },
   en:{
     r:function(n,s,d,dt){return 'Hello '+n+' 👋\n\nReminder ⚠️\nYour subscription'+s+' expires in '+d+' days!\n📅 '+dt+'\n\nRenew now 📺💰\n\n— Islam Box Tech Zeboudja';},
     e:function(n,s,dt){return 'Hello '+n+' 👋\n\nYour subscription'+s+' expired ❌\n📅 '+dt+'\n\nContact us 💰\n\n— Islam Box Tech Zeboudja';},
     a:function(n,s,dt){return 'Hello '+n+' 👋\n\nThank you 🙏\nYour subscription'+s+' is active ✅\n📅 '+dt+'\n\n— Islam Box Tech Zeboudja';},
-    p:function(n,day){return 'Hello '+n+' 👋\n\nPayment reminder 💰\nYour renewal is due on day '+day+' of the month\n\n— Islam Box Tech Zeboudja';},
-    l:function(n,s,amt){return 'Hello '+n+' 👋\n\nImportant reminder 🔴\nYou have a late payment'+s+'\n💸 Amount due: '+amt+' DA\n\nPlease settle as soon as possible ⏳\n\n— Islam Box Tech Zeboudja';}
+    p:function(n,day){return 'Hello '+n+' 👋\n\nPayment reminder 💰\nYour renewal is due on day '+day+' of the month\n\n— Islam Box Tech Zeboudja';}
   },
   es:{
     r:function(n,s,d,dt){return 'Hola '+n+' 👋\n\nRecordatorio ⚠️\nTu suscripción'+s+' vence en '+d+' días!\n📅 '+dt+'\n\nRenueva ahora 📺💰\n\n— Islam Box Tech Zeboudja';},
     e:function(n,s,dt){return 'Hola '+n+' 👋\n\nTu suscripción'+s+' expiró ❌\n📅 '+dt+'\n\nContáctanos 💰\n\n— Islam Box Tech Zeboudja';},
     a:function(n,s,dt){return 'Hola '+n+' 👋\n\nGracias 🙏\nTu suscripción'+s+' está activa ✅\n📅 '+dt+'\n\n— Islam Box Tech Zeboudja';},
-    p:function(n,day){return 'Hola '+n+' 👋\n\nRecordatorio de pago 💰\nTu renovación vence el día '+day+' del mes\n\n— Islam Box Tech Zeboudja';},
-    l:function(n,s,amt){return 'Hola '+n+' 👋\n\nRecordatorio importante 🔴\nTienes un pago pendiente'+s+'\n💸 Monto pendiente: '+amt+' DA\n\nPor favor regulariza pronto ⏳\n\n— Islam Box Tech Zeboudja';}
+    p:function(n,day){return 'Hola '+n+' 👋\n\nRecordatorio de pago 💰\nTu renovación vence el día '+day+' del mes\n\n— Islam Box Tech Zeboudja';}
   }
 };
 
@@ -440,11 +374,6 @@ function wMsg(c,type){
   if(type==='reminder'||(!type&&d>=0&&d<=7)) return m.r(c.name,sub,d,dt);
   if(type==='expired'||(!type&&d<0)) return m.e(c.name,sub,dt);
   if(type==='pay') return m.p(c.name,c.payDay||'');
-  if(type==='late'){
-    var paid=(c.payments||[]).reduce(function(s,p){return s+p.amount;},0);
-    var remain=(c.price||0)-paid;
-    return m.l(c.name,sub,remain.toLocaleString());
-  }
   return m.a(c.name,sub,dt);
 }
 
@@ -452,7 +381,7 @@ function wMsg(c,type){
 function go(v){
   view=v;
   document.querySelectorAll('.nb').forEach(function(b,i){
-    b.classList.toggle('on',['dash','list','pay','stats','pkgs','add'][i]===v);
+    b.classList.toggle('on',['dash','list','pay','cat','add'][i]===v);
   });
   render();
 }
@@ -462,8 +391,7 @@ function render(){
   if(view==='dash') el.innerHTML=rDash();
   else if(view==='list') el.innerHTML=rList();
   else if(view==='pay') el.innerHTML=rPay();
-  else if(view==='stats') el.innerHTML=rStats();
-  else if(view==='pkgs') el.innerHTML=rPkgs();
+  else if(view==='cat') el.innerHTML=rCat();
   else if(view==='add') el.innerHTML=rAdd();
   else if(view==='det') el.innerHTML=rDet();
 }
@@ -500,7 +428,7 @@ function rDash(){
   if(exp.length){
     alerts+='<div class="alert alert-warn"><div class="alert-ttl">⚠️ تنتهي خلال 7 أيام</div>';
     exp.forEach(function(c){
-      alerts+='<div class="arow"><span><b>'+c.name+'</b><br><span style="color:var(--text3);font-size:10px">📞 '+c.phone+'</span></span><div style="display:flex;gap:5px;align-items:center">'+bdg(dl(c.endDate))+contactIcon(c)+'</div></div>';
+      alerts+='<div class="arow"><span><b>'+c.name+'</b><br><span style="color:var(--text3);font-size:10px">📞 '+c.phone+'</span></span><div style="display:flex;gap:5px;align-items:center">'+bdg(dl(c.endDate))+'<button class="hdr-btn" style="padding:4px 8px;font-size:11px" onclick="openModal('+c.id+')">📩</button></div></div>';
     });
     alerts+='</div>';
   }
@@ -536,28 +464,6 @@ function getFilt(s){
     return m;
   });
 }
-function contactBtn(c,style){
-  var cm=c.contactM||(c.hasWa!==false?'wa':'call');
-  var ph=c.phone.replace(/[^0-9]/g,'');
-  if(cm==='wa') return '<button class="btn-wa" onclick="openModal('+c.id+')"'+(style?' style="'+style+'"':'')+'>📩 واتساب</button>';
-  if(cm==='viber') return '<a class="btn-wa" href="viber://chat?number=+'+ph+'" style="text-decoration:none;text-align:center'+(style?';'+style:'')+'" target="_blank">📳 Viber</a>';
-  if(cm==='sms') return '<a class="btn-wa" href="sms:+'+ph+'" style="text-decoration:none;text-align:center'+(style?';'+style:'')+'>💬 SMS</a>';
-  return '<a class="btn-wa" href="tel:'+c.phone+'" style="text-decoration:none;text-align:center'+(style?';'+style:'')+'" >📞 اتصال</a>';
-}
-function contactIcon(c){
-  var cm=c.contactM||(c.hasWa!==false?'wa':'call');
-  var ph=c.phone.replace(/[^0-9]/g,'');
-  if(cm==='wa') return '<button class="hdr-btn" style="padding:4px 8px;font-size:11px" onclick="openModal('+c.id+')">📩</button>';
-  if(cm==='viber') return '<a class="hdr-btn" href="viber://chat?number=+'+ph+'" style="padding:4px 8px;font-size:11px;text-decoration:none" target="_blank">📳</a>';
-  if(cm==='sms') return '<a class="hdr-btn" href="sms:+'+ph+'" style="padding:4px 8px;font-size:11px;text-decoration:none">💬</a>';
-  return '<a class="hdr-btn" href="tel:'+c.phone+'" style="padding:4px 8px;font-size:11px;text-decoration:none">📞</a>';
-}
-function contactBadge(c){
-  var cm=c.contactM||(c.hasWa!==false?'wa':'call');
-  var labels={wa:'',viber:'📳 Viber',sms:'💬 SMS',call:'📞 اتصال فقط'};
-  var lbl=labels[cm];
-  return lbl?'<span style="font-size:10px;background:rgba(59,139,255,.1);color:var(--blue);border:1px solid rgba(59,139,255,.3);border-radius:4px;padding:1px 5px">'+lbl+'</span>':'';
-}
 function cHTML(c){
   var lf={ar:'🇩🇿',fr:'🇫🇷',en:'🇬🇧',es:'🇪🇸'}[c.lang||'ar']||'🇩🇿';
   var payBadge=payDue(c)?'<span class="bPD" style="margin-right:4px">💰 يوم '+c.payDay+'</span>':'';
@@ -566,7 +472,7 @@ function cHTML(c){
     '<div class="av" style="background:'+avColor(c.name)+'">'+c.name[0]+'</div>'+
     '<div style="flex:1"><div class="cc-name">'+c.name+' <span style="font-size:11px">'+lf+'</span></div>'+
     '<div class="cc-phone">📞 '+c.phone+'</div></div>'+
-    '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'+contactBadge(c)+payBadge+bdg(dl(c.endDate))+'</div></div>'+
+    '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'+payBadge+bdg(dl(c.endDate))+'</div></div>'+
     '<div class="cc-bot"><span>📦 '+c.plan+'</span>'+(c.subName?'<span>🏷️ '+c.subName+'</span>':'')+
     '<span>📅 '+fd(c.endDate)+'</span><span>💰 '+(c.price||0).toLocaleString()+' دج</span></div></div>';
 }
@@ -644,64 +550,30 @@ function rPay(){
 function rAdd(){
   var s=new Date(), e=addM(s,dur);
   var durs=[1,3,6,12];
-  var db=durs.map(function(d){return '<button class="db'+(dur===d?' on':'')+('" onclick="setD('+d+')">')+(d===1?'شهر':d===12?'سنة':d+' أشهر')+'</button>';}).join('');
+  var db=durs.map(function(d){return '<button class="db'+(dur===d?' on':'')+'" onclick="setD('+d+')">'+(d===1?'شهر':d===12?'سنة':d+' أشهر')+'</button>';}).join('');
   var lf=[{v:'ar',l:'🇩🇿 عربي'},{v:'fr',l:'🇫🇷 Français'},{v:'en',l:'🇬🇧 English'},{v:'es',l:'🇪🇸 Español'}];
   var lb=lf.map(function(x){return '<button class="lb'+(lang===x.v?' on':'')+'" onclick="setL(\''+x.v+'\',this)">'+x.l+'</button>';}).join('');
-  
-  var credHtml='';
-  if(subType==='user'){
-    credHtml='<label class="fl" style="margin-top:0">رابط السيرفر</label><input class="fi" type="text" id="fsrv" placeholder="http://server.com:8080"/>'+
-    '<label class="fl">اسم المستخدم</label><input class="fi" type="text" id="fus" placeholder="username"/>'+
-    '<label class="fl">كلمة المرور</label>'+
-    '<div style="position:relative"><input class="fi" type="password" id="fpw" placeholder="password" style="padding-left:40px"/>'+
-    '<button type="button" onclick="tp()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px">👁</button></div>';
-  } else if(subType==='code'){
-    credHtml='<label class="fl" style="margin-top:0">🔑 الكود</label><input class="fi" type="text" id="fcode" placeholder="XXXX-XXXX-XXXX" style="direction:ltr"/>';
-  } else if(subType==='m3u'){
-    credHtml='<label class="fl" style="margin-top:0">📺 رابط M3U</label><input class="fi" type="text" id="fm3u" placeholder="http://server.com:port/get.php?username=...&password=..." style="direction:ltr" oninput="extractM3U(this.value)"/>'+
-    '<label class="fl">👤 اليوزر</label><input class="fi" type="text" id="fm3u-us" placeholder="يُستخرج تلقائياً" style="direction:ltr"/>'+
-    '<label class="fl">🔑 الباسورد</label><input class="fi" type="text" id="fm3u-pw" placeholder="يُستخرج تلقائياً" style="direction:ltr"/>';
-  } else {
-    credHtml='<label class="fl" style="margin-top:0">📱 الرقم التسلسلي</label><input class="fi" type="text" id="fserial" placeholder="00:11:22:33:44:55" style="direction:ltr"/>';
-  }
-
   return '<div class="sec-ttl">➕ زبون جديد</div>'+
     '<div class="form-wrap">'+
     '<label class="fl">اسم الزبون</label><input class="fi" type="text" id="fn" placeholder="أحمد بن علي"/>'+
     '<label class="fl">رقم الهاتف</label>'+
     '<input class="fi" type="text" id="fph" placeholder="+213 550 000 000"/>'+
     '<label class="fl">اسم الاشتراك / الباقة</label><input class="fi" type="text" id="fsn" placeholder="Gold IPTV"/>'+
-    '<label class="fl">📱 طريقة التواصل</label>'+
-    '<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">'+
-    '<button class="db'+(contactM==="wa"?" on":"")+'" onclick="setContact(\'wa\')" style="flex:1">💬 واتساب</button>'+
-    '<button class="db'+(contactM==="viber"?" on":"")+'" onclick="setContact(\'viber\')" style="flex:1">📳 Viber</button>'+
-    '<button class="db'+(contactM==="sms"?" on":"")+'" onclick="setContact(\'sms\')" style="flex:1">💬 SMS</button>'+
-    '<button class="db'+(contactM==="call"?" on":"")+'" onclick="setContact(\'call\')" style="flex:1">📞 اتصال</button>'+
-    '</div>'+
     '<label class="fl">لغة الزبون 🌍</label><div class="lb-row">'+lb+'</div>'+
     '<label class="fl">يوم الدفع الشهري (اختياري)</label>'+
-    '<input class="fi" type="number" id="fpd" placeholder="مثال: 5" min="1" max="31"/>'+
-    (PKG.length?'<label class="fl">اختر باقة جاهزة</label>'+
-    '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">'+
-    PKG.map(function(p){return '<button class="db" onclick="applyPkg('+PKG.indexOf(p)+')" style="flex:0 0 auto">'+p.name+' — '+p.price.toLocaleString()+' دج</button>';}).join('')+
-    '</div>':'')+
-    '<label class="fl">نوع الاشتراك</label>'+
-    '<div style="display:flex;gap:6px;margin-bottom:8px">'+
-    '<button class="db'+(subType==='user'?' on':'')+'" onclick="setSubType(\'user\')" style="flex:1">👤 يوزر</button>'+
-    '<button class="db'+(subType==='code'?' on':'')+'" onclick="setSubType(\'code\')" style="flex:1">🔑 كود</button>'+
-    '<button class="db'+(subType==='serial'?' on':'')+'" onclick="setSubType(\'serial\')" style="flex:1">📱 تسلسلي</button>'+
-    '<button class="db'+(subType==='m3u'?' on':'')+'" onclick="setSubType(\'m3u\')" style="flex:1">📺 M3U</button>'+
-    '</div>'+
-    '<div class="cred-box"><div class="cred-ttl">🔐 بيانات الدخول (اختياري)</div>'+credHtml+'</div>'+
+    '<input class="fi" type="number" id="fpd" placeholder="مثال: 5 (يدفع كل 5 من الشهر)" min="1" max="31"/>'+
+    '<div class="cred-box">'+
+    '<div class="cred-ttl">🔐 بيانات الدخول (اختياري)</div>'+
+    '<label class="fl" style="margin-top:0">رابط السيرفر</label><input class="fi" type="text" id="fsrv" placeholder="http://server.com:8080"/>'+
+    '<label class="fl">اسم المستخدم</label><input class="fi" type="text" id="fus" placeholder="username"/>'+
+    '<label class="fl">كلمة المرور</label>'+
+    '<div style="position:relative"><input class="fi" type="password" id="fpw" placeholder="password" style="padding-left:40px"/>'+
+    '<button type="button" onclick="tp()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px">👁</button></div></div>'+
     '<label class="fl">مدة الاشتراك</label><div class="dur-row">'+db+'</div>'+
-    '<label class="fl">السعر الكلي (دج)</label><input class="fi" type="number" id="fpr" placeholder="1000" oninput="calcRemain()"/>'+
-    '<label class="fl">المبلغ المدفوع (دج)</label><input class="fi" type="number" id="fpaid" placeholder="0" oninput="calcRemain()"/>'+
-    '<div id="fremain" class="prev-box" style="margin-top:8px"></div>'+
-    '<label class="fl">📝 ملاحظات (اختياري)</label><textarea class="fi" id="fnotes" rows="2" placeholder="زبون وفي، مصدر الزبون..." style="resize:none;font-family:inherit"></textarea>'+
+    '<label class="fl">السعر (دج)</label><input class="fi" type="number" id="fpr" placeholder="1000"/>'+
     '<div class="prev-box">📅 البداية: <b>'+fd(s)+'</b><br>📅 النهاية: <b>'+fd(e)+'</b></div>'+
     '<button class="sub-btn" onclick="addC()">✅ حفظ الاشتراك</button></div>';
 }
-
 function setD(d){dur=d;render();}
 function setL(l,btn){
   lang=l;
@@ -709,98 +581,68 @@ function setL(l,btn){
   btn.classList.add('on');
 }
 function tp(){var i=document.getElementById('fpw');i.type=i.type==='password'?'text':'password';}
-function setSubType(t,btn){subType=t;render();}
-function setContact(t){contactM=t;render();}
-function extractM3U(url){
-  if(!url) return;
+var NEO_KEY = 'b63aafe7a06ae03389bfa709d36d99d1';
+var NEO_API = 'https://4k.cms-only.ru/api/api.php';
+
+async function fetchNeo(){
+  var user = (document.getElementById('neo-user').value||'').trim();
+  var pass = (document.getElementById('neo-pass').value||'').trim();
+  var st = document.getElementById('neo-status');
+  if(!user||!pass){st.textContent='⚠️ أدخل اليوزر والباسورد';st.style.color='var(--orange)';return;}
+  st.textContent='⏳ جاري الجلب...';st.style.color='var(--text2)';
   try{
-    // Try to parse as URL first
-    var us='', pw='', srv='';
-    // Extract username
-    var umatch=url.match(/[?&]username=([^&]+)/i);
-    if(umatch) us=decodeURIComponent(umatch[1]);
-    // Extract password
-    var pmatch=url.match(/[?&]password=([^&]+)/i);
-    if(pmatch) pw=decodeURIComponent(pmatch[1]);
-    // Extract server (base URL)
-    var smatch=url.match(/^(https?:\/\/[^\/]+)/i);
-    if(smatch) srv=smatch[1];
-    // Fill fields
-    if(us||pw){
-      subType='user';
-      render();
-      setTimeout(function(){
-        if(us && document.getElementById('fus')) document.getElementById('fus').value=us;
-        if(pw && document.getElementById('fpw')) document.getElementById('fpw').value=pw;
-        if(srv && document.getElementById('fsrv')) document.getElementById('fsrv').value=srv;
-        toast('✅ تم استخراج اليوزر والباسورد تلقائياً!');
-      },100);
+    var url = NEO_API+'?action=device_info&username='+encodeURIComponent(user)+'&password='+encodeURIComponent(pass)+'&api_key='+NEO_KEY;
+    var res = await fetch(url);
+    var data = await res.json();
+    var d = Array.isArray(data)?data[0]:data;
+    if(!d||d.status==='false'||d.status===false){
+      st.textContent='❌ لم يتم العثور على الزبون';st.style.color='var(--red)';return;
     }
-  }catch(e){}
-}
-function setECM(t){
-  document.getElementById('ewa-val').value=t;
-  ['wa','viber','sms','call'].forEach(function(x){
-    var b=document.getElementById('ecm-'+x);
-    if(b) b.classList.toggle('on',x===t);
-  });
-}
-function applyPkg(i){
-  var p=PKG[i];
-  dur=p.dur; render();
-  setTimeout(function(){
-    if(document.getElementById('fsn')) document.getElementById('fsn').value=p.name;
-    if(document.getElementById('fpr')) document.getElementById('fpr').value=p.price;
-    calcRemain();
-  },50);
-}
-function calcRemain(){
-  var total=Number(document.getElementById('fpr').value)||0;
-  var paid=Number(document.getElementById('fpaid').value)||0;
-  var remain=total-paid;
-  var el=document.getElementById('fremain');
-  if(!el)return;
-  if(total>0){
-    el.innerHTML='💰 المدفوع: <b style="color:var(--green)">'+paid.toLocaleString()+' دج</b> &nbsp;|&nbsp; الباقي: <b style="color:'+(remain>0?'var(--red)':'var(--green)')+'">'+remain.toLocaleString()+' دج</b>';
-  } else {
-    el.innerHTML='';
+    // fill form
+    if(d.username) document.getElementById('neo-user').value=d.username;
+    if(d.password) document.getElementById('neo-pass').value=d.password;
+    // fill credentials
+    if(d.url) document.getElementById('fsrv').value=d.url;
+    if(d.username) document.getElementById('fus').value=d.username;
+    if(d.password) document.getElementById('fpw').value=d.password;
+    // fill expiry
+    if(d.expire){
+      var exp = new Date(d.expire);
+      var now = new Date();
+      var diff = Math.round((exp-now)/(1000*60*60*24*30));
+      if(diff>0&&diff<=12){dur=diff;render();setTimeout(function(){
+        // restore neo fields after render
+        document.getElementById('neo-user').value=user;
+        document.getElementById('neo-pass').value=pass;
+        if(d.url) document.getElementById('fsrv').value=d.url;
+        if(d.username) document.getElementById('fus').value=d.username;
+        if(d.password) document.getElementById('fpw').value=d.password;
+        document.getElementById('neo-status').textContent='✅ تم الجلب! تحقق من البيانات وأكمل الإضافة';
+        document.getElementById('neo-status').style.color='var(--green)';
+      },50);}
+    } else {
+      st.textContent='✅ تم جلب البيانات!';st.style.color='var(--green)';
+    }
+  }catch(e){
+    st.textContent='❌ تعذر الاتصال بـ neo';st.style.color='var(--red)';
   }
 }
-
-
-
-
-
-
-
 
 function addC(){
   var name=(document.getElementById('fn').value||'').trim();
   var phone=(document.getElementById('fph').value||'').trim();
   var sub=(document.getElementById('fsn').value||'').trim();
   var payDay=parseInt(document.getElementById('fpd').value)||0;
-  var srv=subType==='user'?(document.getElementById('fsrv').value||'').trim():'';
-  var us=subType==='user'?(document.getElementById('fus').value||'').trim():'';
-  var pw=subType==='user'?(document.getElementById('fpw').value||'').trim():'';
-  var code=subType==='code'?(document.getElementById('fcode')?document.getElementById('fcode').value||'':''):'';
-  var serial=subType==='serial'?(document.getElementById('fserial')?document.getElementById('fserial').value||'':''):'';  var m3u=subType==='m3u'?(document.getElementById('fm3u')?document.getElementById('fm3u').value||'':''):'';  var m3uUs=subType==='m3u'?(document.getElementById('fm3u-us')?document.getElementById('fm3u-us').value||'':''):'';  var m3uPw=subType==='m3u'?(document.getElementById('fm3u-pw')?document.getElementById('fm3u-pw').value||'':''):'';
+  var srv=(document.getElementById('fsrv').value||'').trim();
+  var us=(document.getElementById('fus').value||'').trim();
+  var pw=(document.getElementById('fpw').value||'').trim();
   var pr=Number(document.getElementById('fpr').value)||0;
-  var paid=Number(document.getElementById('fpaid')?document.getElementById('fpaid').value:0)||0;
-  var notes=(document.getElementById('fnotes')?document.getElementById('fnotes').value||'':'').trim();
-  var contactMethod=contactM||'wa';
   if(!name||!phone){alert('الرجاء إدخال الاسم ورقم الهاتف');return;}
   var s=new Date(), e=addM(s,dur);
   var pl=dur===1?'1 شهر':dur===12?'12 شهر':dur+' أشهر';
-  var initPayments=paid>0?[{amount:paid,date:new Date().toISOString().split('T')[0],note:'دفعة أولى'}]:[];
-  C.unshift({id:Date.now(),name:name,phone:phone,subName:sub,server:srv,username:us,password:pw,code:code,serial:serial,subType:subType,lang:lang,plan:pl,payDay:payDay||null,payments:initPayments,startDate:s.toISOString().split('T')[0],endDate:e.toISOString().split('T')[0],price:pr,notes:notes,hasWa:contactMethod==='wa',contactM:contactMethod,m3u:m3u,m3uUs:m3uUs,m3uPw:m3uPw});
-  sv(); filt='all'; dur=1; lang='ar'; subType='user'; contactM='wa';
-  toast('✅ تم إضافة '+name+'!');
-  // Auto WhatsApp welcome message
-  var newC=C[0];
-  if(confirm('📩 إرسال رسالة ترحيب عبر واتساب؟')){
-    window.open(wl(newC.phone, wMsg(newC,'active')),'_blank');
-  }
-  go('list');
+  C.unshift({id:Date.now(),name:name,phone:phone,subName:sub,server:srv,username:us,password:pw,lang:lang,plan:pl,payDay:payDay||null,payments:[],startDate:s.toISOString().split('T')[0],endDate:e.toISOString().split('T')[0],price:pr});
+  sv(); filt='all'; dur=1; lang='ar';
+  toast('✅ تم إضافة '+name+'!'); go('list');
 }
 
 // ══ DETAIL ══
@@ -811,17 +653,12 @@ function rDet(){
   var d=dl(c.endDate);
   var lf={ar:'🇩🇿 عربي',fr:'🇫🇷 Français',en:'🇬🇧 English',es:'🇪🇸 Español'};
   var cred='';
-  if(c.server||c.username||c.password||c.code||c.serial||c.m3u){
+  if(c.server||c.username||c.password){
     cred='<div style="background:var(--bg);border:1px solid rgba(59,139,255,.3);border-radius:var(--radius-sm);padding:12px;margin-top:8px">'+
       '<div class="cred-ttl">🔐 بيانات الدخول</div>'+
       (c.server?credRow('🌐 السيرفر',c.server):'')+
       (c.username?credRow('👤 اليوزر',c.username):'')+
       (c.password?credRowPass(c.id,c.password):'')+
-      (c.code?credRow('🔑 الكود',c.code):'')+
-      (c.serial?credRow('📱 الرقم التسلسلي',c.serial):'')+
-      (c.m3u?credRow('📺 رابط M3U',c.m3u):'')+
-      (c.m3uUs?credRow('👤 يوزر M3U',c.m3uUs):'')+
-      (c.m3uPw?credRow('🔑 باسورد M3U',c.m3uPw):'')+
       '<button onclick="sendCred('+c.id+')" style="width:100%;margin-top:8px;padding:9px;background:rgba(59,139,255,.1);color:var(--blue);border:1px solid rgba(59,139,255,.3);border-radius:var(--radius-sm);cursor:pointer;font-size:12px;font-weight:700">📩 إرسال بيانات الدخول</button></div>';
   }
   var pays=c.payments||[];
@@ -848,18 +685,13 @@ function rDet(){
     '<div class="di"><span class="di-lbl">💰 السعر</span><b>'+(c.price||0).toLocaleString()+' دج</b></div>'+
     '</div>'+
     '<div class="det-actions">'+
-    contactBtn(c)+
+    '<button class="btn-wa" onclick="openModal('+c.id+')">📩 واتساب</button>'+
     '<button class="btn-edit" onclick="openEdit('+c.id+')">✏️ تعديل</button>'+
     '<button class="btn-del" onclick="delC('+c.id+')">🗑</button>'+
     '</div>'+
     (d<0?'<button class="btn-renew" onclick="renew('+c.id+')">🔄 تجديد الاشتراك</button>':'')+
     '<button class="btn-pay" onclick="openPayModal('+c.id+')">💰 تسجيل دفعة</button>'+
-    '<button class="btn-pay" onclick="printInvoice('+c.id+')" style="background:rgba(192,132,252,.1);color:var(--purple);border-color:rgba(192,132,252,.3);margin-top:6px">🧾 طباعة فاتورة</button>'+
-    ((c.username||c.code||c.serial)?'<button class="btn-pay" onclick="sendCreds('+c.id+')" style="background:rgba(0,230,118,.08);color:var(--green);border-color:rgba(0,230,118,.3);margin-top:6px">📤 إرسال البيانات للزبون</button>':'')+
-    (function(){var paid=(c.payments||[]).reduce(function(s,p){return s+p.amount;},0);var remain=(c.price||0)-paid;return remain>0?'<button class="btn-pay" onclick="openModal('+c.id+',\'late\')" style="background:rgba(248,113,113,.1);color:var(--red);border-color:rgba(248,113,113,.3);margin-top:6px">🔴 تذكير بالدفع المتأخر ('+remain.toLocaleString()+' دج)</button>':'';})()+
-    '</div>'+cred+
-    (c.notes?'<div style="background:rgba(255,200,0,.07);border:1px solid rgba(255,200,0,.2);border-radius:var(--radius-sm);padding:10px;margin-top:8px"><div style="font-size:11px;color:var(--orange);margin-bottom:4px">📝 ملاحظات</div><div style="font-size:13px">'+c.notes+'</div></div>':'')+
-    payHist;
+    '</div>'+cred+payHist;
 }
 
 function credRow(lbl,val){
@@ -910,13 +742,6 @@ function openEdit(id){
   document.getElementById('esrv').value=c.server||'';
   document.getElementById('eu').value=c.username||'';
   document.getElementById('epw').value=c.password||'';
-  document.getElementById('enotes').value=c.notes||'';
-  var cm=c.contactM||(c.hasWa!==false?'wa':'call');
-  document.getElementById('ewa-val').value=cm;
-  ['wa','viber','sms','call'].forEach(function(t){
-    var b=document.getElementById('ecm-'+t);
-    if(b) b.classList.toggle('on',t===cm);
-  });
   document.getElementById('eov').classList.add('show');
 }
 function saveEdit(){
@@ -930,9 +755,6 @@ function saveEdit(){
   c.server=document.getElementById('esrv').value.trim();
   c.username=document.getElementById('eu').value.trim();
   c.password=document.getElementById('epw').value.trim();
-  c.notes=document.getElementById('enotes').value.trim();
-  c.contactM=document.getElementById('ewa-val').value||'wa';
-  c.hasWa=c.contactM==='wa';
   sv();document.getElementById('eov').classList.remove('show');
   toast('✅ تم حفظ التعديلات!');render();
 }
@@ -963,13 +785,11 @@ function sendPayReminder(id){
 }
 
 // ══ MSG MODAL ══
-function openModal(id,initType){
+function openModal(id){
   mc=C.find(function(x){return x.id===id;});if(!mc)return;
-  mtype=initType||'auto';
+  mtype='auto';
   document.querySelectorAll('.mt').forEach(function(b){b.classList.remove('on');});
-  var activeBtn=document.querySelector('.mt[onclick*="\''+mtype+'\'"]');
-  if(activeBtn) activeBtn.classList.add('on');
-  else document.querySelector('.mt').classList.add('on');
+  document.querySelector('.mt').classList.add('on');
   document.getElementById('mt').textContent='📩 رسالة — '+mc.name;
   updM();document.getElementById('ov').classList.add('show');
 }
@@ -988,6 +808,171 @@ function copyMsg(){
   navigator.clipboard.writeText(document.getElementById('ma').value).then(function(){
     var b=document.querySelector('.m-copy');b.textContent='✅ تم!';
     setTimeout(function(){b.textContent='📋 نسخ';},2000);
+  });
+}
+
+// ══ CATALOG ══
+var PACKAGES = [
+  {
+    server: 'Neo 4K',
+    icon: '🌟',
+    plans: [
+      {dur:'1 شهر',   price:800,  months:1},
+      {dur:'3 أشهر',  price:1700, months:3},
+      {dur:'6 أشهر',  price:2700, months:6},
+      {dur:'12 شهر',  price:4200, months:12}
+    ]
+  },
+  {
+    server: 'Family 4K',
+    icon: '👨‍👩‍👧‍👦',
+    plans: [
+      {dur:'6 أشهر',  price:1200, months:6},
+      {dur:'12 شهر',  price:2200, months:12}
+    ]
+  }
+];
+
+var TEMPLATES = [
+  {
+    title: '📋 رسالة ترحيب + أسعار',
+    text: function(){
+      var t = 'السلام عليكم 👋
+أهلاً بك في Islam Box Tech Zeboudja 📺
+
+';
+      t += '💎 باقاتنا:
+
+';
+      PACKAGES.forEach(function(p){
+        t += p.icon+' '+p.server+':
+';
+        p.plans.forEach(function(pl){
+          t += '   • '+pl.dur+' ← '+pl.price.toLocaleString()+' دج
+';
+        });
+        t += '
+';
+      });
+      t += '✅ جودة عالية 4K
+✅ أكثر من 10,000 قناة
+✅ دعم 24/7
+
+';
+      t += 'للطلب راسلنا مباشرة 💬
+— Islam Box Tech Zeboudja';
+      return t;
+    }
+  },
+  {
+    title: '⚡ رسالة سريعة للأسعار فقط',
+    text: function(){
+      var t = 'أسعار الاشتراكات 📺
+
+';
+      PACKAGES.forEach(function(p){
+        t += p.icon+' '+p.server+':
+';
+        p.plans.forEach(function(pl){
+          t += '• '+pl.dur+': '+pl.price.toLocaleString()+' دج
+';
+        });
+        t += '
+';
+      });
+      t += '📩 للطلب راسلنا
+— Islam Box Tech Zeboudja';
+      return t;
+    }
+  },
+  {
+    title: '🎁 عرض خاص',
+    text: function(){
+      return 'السلام عليكم 👋
+
+🔥 عرض خاص محدود!
+
+⭐ Neo 4K لمدة 12 شهر
+بـ 4200 دج فقط!
+(توفير 1400 دج مقارنة بالشهري)
+
+✅ جودة 4K
+✅ أكثر من 10,000 قناة
+✅ دعم فوري
+
+⏰ العرض محدود — تواصل معنا الآن!
+— Islam Box Tech Zeboudja';
+    }
+  }
+];
+
+function pkgMsg(pkg, plan){
+  return 'السلام عليكم 👋
+
+تفاصيل باقة '+pkg.server+' '+plan.dur+':
+
+'+
+    '💰 السعر: '+plan.price.toLocaleString()+' دج
+'+
+    '⏱️ المدة: '+plan.dur+'
+'+
+    '✅ جودة 4K
+✅ أكثر من 10,000 قناة
+✅ دعم 24/7
+
+'+
+    'للاشتراك راسلنا 💬
+— Islam Box Tech Zeboudja';
+}
+
+function rCat(){
+  var html = '<div class="sec-ttl">📦 الكتالوج والباقات</div>';
+
+  // Packages
+  PACKAGES.forEach(function(pkg){
+    html += '<div class="cat-section"><div class="cat-section-title">'+pkg.icon+' '+pkg.server+'</div>';
+    pkg.plans.forEach(function(plan){
+      var msg = pkgMsg(pkg, plan);
+      var msgEnc = encodeURIComponent(msg);
+      html += '<div class="pkg-card">'+
+        '<div class="pkg-top">'+
+        '<div><div class="pkg-name">'+pkg.icon+' '+pkg.server+'</div><div class="pkg-dur">'+plan.dur+'</div></div>'+
+        '<div class="pkg-price">'+plan.price.toLocaleString()+' دج</div>'+
+        '</div>'+
+        '<div class="pkg-btns">'+
+        '<button class="pkg-btn pkg-btn-copy" onclick="cpMsg(''+msg.replace(/'/g,"\'").replace(/
+/g,'\n')+'',this)">📋 نسخ</button>'+
+        '<a class="pkg-btn pkg-btn-wa" href="https://wa.me/?text='+msgEnc+'" target="_blank">💬 إرسال</a>'+
+        '</div></div>';
+    });
+    html += '</div>';
+  });
+
+  // Templates
+  html += '<div class="cat-section"><div class="cat-section-title">📋 رسائل جاهزة</div>';
+  TEMPLATES.forEach(function(t, i){
+    var msg = t.text();
+    var msgEnc = encodeURIComponent(msg);
+    html += '<div class="tmpl-card">'+
+      '<div class="tmpl-title">'+t.title+'</div>'+
+      '<div class="tmpl-preview">'+msg.substring(0,120).replace(/
+/g,'<br>')+'...</div>'+
+      '<div class="tmpl-btns">'+
+      '<button class="pkg-btn pkg-btn-copy" style="flex:1" onclick="cpMsg(''+msg.replace(/'/g,"\'").replace(/
+/g,'\n')+'',this)">📋 نسخ الرسالة</button>'+
+      '<a class="pkg-btn pkg-btn-wa" style="flex:1;text-decoration:none;display:flex;align-items:center;justify-content:center" href="https://wa.me/?text='+msgEnc+'" target="_blank">💬 إرسال واتساب</a>'+
+      '</div></div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function cpMsg(txt, btn){
+  var clean = txt.replace(/\n/g,'
+');
+  navigator.clipboard.writeText(clean).then(function(){
+    var o=btn.textContent; btn.textContent='✅ تم!';
+    setTimeout(function(){btn.textContent=o;},2000);
   });
 }
 
@@ -1035,317 +1020,7 @@ function sendAll(){
   else setTimeout(function(){closeSal();si=0;},1000);
 }
 
-
-// ══ IMPORT FROM PANEL ══
-
-
-
-
-// ══ EXCEL EXPORT ══
-function exportExcel(){
-  var rows=[['الاسم','الهاتف','الباقة','الاشتراك','البداية','النهاية','الأيام المتبقية','السعر','المدفوع','الباقي','اليوزر','الباسورد','الكود','التسلسلي','الحالة','ملاحظات']];
-  C.forEach(function(c){
-    var paid=(c.payments||[]).reduce(function(s,p){return s+p.amount;},0);
-    var remain=(c.price||0)-paid;
-    var days=dl(c.endDate);
-    var status=days<0?'منتهي':days<=7?'ينتهي قريباً':'نشط';
-    rows.push([
-      c.name,c.phone,c.plan||'',c.subName||'',
-      c.startDate,c.endDate,days,
-      c.price||0,paid,remain,
-      c.username||'',c.password||'',c.code||'',c.serial||'',
-      status,c.notes||''
-    ]);
-  });
-  var csv=rows.map(function(r){return r.map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
-  var bom='\uFEFF';
-  var blob=new Blob([bom+csv],{type:'text/csv;charset=utf-8;'});
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='islambox-'+new Date().toISOString().split('T')[0]+'.csv';
-  a.click();
-  toast('✅ تم تصدير '+C.length+' زبون!');
-}
-
-// ══ PACKAGES PAGE ══
-function rPkgs(){
-  var rows=PKG.length?PKG.map(function(p,i){
-    return '<div class="cc" style="display:flex;justify-content:space-between;align-items:center;cursor:default">'+
-      '<div><div style="font-weight:800;font-size:14px">'+p.name+'</div>'+
-      '<div style="font-size:12px;color:var(--text3)">'+p.dur+' شهر — '+p.price.toLocaleString()+' دج</div></div>'+
-      '<div style="display:flex;gap:6px">'+
-      '<button onclick="editPkg('+i+')" style="padding:6px 10px;background:var(--blue-glow);color:var(--blue);border:1px solid var(--blue);border-radius:6px;cursor:pointer;font-size:12px">✏️</button>'+
-      '<button onclick="delPkg('+i+')" style="padding:6px 10px;background:var(--red-bg);color:var(--red);border:1px solid var(--red);border-radius:6px;cursor:pointer;font-size:12px">🗑</button>'+
-      '</div></div>';
-  }).join(''):'<div class="empty">لا توجد باقات بعد 📦<br><small>أضف باقاتك لتظهر عند إضافة زبون</small></div>';
-
-  var durs2=[1,3,6,12];
-  var db2=durs2.map(function(d){return '<button class="db'+(pkgDur===d?' on':'')+'" onclick="pkgDur='+d+';render()" style="flex:1">'+(d===1?'شهر':d===12?'سنة':d+' أشهر')+'</button>';}).join('');
-  return '<div class="sec-ttl">💳 الباقات الجاهزة</div>'+
-    '<div class="form-wrap" style="margin-bottom:14px">'+
-    '<label class="fl">اسم الباقة</label><input class="fi" id="pkg-name" placeholder="Gold IPTV"/>'+
-    '<label class="fl">المدة (أشهر)</label>'+
-    '<div style="display:flex;gap:6px;margin-bottom:8px">'+db2+'</div>'+
-    '<label class="fl">السعر (دج)</label><input class="fi" id="pkg-price" type="number" placeholder="1000"/>'+
-    '<button class="sub-btn" onclick="addPkg()">✅ إضافة الباقة</button>'+
-    '</div>'+
-    '<div class="sec-ttl" style="font-size:14px">📋 الباقات المحفوظة</div>'+
-    rows;
-}
-function addPkg(){
-  var name=(document.getElementById('pkg-name').value||'').trim();
-  var price=Number(document.getElementById('pkg-price').value)||0;
-  if(!name){toast('⚠️ أدخل اسم الباقة');return;}
-  PKG.push({name:name,dur:pkgDur,price:price});
-  svPkg();
-  document.getElementById('pkg-name').value='';
-  document.getElementById('pkg-price').value='';
-  render(); toast('✅ تمت إضافة الباقة: '+name);
-}
-function delPkg(i){
-  PKG.splice(i,1); svPkg(); render(); toast('🗑 تم الحذف');
-}
-function editPkg(i){
-  var p=PKG[i];
-  document.getElementById('pkg-name').value=p.name;
-  document.getElementById('pkg-dur').value=p.dur;
-  document.getElementById('pkg-price').value=p.price;
-  PKG.splice(i,1); svPkg();
-  document.getElementById('pkg-name').focus();
-  toast('✏️ عدّل البيانات واضغط إضافة');
-}
-
-// ══ SEND CREDENTIALS ══
-function sendCreds(id){
-  var c=C.find(function(x){return x.id===id;});
-  if(!c) return;
-  var msg='';
-  var sub=c.subName?' ('+c.subName+')':'';
-  if(c.subType==='code'||c.code){
-    msg='السلام عليكم '+c.name+' 👋\n\n🔑 بيانات اشتراكك'+sub+':\n\nالكود: '+c.code+'\n\n📅 صالح حتى: '+fd(c.endDate)+'\n\n— Islam Box Tech Zeboudja';
-  } else if(c.subType==='serial'||c.serial){
-    msg='السلام عليكم '+c.name+' 👋\n\n📱 بيانات اشتراكك'+sub+':\n\nالرقم التسلسلي: '+c.serial+'\n\n📅 صالح حتى: '+fd(c.endDate)+'\n\n— Islam Box Tech Zeboudja';
-  } else if(c.subType==='m3u'||c.m3u){
-    msg='السلام عليكم '+c.name+' 👋\n\n📺 رابط M3U'+sub+':\n\n🔗 الرابط: '+c.m3u+'\n'+(c.m3uUs?'👤 اليوزر: '+c.m3uUs+'\n':'')+(c.m3uPw?'🔑 الباسورد: '+c.m3uPw+'\n':'')+'\n📅 صالح حتى: '+fd(c.endDate)+'\n\n— Islam Box Tech Zeboudja';
-  } else {
-    msg='السلام عليكم '+c.name+' 👋\n\n🔐 بيانات اشتراكك'+sub+':\n\n'+(c.server?'🌐 السيرفر: '+c.server+'\n':'')+
-    '👤 اليوزر: '+c.username+'\n🔑 الباسورد: '+c.password+'\n\n📅 صالح حتى: '+fd(c.endDate)+'\n\n— Islam Box Tech Zeboudja';
-  }
-  window.open(wl(c.phone,msg),'_blank');
-}
-
-// ══ STATS ══
-function rStats(){
-  var now=new Date();
-  var months=[];
-  for(var i=5;i>=0;i--){
-    var d=new Date(now.getFullYear(),now.getMonth()-i,1);
-    months.push({mn:d.getMonth(),yr:d.getFullYear(),lbl:d.toLocaleDateString('ar-DZ',{month:'short',year:'numeric'}),rev:0});
-  }
-  C.forEach(function(c){
-    (c.payments||[]).forEach(function(p){
-      var pd=new Date(p.date);
-      months.forEach(function(m){
-        if(pd.getMonth()===m.mn&&pd.getFullYear()===m.yr) m.rev+=p.amount;
-      });
-    });
-  });
-  var maxRev=Math.max.apply(null,months.map(function(m){return m.rev||1;}));
-  var totalRev=C.reduce(function(s,c){return s+(c.payments||[]).reduce(function(a,p){return a+p.amount;},0);},0);
-  var act=C.filter(function(c){return dl(c.endDate)>=0;}).length;
-  var expd=C.filter(function(c){return dl(c.endDate)<0;}).length;
-  var renewRate=C.length>0?Math.round(act/C.length*100):0;
-  var nextM=new Date(now.getFullYear(),now.getMonth()+1,1);
-  var expNext=C.filter(function(c){var e=new Date(c.endDate);return e>=now&&e<nextM;});
-  var forecastRev=expNext.reduce(function(s,c){return s+(c.price||0);},0);
-  var topC=C.slice().sort(function(a,b){
-    var pa=(a.payments||[]).reduce(function(s,p){return s+p.amount;},0);
-    var pb=(b.payments||[]).reduce(function(s,p){return s+p.amount;},0);
-    return pb-pa;
-  }).slice(0,5);
-  var plans={};
-  C.forEach(function(c){var p=c.subName||"أخرى";plans[p]=(plans[p]||0)+1;});
-  var planArr=Object.entries(plans).sort(function(a,b){return b[1]-a[1];}).slice(0,5);
-  var maxP=planArr[0]?planArr[0][1]:1;
-
-  return '<div class="sec-ttl">📊 التقارير والتحليلات</div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">'+
-    '<div class="cc"><div class="cv" style="color:var(--green)">'+totalRev.toLocaleString()+'</div><div class="cl">دج إجمالي</div></div>'+
-    '<div class="cc"><div class="cv" style="color:var(--blue)">'+renewRate+'%</div><div class="cl">نسبة النشطين</div></div>'+
-    '<div class="cc"><div class="cv" style="color:var(--orange)">'+forecastRev.toLocaleString()+'</div><div class="cl">دج توقع قادم</div></div>'+
-    '<div class="cc"><div class="cv" style="color:var(--red)">'+expd+'</div><div class="cl">منتهية</div></div>'+
-    '</div>'+
-    '<div class="chart-wrap" style="margin-bottom:14px"><div class="chart-ttl">📈 الإيرادات آخر 6 أشهر</div>'+
-    months.map(function(m){return '<div class="bar-row"><div class="bar-lbl" style="font-size:10px;width:70px">'+m.lbl+'</div><div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:'+(m.rev/maxRev*100)+'%;background:linear-gradient(90deg,var(--blue),var(--purple))"></div></div><div class="bar-val">'+m.rev.toLocaleString()+'</div></div>';}).join('')+
-    '</div>'+
-    '<div class="chart-wrap" style="margin-bottom:14px"><div class="chart-ttl">🏆 أفضل 5 زبائن</div>'+
-    topC.map(function(c,i){
-      var paid=(c.payments||[]).reduce(function(s,p){return s+p.amount;},0);
-      var medals=["🥇","🥈","🥉","4️⃣","5️⃣"];
-      return '<div class="arow"><span>'+medals[i]+' <b>'+c.name+'</b></span><span style="color:var(--green);font-weight:800">'+paid.toLocaleString()+' دج</span></div>';
-    }).join('')+
-    '</div>'+
-    '<div class="chart-wrap"><div class="chart-ttl">📦 توزيع الباقات</div>'+
-    planArr.map(function(x){return '<div class="bar-row"><div class="bar-lbl">'+x[0].substring(0,12)+'</div><div class="bar-bg"><div class="bar-fill" style="width:'+(x[1]/maxP*100)+'%"></div></div><div class="bar-val">'+x[1]+'</div></div>';}).join('')+
-    '</div>';
-}
-
-// ══ PDF INVOICE ══
-function printInvoice(id){
-  var c=C.find(function(x){return x.id===id;});
-  if(!c) return;
-  var paid=(c.payments||[]).reduce(function(s,p){return s+p.amount;},0);
-  var remain=(c.price||0)-paid;
-  var w=window.open("","_blank","width=600,height=800");
-  w.document.write("<!DOCTYPE html><html dir=\"rtl\"><head><meta charset=\"UTF-8\"><title>فاتورة - "+c.name+"</title><style>"+
-    "body{font-family:Tahoma,Arial,sans-serif;direction:rtl;background:#fff;color:#111;padding:30px;max-width:500px;margin:0 auto}"+
-    "h1{text-align:center;color:#1a3a6a;font-size:22px;margin-bottom:4px}"+
-    ".sub{text-align:center;color:#666;font-size:12px;margin-bottom:20px;border-bottom:2px solid #1a3a6a;padding-bottom:12px}"+
-    "table{width:100%;border-collapse:collapse;margin-bottom:16px}"+
-    "td{padding:8px 10px;border:1px solid #ddd;font-size:13px}"+
-    "td:first-child{background:#f0f4ff;font-weight:bold;width:40%}"+
-    ".total{background:#1a3a6a;color:#fff;text-align:center;padding:12px;border-radius:8px;font-size:16px;font-weight:bold;margin-top:10px}"+
-    ".remain{background:"+(remain>0?"#fff0f0":"#f0fff4")+";color:"+(remain>0?"#c00":"#060")+";text-align:center;padding:10px;border-radius:8px;font-size:14px;font-weight:bold;margin-top:8px}"+
-    ".footer{text-align:center;margin-top:20px;font-size:11px;color:#999;border-top:1px solid #eee;padding-top:10px}"+
-    "@media print{button{display:none}}"+
-    "</style></head><body>"+
-    "<h1>📺 Islam Box Tech</h1>"+
-    "<div class=\"sub\">Zeboudja — فاتورة اشتراك<br>"+new Date().toLocaleDateString("ar-DZ",{year:"numeric",month:"long",day:"numeric"})+"</div>"+
-    "<table>"+
-    "<tr><td>👤 الاسم</td><td>"+c.name+"</td></tr>"+
-    "<tr><td>📞 الهاتف</td><td>"+c.phone+"</td></tr>"+
-    "<tr><td>📦 الباقة</td><td>"+(c.subName||"-")+"</td></tr>"+
-    "<tr><td>📅 البداية</td><td>"+fd(c.startDate)+"</td></tr>"+
-    "<tr><td>📅 النهاية</td><td>"+fd(c.endDate)+"</td></tr>"+
-    (c.username?"<tr><td>👤 اليوزر</td><td style=\"direction:ltr;text-align:left\">"+c.username+"</td></tr>":"")+
-    (c.code?"<tr><td>🔑 الكود</td><td style=\"direction:ltr;text-align:left\">"+c.code+"</td></tr>":"")+
-    (c.serial?"<tr><td>📱 التسلسلي</td><td style=\"direction:ltr;text-align:left\">"+c.serial+"</td></tr>":"")+
-    "</table>"+
-    "<div class=\"total\">💰 السعر الكلي: "+((c.price||0).toLocaleString())+" دج</div>"+
-    "<div class=\"remain\">"+(remain>0?"⏳ الباقي: "+remain.toLocaleString()+" دج":"✅ مدفوع بالكامل")+"</div>"+
-    "<div style=\"text-align:center;margin-top:16px\"><button onclick=\"window.print()\" style=\"padding:10px 30px;background:#1a3a6a;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer\">🖨️ طباعة</button></div>"+
-    "<div class=\"footer\">Islam Box Tech — Zeboudja<br>شكراً على ثقتك 🙏</div>"+
-    "</body></html>");
-  w.document.close();
-}
-
-// ══ LOCK ══
-function initLock(){
-  if(!localStorage.getItem("appLock")) localStorage.setItem("appLock","1234");
-  var ls=document.getElementById("lockScreen");
-  ls.style.display="flex";
-  setTimeout(function(){document.getElementById("lockInput").focus();},100);
-}
-function resetLock(){
-  localStorage.setItem("appLock","1234");
-  document.getElementById("lockInput").value="";
-  document.getElementById("lockErr").textContent="✅ كلمة السر أعيدت إلى: 1234";
-}
-function checkLock(){
-  var pw=localStorage.getItem("appLock");
-  var val=document.getElementById("lockInput").value;
-  if(val===pw){
-    document.getElementById("lockScreen").style.display="none";
-    document.getElementById("lockInput").value="";
-    document.getElementById("lockErr").textContent="";
-  } else {
-    document.getElementById("lockErr").textContent="❌ كلمة السر خاطئة";
-    document.getElementById("lockInput").value="";
-  }
-}
-function openLockSettings(){
-  document.getElementById("lockSetModal").style.display="flex";
-  var cur=localStorage.getItem("appLock");
-  document.getElementById("lockSetTitle").textContent=cur?"🔒 تغيير أو إلغاء كلمة السر":"🔒 تفعيل قفل التطبيق";
-  document.getElementById("lockSetInput").value="";
-  setTimeout(function(){document.getElementById("lockSetInput").focus();},100);
-}
-function saveLockSet(){
-  var val=document.getElementById("lockSetInput").value.trim();
-  document.getElementById("lockSetModal").style.display="none";
-  if(val===""){
-    localStorage.removeItem("appLock");
-    toast("🔓 تم إلغاء قفل التطبيق");
-  } else {
-    localStorage.setItem("appLock",val);
-    toast("🔒 تم تفعيل القفل: "+val);
-  }
-}
-function removeLock(){
-  localStorage.removeItem("appLock");
-  document.getElementById("lockSetModal").style.display="none";
-  toast("🔓 تم إلغاء القفل");
-}
-
-// ══ UI LANGUAGE ══
-var UI_LANG = localStorage.getItem('uilang')||'ar';
-var UI = {
-  ar:{dash:'الرئيسية',list:'الزبائن',pay:'الدفعات',stats:'تقارير',pkgs:'باقات',add:'جديد',
-      sub:'إدارة الاشتراكات',search:'ابحث...',newC:'➕ جديد',save:'✅ حفظ الاشتراك',
-      name:'اسم الزبون',phone:'رقم الهاتف',pkg:'اسم الاشتراك / الباقة',late:'🔴 متأخر بالدفع'},
-  fr:{dash:'Accueil',list:'Clients',pay:'Paiements',stats:'Rapports',pkgs:'Forfaits',add:'Nouveau',
-      sub:'Gestion des abonnements',search:'Rechercher...',newC:'➕ Nouveau',save:'✅ Enregistrer',
-      name:'Nom du client',phone:'Numéro de téléphone',pkg:'Nom de l\'abonnement',late:'🔴 Retard paiement'}
-};
-function toggleUILang(){
-  UI_LANG = UI_LANG==='ar'?'fr':'ar';
-  localStorage.setItem('uilang',UI_LANG);
-  document.getElementById('uilang-btn').textContent=UI_LANG==='ar'?'🇩🇿':'🇫🇷';
-  document.getElementById('app-sub').textContent='Zeboudja — '+(UI_LANG==='ar'?'إدارة الاشتراكات':'Gestion des abonnements');
-  document.querySelectorAll('.nb').forEach(function(b,i){
-    var keys=['dash','list','pay','stats','pkgs','add'];
-    var spans=b.querySelectorAll('span');
-    if(spans.length) b.lastChild.textContent=UI[UI_LANG][keys[i]]||'';
-  });
-  render();
-}
-(function(){
-  if(UI_LANG==='fr'){
-    setTimeout(function(){
-      var btn=document.getElementById('uilang-btn');
-      if(btn) btn.textContent='🇫🇷';
-      var sub=document.getElementById('app-sub');
-      if(sub) sub.textContent='Zeboudja — Gestion des abonnements';
-    },150);
-  }
-})();
-
-// ══ THEME ══
-var themes=['dark','light','warm','green'];
-var themeIcons=['🌙','☀️','🌅','🌿'];
-function toggleTheme(){
-  var html=document.documentElement;
-  var cur=html.getAttribute('data-theme')||'dark';
-  var idx=(themes.indexOf(cur)+1)%themes.length;
-  html.setAttribute('data-theme',themes[idx]);
-  document.getElementById('theme-btn').textContent=themeIcons[idx];
-  localStorage.setItem('theme',themes[idx]);
-}
-(function(){
-  var t=localStorage.getItem('theme')||'dark';
-  var idx=themes.indexOf(t);if(idx<0)idx=0;
-  document.documentElement.setAttribute('data-theme',themes[idx]);
-  setTimeout(function(){var b=document.getElementById('theme-btn');if(b)b.textContent=themeIcons[idx];},100);
-})();
-
-initLock();render();checkSt();
-// Auto-update check
-var APP_VERSION = "202603130331";
-var storedVersion = localStorage.getItem("appVersion");
-if(storedVersion && storedVersion !== APP_VERSION){
-  localStorage.setItem("appVersion", APP_VERSION);
-  if("serviceWorker" in navigator){
-    navigator.serviceWorker.getRegistrations().then(function(regs){
-      regs.forEach(function(r){r.unregister();});
-      window.location.reload(true);
-    });
-  }
-} else {
-  localStorage.setItem("appVersion", APP_VERSION);
-  if("serviceWorker" in navigator){
-    navigator.serviceWorker.register("sw.js");
-  }
-}
+render();checkSt();
 </script>
 </body>
 </html>
