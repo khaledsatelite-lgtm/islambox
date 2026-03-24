@@ -215,6 +215,7 @@ select.fi{cursor:pointer}
       <option value="problem">⚠️ مشكل في الدفع</option>
     </select>
     <label class="fl">رابط السيرفر</label><input class="fi" type="text" id="esrv"/>
+    <label class="fl">رابط M3U المباشر</label><input class="fi" type="text" id="em3u" placeholder="http://..."/>
     <label class="fl">اسم المستخدم</label><input class="fi" type="text" id="eu"/>
     <label class="fl">كلمة المرور</label><input class="fi" type="text" id="epw"/>
     <div style="display:flex;gap:8px;margin-top:14px">
@@ -243,8 +244,6 @@ var C = JSON.parse(localStorage.getItem('ibc') || '[]');
 var V = 'dash', selId = null, dur = 1, lang = 'ar', filt = 'all', eid = null;
 var mc = null, mtype = 'auto', salC = [], si = 0, payId = null;
 var subType = 'code', clientCat = 'normal';
-var NEO_KEY = 'b63aafe7a06ae03389bfa709d36d99d1';
-var NEO_API = 'https://4k.cms-only.ru/api/api.php';
 var _cred = {};
 
 var PKGS = [
@@ -631,10 +630,6 @@ function rAdd() {
   var lfs = [{ v: 'ar', l: '🇩🇿 عربي' }, { v: 'fr', l: '🇫🇷 Français' }, { v: 'en', l: '🇬🇧 English' }, { v: 'es', l: '🇪🇸 Español' }];
   var lb = lfs.map(function(x) { return '<button class="lb' + (lang === x.v ? ' on' : '') + '" onclick="setL(\'' + x.v + '\',this)">' + x.l + '</button>'; }).join('');
   return '<div class="ttl">➕ زبون جديد</div>' +
-    '<div class="nbox"><div class="nbox-t">⚡ استيراد من neo تلقائياً</div>' +
-    '<div style="display:flex;gap:6px;margin-bottom:8px"><input class="fi" type="text" id="nu" placeholder="اليوزر" style="flex:1"/><input class="fi" type="text" id="np2" placeholder="الباسورد" style="flex:1"/></div>' +
-    '<button type="button" class="nbtn" onclick="fetchNeo()">🔍 جلب من neo</button>' +
-    '<div id="nst" style="font-size:12px;margin-top:7px;min-height:16px;text-align:center"></div></div>' +
     '<div class="fw">' +
     '<label class="fl" style="margin-top:0">اسم الزبون</label><input class="fi" type="text" id="fn" placeholder="أحمد بن علي"/>' +
     '<label class="fl">رقم الهاتف</label><input class="fi" type="text" id="fph" placeholder="+213 550 000 000"/>' +
@@ -655,7 +650,9 @@ function rAdd() {
     '<label class="fl">لغة الزبون 🌍</label><div style="display:flex;gap:6px;flex-wrap:wrap">' + lb + '</div>' +
     '<label class="fl">يوم الدفع الشهري (اختياري)</label><input class="fi" type="number" id="fpd" placeholder="مثال: 5" min="1" max="31"/>' +
     '<div class="cbox"><div class="cbox-t">🔐 بيانات الدخول (اختياري)</div>' +
-    '<label class="fl" style="margin-top:0">رابط السيرفر</label><input class="fi" type="text" id="fsrv" placeholder="http://server.com:8080"/>' +
+    '<div id="m3u-url-box" style="display:' + (subType === 'm3u' ? 'block' : 'none') + '">' +
+    '<label class="fl" style="margin-top:0">🔗 رابط M3U المباشر</label><input class="fi" type="text" id="fm3u" placeholder="http://server.com:8080/get.php?username=X&password=Y&type=m3u"/></div>' +
+    '<label class="fl"' + (subType === 'm3u' ? '' : ' style="margin-top:0"') + '>رابط السيرفر</label><input class="fi" type="text" id="fsrv" placeholder="http://server.com:8080"/>' +
     '<label class="fl">اسم المستخدم</label><input class="fi" type="text" id="fus" placeholder="username"/>' +
     '<label class="fl">كلمة المرور</label>' +
     '<div style="position:relative"><input class="fi" type="password" id="fpw" placeholder="password" style="padding-left:40px"/>' +
@@ -668,29 +665,9 @@ function rAdd() {
 
 function setD(d) { dur = d; render(); }
 function setL(l, btn) { lang = l; document.querySelectorAll('.lb').forEach(function(b) { if (['🇩🇿 عربي','🇫🇷 Français','🇬🇧 English','🇪🇸 Español'].indexOf(b.textContent.trim()) >= 0) b.classList.remove('on'); }); btn.classList.add('on'); }
-function setType(t, btn) { subType = t; document.querySelectorAll('#type-row .lb').forEach(function(b) { b.classList.remove('on'); }); btn.classList.add('on'); }
+function setType(t, btn) { subType = t; document.querySelectorAll('#type-row .lb').forEach(function(b) { b.classList.remove('on'); }); btn.classList.add('on'); var mb = document.getElementById('m3u-url-box'); if (mb) mb.style.display = t === 'm3u' ? 'block' : 'none'; }
 function setCat(c, btn) { clientCat = c; document.querySelectorAll('#cat-row .lb').forEach(function(b) { b.classList.remove('on'); }); btn.classList.add('on'); }
 function tp() { var i = document.getElementById('fpw'); i.type = i.type === 'password' ? 'text' : 'password'; }
-
-async function fetchNeo() {
-  var user = (document.getElementById('nu').value || '').trim();
-  var pass = (document.getElementById('np2').value || '').trim();
-  var st = document.getElementById('nst');
-  if (!user || !pass) { st.textContent = '⚠️ أدخل اليوزر والباسورد'; st.style.color = 'var(--orange)'; return; }
-  st.textContent = '⏳ جاري الجلب...'; st.style.color = 'var(--text2)';
-  try {
-    var url = NEO_API + '?action=device_info&username=' + encodeURIComponent(user) + '&password=' + encodeURIComponent(pass) + '&api_key=' + NEO_KEY;
-    var res = await fetch(url);
-    var data = await res.json();
-    var d = Array.isArray(data) ? data[0] : data;
-    if (!d || d.status === 'false' || d.status === false) { st.textContent = '❌ لم يتم العثور على الزبون'; st.style.color = 'var(--red)'; return; }
-    if (d.url) document.getElementById('fsrv').value = d.url;
-    if (d.username) { document.getElementById('fus').value = d.username; document.getElementById('fsn').value = d.username; }
-    if (d.password) document.getElementById('fpw').value = d.password;
-    if (d.expire) { var exp = new Date(d.expire); var diff = Math.round((exp - new Date()) / (1000 * 60 * 60 * 24 * 30)); if (diff > 0) dur = Math.min(diff, 12); }
-    st.textContent = '✅ تم! أكمل الاسم والهاتف واحفظ'; st.style.color = 'var(--green)';
-  } catch(e2) { st.textContent = '❌ تعذر الاتصال بـ neo'; st.style.color = 'var(--red)'; }
-}
 
 function addC() {
   var name = (document.getElementById('fn').value || '').trim();
@@ -700,11 +677,12 @@ function addC() {
   var srv = (document.getElementById('fsrv').value || '').trim();
   var us = (document.getElementById('fus').value || '').trim();
   var pw = (document.getElementById('fpw').value || '').trim();
+  var m3u = (document.getElementById('fm3u') ? document.getElementById('fm3u').value || '' : '').trim();
   var pr = Number(document.getElementById('fpr').value) || 0;
   if (!name || !phone) { alert('الرجاء إدخال الاسم ورقم الهاتف'); return; }
   var s = new Date(), e2 = addM(s, dur);
   var pl = dur === 1 ? '1 شهر' : dur === 12 ? '12 شهر' : dur + ' أشهر';
-  C.unshift({ id: Date.now(), name: name, phone: phone, subName: sub, subType: subType, category: clientCat, server: srv, username: us, password: pw, lang: lang, plan: pl, payDay: payDay, payments: [], startDate: s.toISOString().split('T')[0], endDate: e2.toISOString().split('T')[0], price: pr });
+  C.unshift({ id: Date.now(), name: name, phone: phone, subName: sub, subType: subType, category: clientCat, server: srv, username: us, password: pw, m3uUrl: m3u, lang: lang, plan: pl, payDay: payDay, payments: [], startDate: s.toISOString().split('T')[0], endDate: e2.toISOString().split('T')[0], price: pr });
   sv(); filt = 'all'; dur = 1; lang = 'ar'; subType = 'code'; clientCat = 'normal';
   toast('✅ تم إضافة ' + name + '!'); go('list');
 }
@@ -716,11 +694,12 @@ function rDet() {
   if (!c) return '<div class="empty">غير موجود</div>';
   var d = dl(c.endDate);
   var lf = { ar: '🇩🇿 عربي', fr: '🇫🇷 Français', en: '🇬🇧 English', es: '🇪🇸 Español' };
-  _cred = { srv: c.server || '', usr: c.username || '', pwd: c.password || '', id: c.id };
+  _cred = { srv: c.server || '', usr: c.username || '', pwd: c.password || '', m3u: c.m3uUrl || '', id: c.id };
   var cred = '';
-  if (c.server || c.username || c.password) {
+  if (c.server || c.username || c.password || c.m3uUrl) {
     cred = '<div style="background:var(--bg);border:1px solid rgba(59,139,255,.3);border-radius:var(--rs);padding:12px;margin-top:8px">' +
       '<div style="color:var(--blue);font-size:12px;font-weight:700;margin-bottom:8px">🔐 بيانات الدخول</div>' +
+      (c.m3uUrl ? '<div class="crow"><span style="color:var(--text3)">🔗 رابط M3U</span><div class="cvals"><span class="cv">' + c.m3uUrl + '</span><button class="cpb" onclick="cpCred(\'m3u\',this)">📋</button></div></div>' : '') +
       (c.server ? '<div class="crow"><span style="color:var(--text3)">🌐 السيرفر</span><div class="cvals"><span class="cv">' + c.server + '</span><button class="cpb" onclick="cpCred(\'srv\',this)">📋</button></div></div>' : '') +
       (c.username ? '<div class="crow"><span style="color:var(--text3)">👤 اليوزر</span><div class="cvals"><span class="cv">' + c.username + '</span><button class="cpb" onclick="cpCred(\'usr\',this)">📋</button></div></div>' : '') +
       (c.password ? '<div class="crow"><span style="color:var(--text3)">🔑 الباسورد</span><div class="cvals"><span class="cv" id="pv' + c.id + '">••••••••</span><button class="cpb" onclick="tpvC()">👁</button><button class="cpb" onclick="cpCred(\'pwd\',this)">📋</button></div></div>' : '') +
@@ -813,6 +792,7 @@ function openEdit(id) {
   document.getElementById('est').value = c.subType || 'code';
   document.getElementById('ecat').value = c.category || 'normal';
   document.getElementById('esrv').value = c.server || '';
+  document.getElementById('em3u').value = c.m3uUrl || '';
   document.getElementById('eu').value = c.username || '';
   document.getElementById('epw').value = c.password || '';
   document.getElementById('eov').classList.add('show');
@@ -829,6 +809,7 @@ function saveEdit() {
   c.subType = document.getElementById('est').value || 'code';
   c.category = document.getElementById('ecat').value || 'normal';
   c.server = document.getElementById('esrv').value.trim();
+  c.m3uUrl = document.getElementById('em3u').value.trim();
   c.username = document.getElementById('eu').value.trim();
   c.password = document.getElementById('epw').value.trim();
   sv(); document.getElementById('eov').classList.remove('show');
