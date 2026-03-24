@@ -215,6 +215,7 @@ select.fi{cursor:pointer}
       <option value="problem">⚠️ مشكل في الدفع</option>
     </select>
     <label class="fl">رابط السيرفر</label><input class="fi" type="text" id="esrv"/>
+    <label class="fl">📱 الكود</label><input class="fi" type="text" id="ecode" placeholder="أدخل الكود..."/>
     <label class="fl">رابط M3U المباشر</label><input class="fi" type="text" id="em3u" placeholder="http://..."/>
     <label class="fl">اسم المستخدم</label><input class="fi" type="text" id="eu"/>
     <label class="fl">كلمة المرور</label><input class="fi" type="text" id="epw"/>
@@ -650,6 +651,8 @@ function rAdd() {
     '<label class="fl">لغة الزبون 🌍</label><div style="display:flex;gap:6px;flex-wrap:wrap">' + lb + '</div>' +
     '<label class="fl">يوم الدفع الشهري (اختياري)</label><input class="fi" type="number" id="fpd" placeholder="مثال: 5" min="1" max="31"/>' +
     '<div class="cbox"><div class="cbox-t">🔐 بيانات الدخول (اختياري)</div>' +
+    '<div id="code-box" style="display:' + (subType === 'code' ? 'block' : 'none') + '">' +
+    '<label class="fl" style="margin-top:0">📱 الكود</label><input class="fi" type="text" id="fcode" placeholder="أدخل الكود هنا..."/></div>' +
     '<div id="m3u-url-box" style="display:' + (subType === 'm3u' ? 'block' : 'none') + '">' +
     '<label class="fl" style="margin-top:0">🔗 رابط M3U المباشر</label><input class="fi" type="text" id="fm3u" placeholder="http://server.com:8080/get.php?username=X&password=Y&type=m3u"/></div>' +
     '<label class="fl"' + (subType === 'm3u' ? '' : ' style="margin-top:0"') + '>رابط السيرفر</label><input class="fi" type="text" id="fsrv" placeholder="http://server.com:8080"/>' +
@@ -665,7 +668,7 @@ function rAdd() {
 
 function setD(d) { dur = d; render(); }
 function setL(l, btn) { lang = l; document.querySelectorAll('.lb').forEach(function(b) { if (['🇩🇿 عربي','🇫🇷 Français','🇬🇧 English','🇪🇸 Español'].indexOf(b.textContent.trim()) >= 0) b.classList.remove('on'); }); btn.classList.add('on'); }
-function setType(t, btn) { subType = t; document.querySelectorAll('#type-row .lb').forEach(function(b) { b.classList.remove('on'); }); btn.classList.add('on'); var mb = document.getElementById('m3u-url-box'); if (mb) mb.style.display = t === 'm3u' ? 'block' : 'none'; }
+function setType(t, btn) { subType = t; document.querySelectorAll('#type-row .lb').forEach(function(b) { b.classList.remove('on'); }); btn.classList.add('on'); var mb = document.getElementById('m3u-url-box'); if (mb) mb.style.display = t === 'm3u' ? 'block' : 'none'; var cb = document.getElementById('code-box'); if (cb) cb.style.display = t === 'code' ? 'block' : 'none'; }
 function setCat(c, btn) { clientCat = c; document.querySelectorAll('#cat-row .lb').forEach(function(b) { b.classList.remove('on'); }); btn.classList.add('on'); }
 function tp() { var i = document.getElementById('fpw'); i.type = i.type === 'password' ? 'text' : 'password'; }
 
@@ -678,11 +681,12 @@ function addC() {
   var us = (document.getElementById('fus').value || '').trim();
   var pw = (document.getElementById('fpw').value || '').trim();
   var m3u = (document.getElementById('fm3u') ? document.getElementById('fm3u').value || '' : '').trim();
+  var code = (document.getElementById('fcode') ? document.getElementById('fcode').value || '' : '').trim();
   var pr = Number(document.getElementById('fpr').value) || 0;
   if (!name || !phone) { alert('الرجاء إدخال الاسم ورقم الهاتف'); return; }
   var s = new Date(), e2 = addM(s, dur);
   var pl = dur === 1 ? '1 شهر' : dur === 12 ? '12 شهر' : dur + ' أشهر';
-  C.unshift({ id: Date.now(), name: name, phone: phone, subName: sub, subType: subType, category: clientCat, server: srv, username: us, password: pw, m3uUrl: m3u, lang: lang, plan: pl, payDay: payDay, payments: [], startDate: s.toISOString().split('T')[0], endDate: e2.toISOString().split('T')[0], price: pr });
+  C.unshift({ id: Date.now(), name: name, phone: phone, subName: sub, subType: subType, category: clientCat, server: srv, username: us, password: pw, m3uUrl: m3u, subCode: code, lang: lang, plan: pl, payDay: payDay, payments: [], startDate: s.toISOString().split('T')[0], endDate: e2.toISOString().split('T')[0], price: pr });
   sv(); filt = 'all'; dur = 1; lang = 'ar'; subType = 'code'; clientCat = 'normal';
   toast('✅ تم إضافة ' + name + '!'); go('list');
 }
@@ -694,11 +698,12 @@ function rDet() {
   if (!c) return '<div class="empty">غير موجود</div>';
   var d = dl(c.endDate);
   var lf = { ar: '🇩🇿 عربي', fr: '🇫🇷 Français', en: '🇬🇧 English', es: '🇪🇸 Español' };
-  _cred = { srv: c.server || '', usr: c.username || '', pwd: c.password || '', m3u: c.m3uUrl || '', id: c.id };
+  _cred = { srv: c.server || '', usr: c.username || '', pwd: c.password || '', m3u: c.m3uUrl || '', code: c.subCode || '', id: c.id };
   var cred = '';
-  if (c.server || c.username || c.password || c.m3uUrl) {
+  if (c.server || c.username || c.password || c.m3uUrl || c.subCode) {
     cred = '<div style="background:var(--bg);border:1px solid rgba(59,139,255,.3);border-radius:var(--rs);padding:12px;margin-top:8px">' +
       '<div style="color:var(--blue);font-size:12px;font-weight:700;margin-bottom:8px">🔐 بيانات الدخول</div>' +
+      (c.subCode ? '<div class="crow"><span style="color:var(--text3)">📱 الكود</span><div class="cvals"><span class="cv">' + c.subCode + '</span><button class="cpb" onclick="cpCred(\'code\',this)">📋</button></div></div>' : '') +
       (c.m3uUrl ? '<div class="crow"><span style="color:var(--text3)">🔗 رابط M3U</span><div class="cvals"><span class="cv">' + c.m3uUrl + '</span><button class="cpb" onclick="cpCred(\'m3u\',this)">📋</button></div></div>' : '') +
       (c.server ? '<div class="crow"><span style="color:var(--text3)">🌐 السيرفر</span><div class="cvals"><span class="cv">' + c.server + '</span><button class="cpb" onclick="cpCred(\'srv\',this)">📋</button></div></div>' : '') +
       (c.username ? '<div class="crow"><span style="color:var(--text3)">👤 اليوزر</span><div class="cvals"><span class="cv">' + c.username + '</span><button class="cpb" onclick="cpCred(\'usr\',this)">📋</button></div></div>' : '') +
@@ -792,6 +797,7 @@ function openEdit(id) {
   document.getElementById('est').value = c.subType || 'code';
   document.getElementById('ecat').value = c.category || 'normal';
   document.getElementById('esrv').value = c.server || '';
+  document.getElementById('ecode').value = c.subCode || '';
   document.getElementById('em3u').value = c.m3uUrl || '';
   document.getElementById('eu').value = c.username || '';
   document.getElementById('epw').value = c.password || '';
@@ -809,6 +815,7 @@ function saveEdit() {
   c.subType = document.getElementById('est').value || 'code';
   c.category = document.getElementById('ecat').value || 'normal';
   c.server = document.getElementById('esrv').value.trim();
+  c.subCode = document.getElementById('ecode').value.trim();
   c.m3uUrl = document.getElementById('em3u').value.trim();
   c.username = document.getElementById('eu').value.trim();
   c.password = document.getElementById('epw').value.trim();
