@@ -137,6 +137,18 @@ select.fi{cursor:pointer}
 .sal-a{flex:1;padding:12px;background:linear-gradient(135deg,#065f46,#1e40af);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-weight:800;font-size:13px}
 .sal-s{padding:12px 14px;background:var(--bg);color:var(--text3);border:none;border-radius:var(--rs);cursor:pointer}
 .toast{position:fixed;bottom:75px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#065f46,#1e40af);color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:2000;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.ai-wrap{display:flex;flex-direction:column;height:calc(100vh - 160px);min-height:400px}
+.ai-msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:10px}
+.ai-msg{max-width:85%;padding:10px 13px;border-radius:14px;font-size:13px;line-height:1.6}
+.ai-msg.user{align-self:flex-end;background:linear-gradient(135deg,var(--blue2),#6d28d9);color:#fff;border-radius:14px 14px 4px 14px}
+.ai-msg.bot{align-self:flex-start;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:14px 14px 14px 4px}
+.ai-msg.bot.loading{color:var(--text3)}
+.ai-inp{display:flex;gap:8px;padding-top:10px;border-top:1px solid var(--border)}
+.ai-tf{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:22px;padding:11px 16px;color:var(--text);font-size:13px;resize:none;max-height:80px}
+.ai-tf:focus{border-color:var(--blue);outline:none}
+.ai-send{background:linear-gradient(135deg,var(--blue2),#6d28d9);border:none;border-radius:50%;width:42px;height:42px;color:#fff;cursor:pointer;font-size:18px;flex-shrink:0;align-self:flex-end}
+.ai-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.ai-chip{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:11px;color:var(--text2);cursor:pointer}
 @media print{#hdr,#sal,.ov,.bk,.dacts,.abtn{display:none!important}body{background:#fff;color:#000}.cc,.dh{border:1px solid #ddd;background:#fff}}
 </style>
 </head>
@@ -159,6 +171,7 @@ select.fi{cursor:pointer}
     <button class="nb" onclick="go('pay')"><span>💰</span>الدفعات</button>
     <button class="nb" onclick="go('cat')"><span>📦</span>الكتالوج</button>
     <button class="nb" onclick="go('add')"><span>➕</span>جديد</button>
+    <button class="nb" onclick="go('ai')"><span>🤖</span>مساعد</button>
   </nav>
 </div>
 <div id="pg"></div>
@@ -187,6 +200,7 @@ select.fi{cursor:pointer}
     <div class="macts">
       <button class="mc" onclick="cpyMsg()">📋 نسخ</button>
       <a class="mw" id="mwal" href="#" target="_blank">💬 واتساب</a>
+      <button id="ai-wa-btn-0" onclick="genWAMsg(mc&&mc.id)" style="flex:1;padding:10px;background:rgba(192,132,252,.1);color:var(--purple);border:none;border-radius:var(--rs);cursor:pointer;font-weight:700;font-size:12px">✨ رسالة ذكية</button>
       <button class="mx" onclick="document.getElementById('ov').classList.remove('show')">✕</button>
     </div>
   </div>
@@ -347,7 +361,7 @@ function wMsg(c, type) {
 function go(v) {
   V = v;
   document.querySelectorAll('.nb').forEach(function(b, i) {
-    b.classList.toggle('on', ['dash','list','pay','cat','add'][i] === v);
+    b.classList.toggle('on', ['dash','list','pay','cat','add','ai'][i] === v);
   });
   render();
 }
@@ -361,6 +375,7 @@ function render() {
   else if (V === 'mcat') el.innerHTML = rMCat();
   else if (V === 'add') el.innerHTML = rAdd();
   else if (V === 'det') el.innerHTML = rDet();
+  else if (V === 'ai') el.innerHTML = rAI();
   else if (V === 'report') el.innerHTML = rReport();
 }
 
@@ -913,6 +928,8 @@ function openModal(id) {
   document.querySelectorAll('.mt').forEach(function(b) { b.classList.remove('on'); });
   document.querySelector('.mt').classList.add('on');
   document.getElementById('mttl').textContent = '📩 رسالة — ' + mc.name;
+  var aibtn = document.getElementById('ai-wa-btn-0');
+  if(aibtn) aibtn.id = 'ai-wa-btn-' + mc.id;
   updM(); document.getElementById('ov').classList.add('show');
 }
 
@@ -1047,6 +1064,114 @@ function showNotif() {
   var due = C.filter(function(c) { return payDue(c); });
   if (exp.length) new Notification('Islam Box Tech ⚠️', { body: exp.length + ' اشتراك ينتهي خلال 3 أيام!' });
   if (due.length) new Notification('Islam Box Tech 💰', { body: due.length + ' زبون موعد دفعه اليوم أو غداً!' });
+}
+
+var aiHistory = [];
+
+function rAI() {
+  var chips = ['من ما دفع هذا الشهر؟','كم ربحت هذا الشهر؟','من ينتهي اشتراكه قريباً؟','كم عندي زبون VIP؟','أعطني ملخص شامل'];
+  var msgsHtml = aiHistory.length === 0
+    ? '<div class="ai-msg bot">مرحباً! 👋 أنا مساعدك الذكي.<br>اسألني أي شيء عن زبائنك وبياناتك 📊</div>'
+    : aiHistory.map(function(m) { return '<div class="ai-msg ' + m.role + '">' + m.text.replace(/\n/g,'<br>') + '</div>'; }).join('');
+  return '<div class="ttl">🤖 المساعد الذكي</div>' +
+    '<div class="ai-chips">' + chips.map(function(c) { return '<button class="ai-chip" onclick="askAI(' + JSON.stringify(c) + ')">' + c + '</button>'; }).join('') + '</div>' +
+    '<div class="ai-wrap"><div class="ai-msgs" id="ai-msgs">' + msgsHtml + '</div>' +
+    '<div class="ai-inp"><textarea class="ai-tf" id="ai-tf" placeholder="اسألني عن زبائنك..." rows="1" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendAI()}"></textarea>' +
+    '<button class="ai-send" onclick="sendAI()">➤</button></div></div>';
+}
+
+function getDataSummary() {
+  var today = new Date();
+  var mn = today.getMonth(), yr = today.getFullYear();
+  var exp7 = C.filter(function(c){ return dl(c.endDate)>=0&&dl(c.endDate)<=7; });
+  var expd = C.filter(function(c){ return dl(c.endDate)<0; });
+  var act = C.filter(function(c){ return dl(c.endDate)>7; });
+  var mRev = C.reduce(function(s,c){ return s+(c.payments||[]).filter(function(p){ var d=new Date(p.date); return d.getMonth()===mn&&d.getFullYear()===yr; }).reduce(function(a,p){ return a+p.amount; },0); },0);
+  var totRev = C.reduce(function(s,c){ return s+(c.payments||[]).reduce(function(a,p){ return a+p.amount; },0); },0);
+  var vip = C.filter(function(c){ return c.category==='vip'; });
+  var prob = C.filter(function(c){ return c.category==='problem'; });
+  var noPayThisMonth = C.filter(function(c){
+    return !(c.payments||[]).some(function(p){ var d=new Date(p.date); return d.getMonth()===mn&&d.getFullYear()===yr; });
+  });
+  var typeCount = {};
+  C.forEach(function(c){ var t=c.subType||'code'; typeCount[t]=(typeCount[t]||0)+1; });
+  return {
+    total: C.length, active: act.length, expiring: exp7.length, expired: expd.length,
+    monthRevenue: mRev, totalRevenue: totRev, vip: vip.length, problem: prob.length,
+    noPayThisMonth: noPayThisMonth.length,
+    typeCount: typeCount,
+    expiringList: exp7.map(function(c){ return c.name+' ('+dl(c.endDate)+' أيام — '+c.phone+')'; }),
+    expiredList: expd.slice(0,10).map(function(c){ return c.name+' — '+c.phone; }),
+    noPayList: noPayThisMonth.slice(0,10).map(function(c){ return c.name+' — '+c.phone; }),
+    vipList: vip.map(function(c){ return c.name; }),
+    probList: prob.map(function(c){ return c.name+' — '+c.phone; })
+  };
+}
+
+function askAI(q) {
+  var tf = document.getElementById('ai-tf');
+  if (tf) tf.value = q;
+  sendAI();
+}
+
+async function sendAI() {
+  var tf = document.getElementById('ai-tf');
+  var q = (tf ? tf.value : '').trim();
+  if (!q) return;
+  tf.value = '';
+  aiHistory.push({ role: 'user', text: q });
+  var msgs = document.getElementById('ai-msgs');
+  if (msgs) msgs.innerHTML += '<div class="ai-msg user">' + q.replace(/\n/g,'<br>') + '</div><div class="ai-msg bot loading" id="ai-loading">⏳ جاري التفكير...</div>';
+  if (msgs) msgs.scrollTop = msgs.scrollHeight;
+
+  var data = getDataSummary();
+  var systemPrompt = 'أنت مساعد ذكي لإدارة اشتراكات IPTV لتاجر اسمه Islam Box Tech Zeboudja. أجب دائماً بالعربية بشكل مختصر ومفيد.\n\nبيانات الزبائن الحالية:\n' + JSON.stringify(data, null, 2);
+
+  var messages = aiHistory.slice(0,-1).map(function(m){ return { role: m.role==='user'?'user':'assistant', content: m.text }; });
+  messages.push({ role: 'user', content: q });
+
+  try {
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: systemPrompt, messages: messages })
+    });
+    var json = await res.json();
+    var answer = (json.content && json.content[0] && json.content[0].text) || '❌ لم أتمكن من الإجابة';
+    aiHistory.push({ role: 'bot', text: answer });
+    var loading = document.getElementById('ai-loading');
+    if (loading) { loading.id=''; loading.classList.remove('loading'); loading.innerHTML = answer.replace(/\n/g,'<br>'); }
+    if (msgs) msgs.scrollTop = msgs.scrollHeight;
+  } catch(e) {
+    var loading = document.getElementById('ai-loading');
+    if (loading) { loading.id=''; loading.classList.remove('loading'); loading.textContent = '❌ خطأ في الاتصال'; }
+  }
+}
+
+async function genWAMsg(id) {
+  var c = C.find(function(x){ return x.id===id; }); if(!c) return;
+  var btn = document.getElementById('ai-wa-btn-'+id);
+  if(btn){ btn.textContent='⏳ جاري الكتابة...'; btn.disabled=true; }
+  var d = dl(c.endDate);
+  var info = 'اسم الزبون: '+c.name+'\nالهاتف: '+c.phone+'\nالباقة: '+c.plan+(c.subName?' — '+c.subName:'')+'\nتاريخ الانتهاء: '+fd(c.endDate)+'\nأيام المتبقية: '+d+'\nالسعر: '+(c.price||0)+' دج\nالتصنيف: '+(c.category||'normal')+(c.note?'\nملاحظة: '+c.note:'');
+  var prompt = 'اكتب رسالة واتساب احترافية وودية لهذا الزبون. الرسالة يجب أن تكون مخصصة له حسب وضعه (نشط أو ينتهي قريباً أو منتهي). لا تضف أي شرح، فقط الرسالة مباشرة.\n\n'+info;
+  try {
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 400, messages: [{ role:'user', content: prompt }] })
+    });
+    var json = await res.json();
+    var msg = (json.content&&json.content[0]&&json.content[0].text)||'';
+    if(msg) {
+      var ta = document.getElementById('mta');
+      if(ta) ta.value = msg;
+      var wal = document.getElementById('mwal');
+      if(wal) wal.href = wl(c.phone, msg);
+      toast('✅ تم كتابة الرسالة بالذكاء!');
+    }
+  } catch(e){ toast('❌ خطأ في الاتصال'); }
+  if(btn){ btn.textContent='✨ رسالة ذكية'; btn.disabled=false; }
 }
 
 var savedPkgs = localStorage.getItem('ibc_pkgs');
