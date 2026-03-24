@@ -196,6 +196,10 @@ select{background:var(--bg);border:1px solid var(--border);border-radius:var(--r
     <label class="fl">رقم الهاتف</label><input class="fi" type="text" id="ep"/>
     <label class="fl">اسم الاشتراك</label><input class="fi" type="text" id="es"/>
     <label class="fl">السعر (دج)</label><input class="fi" type="number" id="epr"/>
+    <label class="fl">تصنيف الزبون</label>
+    <select class="fi" id="ecat"><option value="normal">👤 عادي</option><option value="vip">⭐ VIP</option><option value="problem">⚠️ مشكل في الدفع</option></select>
+    <label class="fl">نوع الاشتراك</label>
+    <select class="fi" id="est"><option value="code">📱 كود</option><option value="m3u">📋 M3U</option><option value="mag">📺 MAG</option><option value="stalker">🔌 Stalker</option></select>
     <label class="fl">تاريخ الانتهاء</label><input class="fi" type="date" id="eed"/>
     <label class="fl">يوم الدفع الشهري (1-31)</label><input class="fi" type="number" id="epd" min="1" max="31"/>
     <label class="fl">رابط السيرفر</label><input class="fi" type="text" id="esrv"/>
@@ -225,6 +229,8 @@ select{background:var(--bg);border:1px solid var(--border);border-radius:var(--r
 <script>
 var C = JSON.parse(localStorage.getItem('ibc') || '[]');
 var V = 'dash', selId = null, dur = 1, lang = 'ar', filt = 'all', eid = null, mc = null, mtype = 'auto', salC = [], si = 0, payId = null;
+var subType = 'code';
+var clientCat = 'normal';
 var NEO_KEY = 'b63aafe7a06ae03389bfa709d36d99d1';
 var NEO_API = 'https://4k.cms-only.ru/api/api.php';
 
@@ -323,6 +329,8 @@ function render() {
   else if (V === 'list') el.innerHTML = rList();
   else if (V === 'pay') el.innerHTML = rPay();
   else if (V === 'cat') el.innerHTML = rCat();
+  else if (V === 'mcat') el.innerHTML = rMCat();
+  else if (V === 'report') el.innerHTML = rReport();
   else if (V === 'add') el.innerHTML = rAdd();
   else if (V === 'det') el.innerHTML = rDet();
 }
@@ -381,7 +389,10 @@ function rDash() {
     '<div class="stat stat-wide"><div class="stat-line" style="background:var(--purple)"></div><div class="stat-ico">💰</div><div class="stat-val" style="color:var(--purple);font-size:19px">' + rev.toLocaleString() + ' دج</div><div class="stat-lbl">إجمالي الإيرادات</div></div>' +
     '<div class="stat stat-wide"><div class="stat-line" style="background:#06b6d4"></div><div class="stat-ico">📅</div><div class="stat-val" style="color:#06b6d4;font-size:19px">' + mRev.toLocaleString() + ' دج</div><div class="stat-lbl">مدفوعات هذا الشهر</div></div>' +
     '</div>' + chart + alerts +
-    '<button onclick="window.print()" style="width:100%;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);color:var(--blue);cursor:pointer;font-size:12px;font-weight:600;margin-top:4px">🖨️ طباعة القائمة</button>';
+    '<div style="display:flex;gap:8px;margin-top:4px">' +
+    '<button onclick="go('report')" style="flex:1;padding:10px;background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.3);border-radius:var(--rs);color:var(--purple);cursor:pointer;font-size:12px;font-weight:600">📊 التقرير الشهري</button>' +
+    '<button onclick="window.print()" style="flex:1;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);color:var(--blue);cursor:pointer;font-size:12px;font-weight:600">🖨️ طباعة</button>' +
+    '</div>';
 }
 
 function getFilt(s) {
@@ -398,11 +409,12 @@ function getFilt(s) {
 function cHTML(c) {
   var lf = { ar: '🇩🇿', fr: '🇫🇷', en: '🇬🇧', es: '🇪🇸' }[c.lang || 'ar'] || '🇩🇿';
   var pb = payDue(c) ? '<span class="bPD" style="margin-right:4px">💰 يوم ' + c.payDay + '</span>' : '';
+  var catBdg = {'vip':'<span style="background:rgba(255,215,0,.15);color:#ffd700;border:1px solid rgba(255,215,0,.3);border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700">⭐ VIP</span>','problem':'<span class="bEX">⚠️ مشكل</span>','normal':''}[c.category||'normal']||'';
   return '<div class="cc" onclick="openDet(' + c.id + ')">' +
     '<div class="cc-top"><div class="av" style="background:' + avc(c.name) + '">' + c.name[0] + '</div>' +
     '<div style="flex:1"><div class="cc-name">' + c.name + ' <span style="font-size:11px">' + lf + '</span></div>' +
     '<div class="cc-phone">📞 ' + c.phone + '</div></div>' +
-    '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">' + pb + bdg(dl(c.endDate)) + '</div></div>' +
+    '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">' + catBdg + pb + bdg(dl(c.endDate)) + '</div></div>' +
     '<div class="cc-bot"><span>📦 ' + c.plan + '</span>' + (c.subName ? '<span>🏷️ ' + c.subName + '</span>' : '') +
     '<span>📅 ' + fd(c.endDate) + '</span><span>💰 ' + (c.price || 0).toLocaleString() + ' دج</span></div></div>';
 }
@@ -472,7 +484,8 @@ function rPay() {
 }
 
 function rCat() {
-  var h = '<div class="ttl">📦 الكتالوج والباقات</div>';
+  var h = '<div class="ttl">📦 الكتالوج والباقات</div>' +
+    '<button onclick="go('mcat')" style="width:100%;padding:10px;background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.3);border-radius:var(--rs);color:var(--purple);cursor:pointer;font-size:13px;font-weight:700;margin-bottom:14px">⚙️ إدارة الباقات (إضافة / حذف)</button>';
   PKGS.forEach(function(pkg) {
     h += '<div style="margin-bottom:16px"><div class="cat-st">' + pkg.icon + ' ' + pkg.server + '</div>';
     pkg.plans.forEach(function(plan) {
@@ -536,6 +549,176 @@ function rCat() {
   return h;
 }
 
+function rReport() {
+  var now = new Date();
+  var mn = now.getMonth(), yr = now.getFullYear();
+  var months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+  var newC = C.filter(function(c) { var d = new Date(c.startDate); return d.getMonth() === mn && d.getFullYear() === yr; });
+  var expC = C.filter(function(c) { var d = dl(c.endDate); return d < 0; });
+  var expiring = C.filter(function(c) { var d = dl(c.endDate); return d >= 0 && d <= 7; });
+  var vip = C.filter(function(c) { return c.category === 'vip'; });
+  var prob = C.filter(function(c) { return c.category === 'problem'; });
+
+  var mRev = C.reduce(function(s, c) {
+    return s + (c.payments || []).filter(function(p) { var d = new Date(p.date); return d.getMonth() === mn && d.getFullYear() === yr; })
+      .reduce(function(a, p) { return a + p.amount; }, 0);
+  }, 0);
+  var totRev = C.reduce(function(s, c) { return s + (c.payments || []).reduce(function(a, p) { return a + p.amount; }, 0); }, 0);
+
+  var planStats = {};
+  C.forEach(function(c) { var p = c.subName || c.plan || 'أخرى'; planStats[p] = (planStats[p] || 0) + 1; });
+  var topPlans = Object.entries(planStats).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 5);
+
+  var h = '<button class="bk" onclick="go('dash')">← رجوع</button>' +
+    '<div class="ttl">📊 تقرير ' + months[mn] + ' ' + yr + '</div>';
+
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">' +
+    '<div class="stat"><div class="stat-line" style="background:var(--green)"></div><div class="stat-ico">🆕</div><div class="stat-val" style="color:var(--green)">' + newC.length + '</div><div class="stat-lbl">زبائن جدد هذا الشهر</div></div>' +
+    '<div class="stat"><div class="stat-line" style="background:var(--purple)"></div><div class="stat-ico">💰</div><div class="stat-val" style="color:var(--purple);font-size:16px">' + mRev.toLocaleString() + '</div><div class="stat-lbl">إيرادات هذا الشهر دج</div></div>' +
+    '<div class="stat"><div class="stat-line" style="background:var(--red)"></div><div class="stat-ico">❌</div><div class="stat-val" style="color:var(--red)">' + expC.length + '</div><div class="stat-lbl">اشتراكات منتهية</div></div>' +
+    '<div class="stat"><div class="stat-line" style="background:var(--orange)"></div><div class="stat-ico">⚠️</div><div class="stat-val" style="color:var(--orange)">' + expiring.length + '</div><div class="stat-lbl">تنتهي خلال 7 أيام</div></div>' +
+    '<div class="stat"><div class="stat-line" style="background:#ffd700"></div><div class="stat-ico">⭐</div><div class="stat-val" style="color:#ffd700">' + vip.length + '</div><div class="stat-lbl">زبائن VIP</div></div>' +
+    '<div class="stat"><div class="stat-line" style="background:var(--blue)"></div><div class="stat-ico">💵</div><div class="stat-val" style="color:var(--blue);font-size:16px">' + totRev.toLocaleString() + '</div><div class="stat-lbl">إجمالي الإيرادات دج</div></div>' +
+    '</div>';
+
+  if (topPlans.length) {
+    h += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:14px">' +
+      '<div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px">🏆 أكثر الباقات مبيعاً</div>';
+    topPlans.forEach(function(x, i) {
+      var icons = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+      h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px">' +
+        '<span>' + icons[i] + ' ' + x[0] + '</span><span style="font-weight:800;color:var(--blue)">' + x[1] + ' زبون</span></div>';
+    });
+    h += '</div>';
+  }
+
+  if (newC.length) {
+    h += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:14px">' +
+      '<div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:10px">🆕 الزبائن الجدد هذا الشهر</div>';
+    newC.forEach(function(c) {
+      h += '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">' +
+        '<span><b>' + c.name + '</b> — ' + (c.subName || c.plan) + '</span><span style="color:var(--green)">' + (c.price || 0).toLocaleString() + ' دج</span></div>';
+    });
+    h += '</div>';
+  }
+
+  if (prob.length) {
+    h += '<div style="background:var(--bg2);border:1px solid rgba(255,68,68,.3);border-radius:var(--r);padding:14px;margin-bottom:14px">' +
+      '<div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:10px">⚠️ مشاكل في الدفع (' + prob.length + ')</div>';
+    prob.forEach(function(c) {
+      h += '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">' +
+        '<span><b>' + c.name + '</b></span><span style="color:var(--text3)">📞 ' + c.phone + '</span></div>';
+    });
+    h += '</div>';
+  }
+
+  h += '<button onclick="shareReport()" style="width:100%;padding:11px;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.3);border-radius:var(--rs);color:var(--green);cursor:pointer;font-weight:700;font-size:13px">📩 مشاركة التقرير عبر واتساب</button>';
+  return h;
+}
+
+function shareReport() {
+  var now = new Date();
+  var mn = now.getMonth(), yr = now.getFullYear();
+  var months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  var newC = C.filter(function(c) { var d = new Date(c.startDate); return d.getMonth() === mn && d.getFullYear() === yr; });
+  var expC = C.filter(function(c) { return dl(c.endDate) < 0; });
+  var mRev = C.reduce(function(s, c) {
+    return s + (c.payments || []).filter(function(p) { var d = new Date(p.date); return d.getMonth() === mn && d.getFullYear() === yr; })
+      .reduce(function(a, p) { return a + p.amount; }, 0);
+  }, 0);
+  var msg = '📊 تقرير ' + months[mn] + ' ' + yr + '
+
+' +
+    '👥 إجمالي الزبائن: ' + C.length + '
+' +
+    '🆕 زبائن جدد: ' + newC.length + '
+' +
+    '❌ اشتراكات منتهية: ' + expC.length + '
+' +
+    '💰 إيرادات الشهر: ' + mRev.toLocaleString() + ' دج
+
+' +
+    '— Islam Box Tech Zeboudja';
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+function rMCat() {
+  var h = '<button class="bk" onclick="go('cat')">← رجوع</button>' +
+    '<div class="ttl">⚙️ إدارة الباقات</div>';
+
+  // Add new server section
+  h += '<div class="fw" style="margin-bottom:14px">' +
+    '<div style="color:var(--purple);font-size:13px;font-weight:700;margin-bottom:12px">➕ إضافة سيرفر جديد</div>' +
+    '<label class="fl" style="margin-top:0">اسم السيرفر</label><input class="fi" type="text" id="ns-name" placeholder="مثال: Neo 4K"/>' +
+    '<label class="fl">الإيموجي</label><input class="fi" type="text" id="ns-icon" placeholder="🌟"/>' +
+    '<button onclick="addServer()" style="width:100%;margin-top:12px;padding:11px;background:linear-gradient(135deg,var(--blue2),#6d28d9);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-weight:800;font-size:13px">✅ إضافة السيرفر</button>' +
+    '</div>';
+
+  // Show existing packages with add plan + delete options
+  var pkgs = JSON.parse(localStorage.getItem('ibc_pkgs') || 'null') || PKGS;
+  pkgs.forEach(function(pkg, pi) {
+    h += '<div class="fw" style="margin-bottom:12px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">' +
+      '<div style="font-size:14px;font-weight:800">' + pkg.icon + ' ' + pkg.server + '</div>' +
+      '<button onclick="delServer(' + pi + ')" style="padding:5px 10px;background:rgba(255,68,68,.1);color:var(--red);border:1px solid rgba(255,68,68,.3);border-radius:6px;cursor:pointer;font-size:11px">🗑️ حذف</button>' +
+      '</div>';
+    pkg.plans.forEach(function(plan, pli) {
+      h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px">' +
+        '<span>' + plan.dur + ' — <b style="color:var(--green)">' + plan.price.toLocaleString() + ' دج</b></span>' +
+        '<button onclick="delPlan(' + pi + ',' + pli + ')" style="padding:4px 8px;background:rgba(255,68,68,.1);color:var(--red);border:1px solid rgba(255,68,68,.3);border-radius:5px;cursor:pointer;font-size:11px">🗑️</button>' +
+        '</div>';
+    });
+    h += '<div style="display:flex;gap:6px;margin-top:10px">' +
+      '<input class="fi" type="text" id="nd-' + pi + '" placeholder="المدة (مثال: 1 شهر)" style="flex:2"/>' +
+      '<input class="fi" type="number" id="np-' + pi + '" placeholder="السعر دج" style="flex:1"/>' +
+      '<input class="fi" type="number" id="nm-' + pi + '" placeholder="أشهر" style="flex:1"/>' +
+      '</div>' +
+      '<button onclick="addPlan(' + pi + ')" style="width:100%;margin-top:8px;padding:9px;background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.3);border-radius:var(--rs);cursor:pointer;font-weight:700;font-size:12px">➕ إضافة سعر</button>' +
+      '</div>';
+  });
+  return h;
+}
+
+function getPkgs() {
+  return JSON.parse(localStorage.getItem('ibc_pkgs') || 'null') || PKGS;
+}
+function savePkgs(p) { localStorage.setItem('ibc_pkgs', JSON.stringify(p)); }
+
+function addServer() {
+  var name = (document.getElementById('ns-name').value || '').trim();
+  var icon = (document.getElementById('ns-icon').value || '').trim() || '📦';
+  if (!name) { alert('أدخل اسم السيرفر'); return; }
+  var pkgs = getPkgs();
+  pkgs.push({ server: name, icon: icon, plans: [] });
+  savePkgs(pkgs); PKGS = pkgs;
+  toast('✅ تم إضافة ' + name); go('mcat');
+}
+
+function delServer(pi) {
+  if (!confirm('حذف هذا السيرفر؟')) return;
+  var pkgs = getPkgs(); pkgs.splice(pi, 1);
+  savePkgs(pkgs); PKGS = pkgs;
+  toast('🗑️ تم الحذف'); go('mcat');
+}
+
+function addPlan(pi) {
+  var dur = (document.getElementById('nd-' + pi).value || '').trim();
+  var price = Number(document.getElementById('np-' + pi).value) || 0;
+  var months = Number(document.getElementById('nm-' + pi).value) || 1;
+  if (!dur || !price) { alert('أدخل المدة والسعر'); return; }
+  var pkgs = getPkgs();
+  pkgs[pi].plans.push({ dur: dur, price: price, months: months });
+  savePkgs(pkgs); PKGS = pkgs;
+  toast('✅ تم إضافة الباقة'); go('mcat');
+}
+
+function delPlan(pi, pli) {
+  var pkgs = getPkgs(); pkgs[pi].plans.splice(pli, 1);
+  savePkgs(pkgs); PKGS = pkgs;
+  toast('🗑️ تم حذف الباقة'); go('mcat');
+}
+
 function cpTxt(txt, btn) {
   navigator.clipboard.writeText(txt).then(function() {
     var o = btn.textContent; btn.textContent = '✅ تم!';
@@ -583,6 +766,18 @@ function setL(l, btn) {
 }
 function tp() { var i = document.getElementById('fpw'); i.type = i.type === 'password' ? 'text' : 'password'; }
 
+function setCat(c, btn) {
+  clientCat = c;
+  document.querySelectorAll('#cat-row .lb').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+}
+
+function setType(t, btn) {
+  subType = t;
+  document.querySelectorAll('#type-row .lb').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+}
+
 async function fetchNeo() {
   var user = (document.getElementById('nu').value || '').trim();
   var pass = (document.getElementById('np').value || '').trim();
@@ -620,8 +815,8 @@ function addC() {
   if (!name || !phone) { alert('الرجاء إدخال الاسم ورقم الهاتف'); return; }
   var s = new Date(), e = addM(s, dur);
   var pl = dur === 1 ? '1 شهر' : dur === 12 ? '12 شهر' : dur + ' أشهر';
-  C.unshift({ id: Date.now(), name: name, phone: phone, subName: sub, server: srv, username: us, password: pw, lang: lang, plan: pl, payDay: payDay, payments: [], startDate: s.toISOString().split('T')[0], endDate: e.toISOString().split('T')[0], price: pr });
-  sv(); filt = 'all'; dur = 1; lang = 'ar';
+  C.unshift({ id: Date.now(), name: name, phone: phone, subName: sub, subType: subType, category: clientCat, server: srv, username: us, password: pw, lang: lang, plan: pl, payDay: payDay, payments: [], startDate: s.toISOString().split('T')[0], endDate: e.toISOString().split('T')[0], price: pr });
+  sv(); filt = 'all'; dur = 1; lang = 'ar'; subType = 'code'; clientCat = 'normal';
   toast('✅ تم إضافة ' + name + '!'); go('list');
 }
 
@@ -653,6 +848,7 @@ function rDet() {
     '<div class="dp">📞 ' + c.phone + '</div>' +
     '<div style="font-size:12px;color:var(--text3);margin-bottom:8px">' + (lf[c.lang || 'ar'] || '🇩🇿 عربي') + (c.payDay ? ' | 💰 يوم الدفع: ' + c.payDay : '') + '</div>' +
     bdg(d) +
+    '<div style="margin-top:6px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">' + ({'code':'<span class="bOK">📱 كود</span>','m3u':'<span class="bPD">📋 M3U</span>','mag':'<span class="bWN">📺 MAG</span>','stalker':'<span style=\"background:rgba(6,182,212,.1);color:#06b6d4;border:1px solid rgba(6,182,212,.3);border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700\">🔌 Stalker</span>'}[c.subType||'code']||'<span class="bOK">📱 كود</span>') + '</div>' +
     '<div class="dgrid">' +
     '<div class="di"><span class="di-l">📦 الباقة</span><b>' + c.plan + '</b></div>' +
     (c.subName ? '<div class="di" style="grid-column:span 2"><span class="di-l">🏷️ الاشتراك</span><b>' + c.subName + '</b></div>' : '') +
@@ -666,7 +862,7 @@ function rDet() {
     '<button class="bedit" onclick="openEdit(' + c.id + ')">✏️ تعديل</button>' +
     '<button class="bdel" onclick="delC(' + c.id + ')">🗑</button>' +
     '</div>' +
-    (d < 0 ? '<button class="bren" onclick="renew(' + c.id + ')">🔄 تجديد الاشتراك</button>' : '') +
+    (d < 0 ? '<button class="bren" onclick="renew(' + c.id + ')">🔄 تجديد الاشتراك</button>' + '<button onclick="renewWA(' + c.id + ')" style="width:100%;margin-top:7px;padding:11px;background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.3);border-radius:var(--rs);cursor:pointer;font-weight:700;font-size:13px">🔄💬 تجديد + إرسال واتساب</button>' : '') +
     '<button class="bpay" onclick="openPay(' + c.id + ')">💰 تسجيل دفعة</button>' +
     '</div>';
 }
@@ -699,6 +895,50 @@ function renew(id) {
   sv(); toast('✅ تم التجديد!'); render();
 }
 
+function renewWA(id) {
+  var c = C.find(function(x) { return x.id === id; }); if (!c) return;
+  var m = parseInt(prompt('كم شهراً للتجديد؟', '1')); if (isNaN(m) || m < 1) return;
+  var e = addM(new Date(), m);
+  c.endDate = e.toISOString().split('T')[0];
+  c.startDate = new Date().toISOString().split('T')[0];
+  c.plan = m === 1 ? '1 شهر' : m === 12 ? '12 شهر' : m + ' أشهر';
+  sv();
+  var lang = c.lang || 'ar';
+  var sub = c.subName ? ' (' + c.subName + ')' : '';
+  var msgs = {
+    ar: 'السلام عليكم ' + c.name + ' 👋
+
+✅ تم تجديد اشتراكك' + sub + ' لمدة ' + c.plan + '
+📅 ينتهي: ' + fd(c.endDate) + '
+
+شكراً على ثقتك 🙏
+— Islam Box Tech Zeboudja',
+    fr: 'Bonjour ' + c.name + ' 👋
+
+✅ Votre abonnement' + sub + ' a été renouvelé pour ' + c.plan + '
+📅 Expire: ' + fd(c.endDate) + '
+
+Merci 🙏
+— Islam Box Tech Zeboudja',
+    en: 'Hello ' + c.name + ' 👋
+
+✅ Your subscription' + sub + ' renewed for ' + c.plan + '
+📅 Expires: ' + fd(c.endDate) + '
+
+Thank you 🙏
+— Islam Box Tech Zeboudja',
+    es: 'Hola ' + c.name + ' 👋
+
+✅ Tu suscripción' + sub + ' renovada por ' + c.plan + '
+📅 Vence: ' + fd(c.endDate) + '
+
+Gracias 🙏
+— Islam Box Tech Zeboudja'
+  };
+  window.open(wl(c.phone, msgs[lang] || msgs.ar), '_blank');
+  toast('✅ تم التجديد وفتح واتساب!'); render();
+}
+
 function openEdit(id) {
   eid = id; var c = C.find(function(x) { return x.id === id; }); if (!c) return;
   document.getElementById('en').value = c.name;
@@ -707,6 +947,8 @@ function openEdit(id) {
   document.getElementById('epr').value = c.price || 0;
   document.getElementById('eed').value = c.endDate;
   document.getElementById('epd').value = c.payDay || '';
+  document.getElementById('est').value = c.subType || 'code';
+  document.getElementById('ecat').value = c.category || 'normal';
   document.getElementById('esrv').value = c.server || '';
   document.getElementById('eu').value = c.username || '';
   document.getElementById('epw').value = c.password || '';
@@ -721,6 +963,8 @@ function saveEdit() {
   c.price = Number(document.getElementById('epr').value) || 0;
   c.endDate = document.getElementById('eed').value;
   c.payDay = parseInt(document.getElementById('epd').value) || null;
+  c.subType = document.getElementById('est').value || 'code';
+  c.category = document.getElementById('ecat').value || 'normal';
   c.server = document.getElementById('esrv').value.trim();
   c.username = document.getElementById('eu').value.trim();
   c.password = document.getElementById('epw').value.trim();
@@ -820,7 +1064,38 @@ function sendAll() {
   else setTimeout(function() { document.getElementById('sal').classList.remove('show'); si = 0; }, 1000);
 }
 
-render(); checkSt();
+var saved = localStorage.getItem('ibc_pkgs'); if(saved) PKGS = JSON.parse(saved);
+render(); checkSt(); askNotif();
+
+function askNotif() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    setTimeout(function() {
+      Notification.requestPermission().then(function(p) {
+        if (p === 'granted') scheduleNotif();
+      });
+    }, 2000);
+  } else if (Notification.permission === 'granted') {
+    scheduleNotif();
+  }
+}
+
+function scheduleNotif() {
+  var exp = C.filter(function(c) { var d = dl(c.endDate); return d >= 0 && d <= 3; });
+  var due = C.filter(function(c) { return payDue(c); });
+  if (exp.length) {
+    new Notification('Islam Box Tech ⚠️', {
+      body: exp.length + ' اشتراك ينتهي خلال 3 أيام!',
+      icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14/assets/72x72/1f4fa.png'
+    });
+  }
+  if (due.length) {
+    new Notification('Islam Box Tech 💰', {
+      body: due.length + ' زبون موعد دفعه اليوم أو غداً!',
+      icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14/assets/72x72/1f4fa.png'
+    });
+  }
+}
 </script>
 </body>
 </html>
