@@ -410,7 +410,8 @@ function rDash() {
     '<div style="display:flex;gap:8px;margin-top:4px">' +
     '<button onclick="go(\'report\')" style="flex:1;padding:10px;background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.3);border-radius:var(--rs);color:var(--purple);cursor:pointer;font-size:12px;font-weight:600">📊 التقرير الشهري</button>' +
     '<button onclick="window.print()" style="flex:1;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);color:var(--blue);cursor:pointer;font-size:12px;font-weight:600">🖨️ طباعة</button>' +
-    '</div>';
+    '</div>' +
+    (exp.length ? '<button onclick="sendAllReminders()" style="width:100%;margin-top:8px;padding:11px;background:rgba(255,145,0,.1);border:1px solid rgba(255,145,0,.3);border-radius:var(--rs);color:var(--orange);cursor:pointer;font-size:13px;font-weight:700">🔔 إرسال تذكير للكل (' + exp.length + ' زبون)</button>' : '');
 }
 
 function getFilt(s) {
@@ -741,6 +742,7 @@ function rDet() {
     '<div class="di"><span class="di-l">💰 السعر</span><b>' + (c.price || 0).toLocaleString() + ' دج</b></div>' +
     '</div>' + cred + ph +
     '<div class="dacts"><button class="bwa" onclick="openModal(' + c.id + ')">📩 واتساب</button><button class="bed" onclick="openEdit(' + c.id + ')">✏️ تعديل</button><button class="bdl" onclick="delC(' + c.id + ')">🗑</button></div>' +
+    '<button onclick="copyAllInfo(' + c.id + ')" style="width:100%;margin-top:7px;padding:10px;background:rgba(59,139,255,.08);border:1px solid rgba(59,139,255,.3);border-radius:var(--rs);color:var(--blue);cursor:pointer;font-size:12px;font-weight:700">📋 نسخ كل البيانات</button>' +
     (c.note ? '<div style="background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.3);border-radius:var(--rs);padding:10px 12px;margin-top:7px;font-size:12px;color:var(--text2)">📝 ' + c.note + '</div>' : '') +
     (d < 0 ? '<button class="brn" onclick="renew(' + c.id + ')">🔄 تجديد</button><button class="brw" onclick="renewWA(' + c.id + ')">🔄💬 تجديد + واتساب</button>' : '') +
     '<button class="bpy" onclick="openPay(' + c.id + ')">💰 تسجيل دفعة</button></div>';
@@ -769,6 +771,39 @@ function sendCred(id) {
   };
   var msg = buildMsg(lines[c.lang || 'ar'] || lines.ar);
   window.open(wl(c.phone, msg), '_blank');
+}
+
+function copyAllInfo(id) {
+  var c = C.find(function(x) { return x.id === id; }); if (!c) return;
+  var lines = [
+    '👤 ' + c.name,
+    '📞 ' + c.phone,
+    '📦 ' + c.plan + (c.subName ? ' — ' + c.subName : ''),
+    '📅 ينتهي: ' + fd(c.endDate),
+    '💰 السعر: ' + (c.price || 0).toLocaleString() + ' دج'
+  ];
+  if (c.subCode) lines.push('📱 الكود: ' + c.subCode);
+  if (c.m3uUrl) lines.push('🔗 M3U: ' + c.m3uUrl);
+  if (c.server) lines.push('🌐 السيرفر: ' + c.server);
+  if (c.username) lines.push('👤 اليوزر: ' + c.username);
+  if (c.password) lines.push('🔑 الباسورد: ' + c.password);
+  if (c.note) lines.push('📝 ' + c.note);
+  navigator.clipboard.writeText(lines.join('\n')).then(function() { toast('✅ تم نسخ كل البيانات!'); });
+}
+
+function sendAllReminders() {
+  var exp = C.filter(function(c) { var d = dl(c.endDate); return d >= 0 && d <= 7; });
+  if (!exp.length) { toast('✅ لا يوجد اشتراكات تنتهي قريباً'); return; }
+  if (!confirm('إرسال تذكير لـ ' + exp.length + ' زبون؟')) return;
+  var i = 0;
+  function next() {
+    if (i >= exp.length) { toast('✅ تم إرسال ' + exp.length + ' تذكير!'); return; }
+    window.open(wl(exp[i].phone, wMsg(exp[i], 'reminder')), '_blank');
+    i++;
+    if (i < exp.length) setTimeout(next, 1500);
+    else setTimeout(function() { toast('✅ تم إرسال ' + exp.length + ' تذكير!'); }, 500);
+  }
+  next();
 }
 
 function sendCode(id) {
