@@ -219,6 +219,7 @@ select.fi{cursor:pointer}
     <label class="fl">رابط M3U المباشر</label><input class="fi" type="text" id="em3u" placeholder="http://..."/>
     <label class="fl">اسم المستخدم</label><input class="fi" type="text" id="eu"/>
     <label class="fl">كلمة المرور</label><input class="fi" type="text" id="epw"/>
+    <label class="fl">📝 ملاحظات</label><textarea class="fi" id="enote" rows="2" style="resize:none"></textarea>
     <div style="display:flex;gap:8px;margin-top:14px">
       <button onclick="saveEdit()" style="flex:1;padding:12px;background:linear-gradient(135deg,#1a5fe0,#6d28d9);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px">✅ حفظ</button>
       <button onclick="document.getElementById('eov').classList.remove('show')" style="padding:12px 14px;background:rgba(255,68,68,.1);color:#ff4444;border:none;border-radius:8px;cursor:pointer">إلغاء</button>
@@ -242,7 +243,7 @@ select.fi{cursor:pointer}
 
 <script>
 var C = JSON.parse(localStorage.getItem('ibc') || '[]');
-var V = 'dash', selId = null, dur = 1, lang = 'ar', filt = 'all', eid = null;
+var V = 'dash', selId = null, dur = 1, lang = 'ar', filt = 'all', filtType = 'all', eid = null;
 var mc = null, mtype = 'auto', salC = [], si = 0, payId = null;
 var subType = 'code', clientCat = 'normal';
 var _cred = {};
@@ -416,9 +417,10 @@ function getFilt(s) {
   return C.filter(function(c) {
     var m = c.name.indexOf(s) >= 0 || c.phone.indexOf(s) >= 0 || (c.subName || '').indexOf(s) >= 0;
     var d = dl(c.endDate);
-    if (filt === 'active') return m && d > 7;
-    if (filt === 'warning') return m && d >= 0 && d <= 7;
-    if (filt === 'expired') return m && d < 0;
+    if (filt === 'active') m = m && d > 7;
+    else if (filt === 'warning') m = m && d >= 0 && d <= 7;
+    else if (filt === 'expired') m = m && d < 0;
+    if (filtType !== 'all') m = m && (c.subType || 'code') === filtType;
     return m;
   });
 }
@@ -446,7 +448,14 @@ function rList() {
     '<option value="active"' + (filt === 'active' ? ' selected' : '') + '>نشط</option>' +
     '<option value="warning"' + (filt === 'warning' ? ' selected' : '') + '>ينتهي قريباً</option>' +
     '<option value="expired"' + (filt === 'expired' ? ' selected' : '') + '>منتهي</option>' +
-    '</select></div><div id="cc">' + cards + '</div>';
+    '</select></div>' +
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">' +
+    ['all','code','m3u','mag','stalker'].map(function(t) {
+      var lbl = {all:'🔵 الكل', code:'📱 كود', m3u:'📋 M3U', mag:'📺 MAG', stalker:'🔌 Stalker'}[t];
+      return '<button onclick="filtType=\'' + t + '\';render()" style="padding:6px 10px;font-size:11px;font-weight:700;border-radius:6px;cursor:pointer;border:1px solid ' + (filtType===t?'var(--blue)':'var(--border)') + ';background:' + (filtType===t?'rgba(59,139,255,.15)':'var(--bg2)') + ';color:' + (filtType===t?'var(--blue)':'var(--text3)') + '">' + lbl + '</button>';
+    }).join('') +
+    '</div>' +
+    '<div id="cc">' + cards + '</div>';
 }
 
 function rl(v) {
@@ -662,6 +671,7 @@ function rAdd() {
     '<button type="button" onclick="tp()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px">👁</button></div></div>' +
     '<label class="fl">مدة الاشتراك</label><div class="dr">' + db + '</div>' +
     '<label class="fl">السعر (دج)</label><input class="fi" type="number" id="fpr" placeholder="1000"/>' +
+    '<label class="fl">📝 ملاحظات (اختياري)</label><textarea class="fi" id="fnote" rows="2" placeholder="مثال: زبون قديم، يدفع متأخر..." style="resize:none"></textarea>' +
     '<div class="prev">📅 البداية: <b>' + fd(s) + '</b><br>📅 النهاية: <b>' + fd(e) + '</b></div>' +
     '<button class="sbtn" onclick="addC()">✅ حفظ الاشتراك</button></div>';
 }
@@ -683,10 +693,11 @@ function addC() {
   var m3u = (document.getElementById('fm3u') ? document.getElementById('fm3u').value || '' : '').trim();
   var code = (document.getElementById('fcode') ? document.getElementById('fcode').value || '' : '').trim();
   var pr = Number(document.getElementById('fpr').value) || 0;
+  var note = (document.getElementById('fnote') ? document.getElementById('fnote').value || '' : '').trim();
   if (!name || !phone) { alert('الرجاء إدخال الاسم ورقم الهاتف'); return; }
   var s = new Date(), e2 = addM(s, dur);
   var pl = dur === 1 ? '1 شهر' : dur === 12 ? '12 شهر' : dur + ' أشهر';
-  C.unshift({ id: Date.now(), name: name, phone: phone, subName: sub, subType: subType, category: clientCat, server: srv, username: us, password: pw, m3uUrl: m3u, subCode: code, lang: lang, plan: pl, payDay: payDay, payments: [], startDate: s.toISOString().split('T')[0], endDate: e2.toISOString().split('T')[0], price: pr });
+  C.unshift({ id: Date.now(), name: name, phone: phone, subName: sub, subType: subType, category: clientCat, server: srv, username: us, password: pw, m3uUrl: m3u, subCode: code, note: note, lang: lang, plan: pl, payDay: payDay, payments: [], startDate: s.toISOString().split('T')[0], endDate: e2.toISOString().split('T')[0], price: pr });
   sv(); filt = 'all'; dur = 1; lang = 'ar'; subType = 'code'; clientCat = 'normal';
   toast('✅ تم إضافة ' + name + '!'); go('list');
 }
@@ -703,7 +714,8 @@ function rDet() {
   if (c.server || c.username || c.password || c.m3uUrl || c.subCode) {
     cred = '<div style="background:var(--bg);border:1px solid rgba(59,139,255,.3);border-radius:var(--rs);padding:12px;margin-top:8px">' +
       '<div style="color:var(--blue);font-size:12px;font-weight:700;margin-bottom:8px">🔐 بيانات الدخول</div>' +
-      (c.subCode ? '<div class="crow"><span style="color:var(--text3)">📱 الكود</span><div class="cvals"><span class="cv">' + c.subCode + '</span><button class="cpb" onclick="cpCred(\'code\',this)">📋</button></div></div>' : '') +
+      (c.subCode ? '<div class="crow"><span style="color:var(--text3)">📱 الكود</span><div class="cvals"><span class="cv">' + c.subCode + '</span><button class="cpb" onclick="cpCred(\'code\',this)">📋</button></div></div>' +
+      '<button onclick="sendCode(' + c.id + ')" style="width:100%;margin-top:6px;padding:8px;background:rgba(0,230,118,.08);color:var(--green);border:1px solid rgba(0,230,118,.3);border-radius:var(--rs);cursor:pointer;font-size:12px;font-weight:700">📩 إرسال الكود واتساب</button>' : '') +
       (c.m3uUrl ? '<div class="crow"><span style="color:var(--text3)">🔗 رابط M3U</span><div class="cvals"><span class="cv">' + c.m3uUrl + '</span><button class="cpb" onclick="cpCred(\'m3u\',this)">📋</button></div></div>' : '') +
       (c.server ? '<div class="crow"><span style="color:var(--text3)">🌐 السيرفر</span><div class="cvals"><span class="cv">' + c.server + '</span><button class="cpb" onclick="cpCred(\'srv\',this)">📋</button></div></div>' : '') +
       (c.username ? '<div class="crow"><span style="color:var(--text3)">👤 اليوزر</span><div class="cvals"><span class="cv">' + c.username + '</span><button class="cpb" onclick="cpCred(\'usr\',this)">📋</button></div></div>' : '') +
@@ -729,6 +741,7 @@ function rDet() {
     '<div class="di"><span class="di-l">💰 السعر</span><b>' + (c.price || 0).toLocaleString() + ' دج</b></div>' +
     '</div>' + cred + ph +
     '<div class="dacts"><button class="bwa" onclick="openModal(' + c.id + ')">📩 واتساب</button><button class="bed" onclick="openEdit(' + c.id + ')">✏️ تعديل</button><button class="bdl" onclick="delC(' + c.id + ')">🗑</button></div>' +
+    (c.note ? '<div style="background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.3);border-radius:var(--rs);padding:10px 12px;margin-top:7px;font-size:12px;color:var(--text2)">📝 ' + c.note + '</div>' : '') +
     (d < 0 ? '<button class="brn" onclick="renew(' + c.id + ')">🔄 تجديد</button><button class="brw" onclick="renewWA(' + c.id + ')">🔄💬 تجديد + واتساب</button>' : '') +
     '<button class="bpy" onclick="openPay(' + c.id + ')">💰 تسجيل دفعة</button></div>';
 }
@@ -755,6 +768,19 @@ function sendCred(id) {
     es: ['Hola ' + c.name + ' 👋', '', '✅ Tu suscripción ' + sub + ' está activa!', '🌐 ' + (c.server || '-'), '👤 ' + (c.username || '-'), '🔑 ' + (c.password || '-'), '📅 Vence: ' + fd(c.endDate), '', '— Islam Box Tech Zeboudja']
   };
   var msg = buildMsg(lines[c.lang || 'ar'] || lines.ar);
+  window.open(wl(c.phone, msg), '_blank');
+}
+
+function sendCode(id) {
+  var c = C.find(function(x) { return x.id === id; }); if (!c || !c.subCode) return;
+  var sub = c.subName || 'IPTV';
+  var msgs = {
+    ar: ['السلام عليكم ' + c.name + ' 👋', '', '✅ تم تفعيل اشتراكك في ' + sub, '', '📱 الكود الخاص بك:', c.subCode, '', '📅 ينتهي: ' + fd(c.endDate), '', '— Islam Box Tech Zeboudja'],
+    fr: ['Bonjour ' + c.name + ' 👋', '', '✅ Abonnement ' + sub + ' activé!', '', '📱 Votre code:', c.subCode, '📅 Expire: ' + fd(c.endDate), '', '— Islam Box Tech Zeboudja'],
+    en: ['Hello ' + c.name + ' 👋', '', '✅ Your ' + sub + ' subscription is active!', '', '📱 Your code:', c.subCode, '📅 Expires: ' + fd(c.endDate), '', '— Islam Box Tech Zeboudja'],
+    es: ['Hola ' + c.name + ' 👋', '', '✅ Tu suscripción ' + sub + ' está activa!', '', '📱 Tu código:', c.subCode, '📅 Vence: ' + fd(c.endDate), '', '— Islam Box Tech Zeboudja']
+  };
+  var msg = buildMsg((msgs[c.lang || 'ar'] || msgs.ar));
   window.open(wl(c.phone, msg), '_blank');
 }
 
@@ -801,6 +827,7 @@ function openEdit(id) {
   document.getElementById('em3u').value = c.m3uUrl || '';
   document.getElementById('eu').value = c.username || '';
   document.getElementById('epw').value = c.password || '';
+  document.getElementById('enote').value = c.note || '';
   document.getElementById('eov').classList.add('show');
 }
 
@@ -819,6 +846,7 @@ function saveEdit() {
   c.m3uUrl = document.getElementById('em3u').value.trim();
   c.username = document.getElementById('eu').value.trim();
   c.password = document.getElementById('epw').value.trim();
+  c.note = document.getElementById('enote').value.trim();
   sv(); document.getElementById('eov').classList.remove('show');
   toast('✅ تم حفظ التعديلات!'); render();
 }
