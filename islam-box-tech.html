@@ -1067,17 +1067,40 @@ function showNotif() {
 }
 
 var aiHistory = [];
+var aiKey = localStorage.getItem('ibc_aikey') || '';
 
 function rAI() {
   var chips = ['من ما دفع هذا الشهر؟','كم ربحت هذا الشهر؟','من ينتهي اشتراكه قريباً؟','كم عندي زبون VIP؟','أعطني ملخص شامل'];
+  var keyBox = !aiKey
+    ? '<div style="background:rgba(255,145,0,.08);border:1px solid rgba(255,145,0,.3);border-radius:var(--r);padding:14px;margin-bottom:14px">' +
+      '<div style="color:var(--orange);font-size:13px;font-weight:700;margin-bottom:8px">🔑 أدخل Anthropic API Key</div>' +
+      '<div style="font-size:11px;color:var(--text3);margin-bottom:10px">احصل عليه من <b>console.anthropic.com</b> — يُحفظ محلياً فقط</div>' +
+      '<div style="display:flex;gap:8px"><input id="key-inp" type="password" class="fi" placeholder="sk-ant-..." style="flex:1"/>' +
+      '<button onclick="saveKey()" style="padding:10px 14px;background:linear-gradient(135deg,var(--blue2),#6d28d9);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-weight:700;font-size:13px">حفظ</button></div></div>'
+    : '<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.3);border-radius:var(--rs);padding:9px 12px;margin-bottom:12px;font-size:12px">' +
+      '<span style="color:var(--green)">✅ API Key محفوظ</span>' +
+      '<button onclick="clearKey()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px">🗑️ حذف</button></div>';
   var msgsHtml = aiHistory.length === 0
     ? '<div class="ai-msg bot">مرحباً! 👋 أنا مساعدك الذكي.<br>اسألني أي شيء عن زبائنك وبياناتك 📊</div>'
     : aiHistory.map(function(m) { return '<div class="ai-msg ' + m.role + '">' + m.text.replace(/\n/g,'<br>') + '</div>'; }).join('');
-  return '<div class="ttl">🤖 المساعد الذكي</div>' +
+  return '<div class="ttl">🤖 المساعد الذكي</div>' + keyBox +
     '<div class="ai-chips">' + chips.map(function(c) { return '<button class="ai-chip" onclick="askAI(' + JSON.stringify(c) + ')">' + c + '</button>'; }).join('') + '</div>' +
     '<div class="ai-wrap"><div class="ai-msgs" id="ai-msgs">' + msgsHtml + '</div>' +
     '<div class="ai-inp"><textarea class="ai-tf" id="ai-tf" placeholder="اسألني عن زبائنك..." rows="1" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendAI()}"></textarea>' +
     '<button class="ai-send" onclick="sendAI()">➤</button></div></div>';
+}
+
+function saveKey() {
+  var v = (document.getElementById('key-inp').value || '').trim();
+  if (!v.startsWith('sk-')) { toast('❌ المفتاح غير صحيح — يبدأ بـ sk-'); return; }
+  aiKey = v; localStorage.setItem('ibc_aikey', v);
+  toast('✅ تم حفظ API Key!'); render();
+}
+
+function clearKey() {
+  if (!confirm('حذف API Key؟')) return;
+  aiKey = ''; localStorage.removeItem('ibc_aikey');
+  toast('🗑️ تم حذف المفتاح'); render();
 }
 
 function getDataSummary() {
@@ -1115,6 +1138,7 @@ function askAI(q) {
 }
 
 async function sendAI() {
+  if (!aiKey) { toast('⚠️ أدخل API Key أولاً'); go('ai'); return; }
   var tf = document.getElementById('ai-tf');
   var q = (tf ? tf.value : '').trim();
   if (!q) return;
@@ -1126,17 +1150,17 @@ async function sendAI() {
 
   var data = getDataSummary();
   var systemPrompt = 'أنت مساعد ذكي لإدارة اشتراكات IPTV لتاجر اسمه Islam Box Tech Zeboudja. أجب دائماً بالعربية بشكل مختصر ومفيد.\n\nبيانات الزبائن الحالية:\n' + JSON.stringify(data, null, 2);
-
   var messages = aiHistory.slice(0,-1).map(function(m){ return { role: m.role==='user'?'user':'assistant', content: m.text }; });
   messages.push({ role: 'user', content: q });
 
   try {
     var res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': aiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: systemPrompt, messages: messages })
     });
     var json = await res.json();
+    if (json.error) throw new Error(json.error.message);
     var answer = (json.content && json.content[0] && json.content[0].text) || '❌ لم أتمكن من الإجابة';
     aiHistory.push({ role: 'bot', text: answer });
     var loading = document.getElementById('ai-loading');
@@ -1144,11 +1168,12 @@ async function sendAI() {
     if (msgs) msgs.scrollTop = msgs.scrollHeight;
   } catch(e) {
     var loading = document.getElementById('ai-loading');
-    if (loading) { loading.id=''; loading.classList.remove('loading'); loading.textContent = '❌ خطأ في الاتصال'; }
+    if (loading) { loading.id=''; loading.classList.remove('loading'); loading.textContent = '❌ ' + (e.message || 'خطأ في الاتصال'); }
   }
 }
 
 async function genWAMsg(id) {
+  if (!aiKey) { toast('⚠️ أدخل API Key في تبويب المساعد أولاً'); return; }
   var c = C.find(function(x){ return x.id===id; }); if(!c) return;
   var btn = document.getElementById('ai-wa-btn-'+id);
   if(btn){ btn.textContent='⏳ جاري الكتابة...'; btn.disabled=true; }
@@ -1158,10 +1183,11 @@ async function genWAMsg(id) {
   try {
     var res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': aiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 400, messages: [{ role:'user', content: prompt }] })
     });
     var json = await res.json();
+    if (json.error) throw new Error(json.error.message);
     var msg = (json.content&&json.content[0]&&json.content[0].text)||'';
     if(msg) {
       var ta = document.getElementById('mta');
@@ -1170,7 +1196,7 @@ async function genWAMsg(id) {
       if(wal) wal.href = wl(c.phone, msg);
       toast('✅ تم كتابة الرسالة بالذكاء!');
     }
-  } catch(e){ toast('❌ خطأ في الاتصال'); }
+  } catch(e){ toast('❌ ' + (e.message || 'خطأ في الاتصال')); }
   if(btn){ btn.textContent='✨ رسالة ذكية'; btn.disabled=false; }
 }
 
