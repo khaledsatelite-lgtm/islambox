@@ -302,6 +302,7 @@ select.fi{cursor:pointer}
 <script>
 var C = JSON.parse(localStorage.getItem('ibc') || '[]');
 var V = 'dash', selId = null, dur = 1, lang = 'ar', filt = 'all', filtType = 'all', eid = null;
+var customEndDate = null;
 var mc = null, mtype = 'auto', salC = [], si = 0, payId = null;
 var subType = 'code', clientCat = 'normal';
 var _cred = {};
@@ -532,12 +533,28 @@ function rPay() {
   var mn = new Date().getMonth(), yr = new Date().getFullYear(), today = new Date().getDate();
   var tot = C.reduce(function(s, c) { return s + (c.payments || []).reduce(function(a, p) { return a + p.amount; }, 0); }, 0);
   var mP = C.reduce(function(s, c) { return s + (c.payments || []).filter(function(p) { var d = new Date(p.date); return d.getMonth() === mn && d.getFullYear() === yr; }).reduce(function(a, p) { return a + p.amount; }, 0); }, 0);
+  var mCost = C.filter(function(c) { var d = new Date(c.startDate); return d.getMonth() === mn && d.getFullYear() === yr; }).reduce(function(s, c) { return s + (c.cost || 0); }, 0);
+  var totCost = C.reduce(function(s, c) { return s + (c.cost || 0); }, 0);
+  var mProfit = mP - mCost;
+  var totProfit = tot - totCost;
   var due = C.filter(function(c) { return c.payDay && Math.abs(c.payDay - today) <= 3; });
   var h = '<div class="ttl">💰 الدفعات</div><div class="ps3">' +
     '<div class="ps"><div class="ps-v" style="color:var(--green)">' + mP.toLocaleString() + '</div><div class="ps-l">دج هذا الشهر</div></div>' +
     '<div class="ps"><div class="ps-v" style="color:var(--purple)">' + tot.toLocaleString() + '</div><div class="ps-l">دج الإجمالي</div></div>' +
     '<div class="ps"><div class="ps-v" style="color:var(--orange)">' + due.length + '</div><div class="ps-l">يستحق قريباً</div></div>' +
-    '</div>';
+    '</div>' +
+    '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:14px">' +
+    '<div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:10px">💵 صافي الربح</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">' +
+    '<div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:10px;text-align:center">' +
+    '<div style="font-size:15px;font-weight:900;color:' + (mProfit >= 0 ? 'var(--green)' : 'var(--red)') + '">' + mProfit.toLocaleString() + ' دج</div>' +
+    '<div style="font-size:10px;color:var(--text3)">ربح هذا الشهر</div>' +
+    '<div style="font-size:10px;color:var(--text3);margin-top:2px">دخل: ' + mP.toLocaleString() + ' | تكلفة: ' + mCost.toLocaleString() + '</div></div>' +
+    '<div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:10px;text-align:center">' +
+    '<div style="font-size:15px;font-weight:900;color:' + (totProfit >= 0 ? 'var(--blue)' : 'var(--red)') + '">' + totProfit.toLocaleString() + ' دج</div>' +
+    '<div style="font-size:10px;color:var(--text3)">إجمالي الربح</div>' +
+    '<div style="font-size:10px;color:var(--text3);margin-top:2px">دخل: ' + tot.toLocaleString() + ' | تكلفة: ' + totCost.toLocaleString() + '</div></div>' +
+    '</div></div>';
   if (due.length) {
     h += '<div class="al al-w" style="margin-bottom:12px"><div class="at">📅 مواعيد الدفع القريبة</div>';
     due.forEach(function(c) {
@@ -656,14 +673,17 @@ function rMCat() {
       '<div style="font-size:14px;font-weight:800">' + pkg.icon + ' ' + pkg.server + '</div>' +
       '<button onclick="delServer(' + pi + ')" style="padding:5px 10px;background:rgba(255,68,68,.1);color:var(--red);border:1px solid rgba(255,68,68,.3);border-radius:6px;cursor:pointer;font-size:11px">🗑️ حذف</button></div>';
     pkg.plans.forEach(function(plan, pli) {
+      var profit = plan.price - (plan.cost || 0);
       h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px">' +
-        '<span>' + plan.dur + ' — <b style="color:var(--green)">' + plan.price.toLocaleString() + ' دج</b></span>' +
+        '<span>' + plan.dur + ' — <b style="color:var(--green)">' + plan.price.toLocaleString() + ' دج</b>' +
+        (plan.cost ? ' | تكلفة: <b style="color:var(--orange)">' + plan.cost.toLocaleString() + '</b> | ربح: <b style="color:var(--blue)">' + profit.toLocaleString() + '</b>' : '') + '</span>' +
         '<button onclick="delPlan(' + pi + ',' + pli + ')" style="padding:4px 8px;background:rgba(255,68,68,.1);color:var(--red);border:1px solid rgba(255,68,68,.3);border-radius:5px;cursor:pointer;font-size:11px">🗑️</button></div>';
     });
-    h += '<div style="display:flex;gap:6px;margin-top:10px">' +
-      '<input class="fi" type="text" id="nd-' + pi + '" placeholder="المدة (مثال: 1 شهر)" style="flex:2"/>' +
-      '<input class="fi" type="number" id="np-' + pi + '" placeholder="السعر" style="flex:1"/>' +
-      '<input class="fi" type="number" id="nm-' + pi + '" placeholder="أشهر" style="flex:1"/>' +
+    h += '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:6px;margin-top:10px">' +
+      '<input class="fi" type="text" id="nd-' + pi + '" placeholder="المدة"/>' +
+      '<input class="fi" type="number" id="np-' + pi + '" placeholder="السعر"/>' +
+      '<input class="fi" type="number" id="nc-' + pi + '" placeholder="التكلفة"/>' +
+      '<input class="fi" type="number" id="nm-' + pi + '" placeholder="أشهر"/>' +
       '</div><button onclick="addPlan(' + pi + ')" style="width:100%;margin-top:8px;padding:9px;background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.3);border-radius:var(--rs);cursor:pointer;font-weight:700;font-size:12px">➕ إضافة سعر</button></div>';
   });
   return h;
@@ -686,9 +706,10 @@ function delServer(pi) {
 function addPlan(pi) {
   var dur2 = (document.getElementById('nd-' + pi).value || '').trim();
   var price = Number(document.getElementById('np-' + pi).value) || 0;
+  var cost = Number(document.getElementById('nc-' + pi).value) || 0;
   var months = Number(document.getElementById('nm-' + pi).value) || 1;
   if (!dur2 || !price) { alert('أدخل المدة والسعر'); return; }
-  var pkgs = getPkgs(); pkgs[pi].plans.push({ dur: dur2, price: price, months: months });
+  var pkgs = getPkgs(); pkgs[pi].plans.push({ dur: dur2, price: price, cost: cost, months: months });
   savePkgs(pkgs); toast('✅ تم إضافة الباقة'); go('mcat');
 }
 
@@ -703,9 +724,20 @@ function rAdd() {
   var db = durs.map(function(d) { return '<button class="db' + (dur === d ? ' on' : '') + '" onclick="setD(' + d + ')">' + (d === 1 ? 'شهر' : d === 12 ? 'سنة' : d + ' أشهر') + '</button>'; }).join('');
   var lfs = [{ v: 'ar', l: '🇩🇿 عربي' }, { v: 'fr', l: '🇫🇷 Français' }, { v: 'en', l: '🇬🇧 English' }, { v: 'es', l: '🇪🇸 Español' }];
   var lb = lfs.map(function(x) { return '<button class="lb' + (lang === x.v ? ' on' : '') + '" onclick="setL(\'' + x.v + '\',this)">' + x.l + '</button>'; }).join('');
+  var pkgsData = getPkgs();
+  var serverOpts = '<option value="">— اختر باقة من الكتالوج —</option>';
+  pkgsData.forEach(function(pkg, pi) {
+    pkg.plans.forEach(function(plan, pli) {
+      serverOpts += '<option value="' + pi + '_' + pli + '">' + pkg.icon + ' ' + pkg.server + ' — ' + plan.dur + ' (' + plan.price.toLocaleString() + ' دج)</option>';
+    });
+  });
+
   return '<div class="ttl">➕ زبون جديد</div>' +
     '<div class="fw">' +
-    '<label class="fl" style="margin-top:0">اسم الزبون</label><input class="fi" type="text" id="fn" placeholder="أحمد بن علي"/>' +
+    '<label class="fl" style="margin-top:0">⚡ اختر من الكتالوج (يملأ تلقائياً)</label>' +
+    '<select class="fi" id="fplan-sel" onchange="autoFillPlan(this.value)">' + serverOpts + '</select>' +
+    '<div id="plan-fill-status" style="font-size:11px;color:var(--green);margin-top:4px;min-height:14px"></div>' +
+    '<label class="fl">اسم الزبون</label><input class="fi" type="text" id="fn" placeholder="أحمد بن علي"/>' +
     '<label class="fl">رقم الهاتف</label><input class="fi" type="text" id="fph" placeholder="+213 550 000 000"/>' +
     '<label class="fl">اسم الاشتراك / الباقة</label><input class="fi" type="text" id="fsn" placeholder="Gold IPTV"/>' +
     '<label class="fl">نوع الاشتراك</label>' +
@@ -736,9 +768,11 @@ function rAdd() {
     '<div style="position:relative"><input class="fi" type="password" id="fpw" placeholder="password" style="padding-left:40px"/>' +
     '<button type="button" onclick="tp()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px">👁</button></div></div>' +
     '<label class="fl">مدة الاشتراك</label><div class="dr">' + db + '</div>' +
+    '<label class="fl">أو تاريخ انتهاء مخصص</label><input class="fi" type="date" id="fcustdate" oninput="setCustomDate(this.value)"/>' +
     '<label class="fl">السعر (دج)</label><input class="fi" type="number" id="fpr" placeholder="1000"/>' +
+    '<label class="fl">💵 تكلفة الاشتراك (دج) — للربح</label><input class="fi" type="number" id="fcost" placeholder="مثال: 500"/>' +
     '<label class="fl">📝 ملاحظات (اختياري)</label><textarea class="fi" id="fnote" rows="2" placeholder="مثال: زبون قديم، يدفع متأخر..." style="resize:none"></textarea>' +
-    '<div class="prev">📅 البداية: <b>' + fd(s) + '</b><br>📅 النهاية: <b>' + fd(e) + '</b></div>' +
+    '<div class="prev" id="date-prev">📅 البداية: <b>' + fd(s) + '</b><br>📅 النهاية: <b>' + fd(e) + '</b></div>' +
     '<button class="sbtn" onclick="addC()">✅ حفظ الاشتراك</button></div>';
 }
 
@@ -767,7 +801,38 @@ function parseM3U(url) {
   } catch(e) { if(st) st.textContent = ''; }
 }
 
-function setD(d) { dur = d; render(); }
+function autoFillPlan(val) {
+  var st = document.getElementById('plan-fill-status');
+  if (!val) { if(st) st.textContent = ''; return; }
+  var parts = val.split('_');
+  var pkgs = getPkgs();
+  var pkg = pkgs[parseInt(parts[0])];
+  var plan = pkg && pkg.plans[parseInt(parts[1])];
+  if (!plan) return;
+  var filled = [];
+  var snEl = document.getElementById('fsn');
+  if (snEl) { snEl.value = pkg.server + ' — ' + plan.dur; filled.push('الباقة'); }
+  var prEl = document.getElementById('fpr');
+  if (prEl) { prEl.value = plan.price; filled.push('السعر'); }
+  var costEl = document.getElementById('fcost');
+  if (costEl && plan.cost) { costEl.value = plan.cost; filled.push('التكلفة'); }
+  if (plan.months) {
+    dur = plan.months; customEndDate = null;
+    var s2 = new Date(), e2 = addM(s2, dur);
+    var prev = document.getElementById('date-prev');
+    if (prev) prev.innerHTML = '📅 البداية: <b>' + fd(s2.toISOString().split('T')[0]) + '</b><br>📅 النهاية: <b>' + fd(e2.toISOString().split('T')[0]) + '</b>';
+    filled.push('المدة');
+  }
+  if (st) st.textContent = filled.length ? '✅ تم تعبئة: ' + filled.join('، ') + ' تلقائياً!' : '';
+}
+
+function setCustomDate(v) {
+  customEndDate = v || null;
+  var prev = document.getElementById('date-prev');
+  if (prev && v) prev.innerHTML = '📅 البداية: <b>' + fd(new Date().toISOString().split('T')[0]) + '</b><br>📅 النهاية: <b>' + fd(v) + '</b>';
+}
+
+function setD(d) { dur = d; customEndDate = null; var cd = document.getElementById('fcustdate'); if(cd) cd.value = ''; render(); }
 function setL(l, btn) { lang = l; document.querySelectorAll('.lb').forEach(function(b) { if (['🇩🇿 عربي','🇫🇷 Français','🇬🇧 English','🇪🇸 Español'].indexOf(b.textContent.trim()) >= 0) b.classList.remove('on'); }); btn.classList.add('on'); }
 function setType(t, btn) { subType = t; document.querySelectorAll('#type-row .lb').forEach(function(b) { b.classList.remove('on'); }); btn.classList.add('on'); var mb = document.getElementById('m3u-url-box'); if (mb) mb.style.display = t === 'm3u' ? 'block' : 'none'; var cb = document.getElementById('code-box'); if (cb) cb.style.display = t === 'code' ? 'block' : 'none'; }
 function setCat(c, btn) { clientCat = c; document.querySelectorAll('#cat-row .lb').forEach(function(b) { b.classList.remove('on'); }); btn.classList.add('on'); }
@@ -784,12 +849,15 @@ function addC() {
   var m3u = (document.getElementById('fm3u') ? document.getElementById('fm3u').value || '' : '').trim();
   var code = (document.getElementById('fcode') ? document.getElementById('fcode').value || '' : '').trim();
   var pr = Number(document.getElementById('fpr').value) || 0;
+  var cost = Number(document.getElementById('fcost') ? document.getElementById('fcost').value || 0 : 0) || 0;
   var note = (document.getElementById('fnote') ? document.getElementById('fnote').value || '' : '').trim();
+  var custDate = document.getElementById('fcustdate') ? document.getElementById('fcustdate').value : '';
   if (!name || !phone) { alert('الرجاء إدخال الاسم ورقم الهاتف'); return; }
-  var s = new Date(), e2 = addM(s, dur);
-  var pl = dur === 1 ? '1 شهر' : dur === 12 ? '12 شهر' : dur + ' أشهر';
-  C.unshift({ id: Date.now(), name: name, phone: phone, subName: sub, subType: subType, category: clientCat, server: srv, username: us, password: pw, m3uUrl: m3u, subCode: code, note: note, lang: lang, plan: pl, payDay: payDay, payments: [], startDate: s.toISOString().split('T')[0], endDate: e2.toISOString().split('T')[0], price: pr });
-  sv(); filt = 'all'; dur = 1; lang = 'ar'; subType = 'code'; clientCat = 'normal';
+  var s = new Date();
+  var e2 = custDate ? new Date(custDate) : addM(s, dur);
+  var pl = custDate ? 'مخصص' : (dur === 1 ? '1 شهر' : dur === 12 ? '12 شهر' : dur + ' أشهر');
+  C.unshift({ id: Date.now(), name: name, phone: phone, subName: sub, subType: subType, category: clientCat, server: srv, username: us, password: pw, m3uUrl: m3u, subCode: code, note: note, cost: cost, lang: lang, plan: pl, payDay: payDay, payments: [], startDate: s.toISOString().split('T')[0], endDate: e2.toISOString().split('T')[0], price: pr });
+  sv(); filt = 'all'; dur = 1; lang = 'ar'; subType = 'code'; clientCat = 'normal'; customEndDate = null;
   toast('✅ تم إضافة ' + name + '!'); go('list');
 }
 
