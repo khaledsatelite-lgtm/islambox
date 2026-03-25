@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Islam Box"/>
+<meta name="theme-color" content="#060d1a"/>
+<link rel="manifest" id="manifest-placeholder"/>
 <title>Islam Box Tech</title>
 <style>
 :root{--bg:#060d1a;--bg2:#0b1525;--bg3:#0f1d30;--border:#1a3050;--blue:#3b8bff;--blue2:#1a5fe0;--green:#00e676;--orange:#ff9100;--red:#ff4444;--purple:#c084fc;--text:#e8f0fe;--text2:#8aa4c8;--text3:#4a6480;--r:14px;--rs:8px}
@@ -150,9 +154,49 @@ select.fi{cursor:pointer}
 .ai-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .ai-chip{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:11px;color:var(--text2);cursor:pointer}
 @media print{#hdr,#sal,.ov,.bk,.dacts,.abtn{display:none!important}body{background:#fff;color:#000}.cc,.dh{border:1px solid #ddd;background:#fff}}
+#lock-screen{display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:30px}
+#lock-screen.show{display:flex}
+.lock-logo{width:64px;height:64px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:16px}
+.lock-title{font-size:20px;font-weight:800;margin-bottom:6px}
+.lock-sub{font-size:13px;color:var(--text3);margin-bottom:30px}
+.pin-dots{display:flex;gap:14px;margin-bottom:28px}
+.pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);background:transparent;transition:.2s}
+.pin-dot.filled{background:var(--blue);border-color:var(--blue)}
+.pin-dot.error{background:var(--red);border-color:var(--red)}
+.pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:240px}
+.pin-btn{height:64px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;color:var(--text);font-size:22px;font-weight:700;cursor:pointer}
+.pin-btn:active{background:rgba(59,139,255,.2);border-color:var(--blue)}
+.pin-del{font-size:18px}
+.lock-hint{font-size:11px;color:var(--text3);margin-top:16px;text-align:center}
 </style>
 </head>
 <body>
+<div id="lock-screen">
+  <div class="lock-logo">📺</div>
+  <div class="lock-title">Islam Box Tech</div>
+  <div class="lock-sub" id="lock-sub">أدخل رمز PIN</div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="d0"></div>
+    <div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div>
+    <div class="pin-dot" id="d3"></div>
+  </div>
+  <div class="pin-grid">
+    <button class="pin-btn" onclick="pinPress('1')">1</button>
+    <button class="pin-btn" onclick="pinPress('2')">2</button>
+    <button class="pin-btn" onclick="pinPress('3')">3</button>
+    <button class="pin-btn" onclick="pinPress('4')">4</button>
+    <button class="pin-btn" onclick="pinPress('5')">5</button>
+    <button class="pin-btn" onclick="pinPress('6')">6</button>
+    <button class="pin-btn" onclick="pinPress('7')">7</button>
+    <button class="pin-btn" onclick="pinPress('8')">8</button>
+    <button class="pin-btn" onclick="pinPress('9')">9</button>
+    <button class="pin-btn" onclick="pinPress('')"></button>
+    <button class="pin-btn" onclick="pinPress('0')">0</button>
+    <button class="pin-btn pin-del" onclick="pinDel()">⌫</button>
+  </div>
+  <div class="lock-hint" id="lock-hint"></div>
+</div>
 <div id="hdr">
   <div class="hdr-top">
     <div class="logo-wrap">
@@ -426,7 +470,11 @@ function rDash() {
     '<button onclick="go(\'report\')" style="flex:1;padding:10px;background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.3);border-radius:var(--rs);color:var(--purple);cursor:pointer;font-size:12px;font-weight:600">📊 التقرير الشهري</button>' +
     '<button onclick="window.print()" style="flex:1;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);color:var(--blue);cursor:pointer;font-size:12px;font-weight:600">🖨️ طباعة</button>' +
     '</div>' +
-    (exp.length ? '<button onclick="sendAllReminders()" style="width:100%;margin-top:8px;padding:11px;background:rgba(255,145,0,.1);border:1px solid rgba(255,145,0,.3);border-radius:var(--rs);color:var(--orange);cursor:pointer;font-size:13px;font-weight:700">🔔 إرسال تذكير للكل (' + exp.length + ' زبون)</button>' : '');
+    (exp.length ? '<button onclick="sendAllReminders()" style="width:100%;margin-top:8px;padding:11px;background:rgba(255,145,0,.1);border:1px solid rgba(255,145,0,.3);border-radius:var(--rs);color:var(--orange);cursor:pointer;font-size:13px;font-weight:700">🔔 إرسال تذكير للكل (' + exp.length + ' زبون)</button>' : '') +
+    '<div style="display:flex;gap:8px;margin-top:8px">' +
+    '<button onclick="setupPin()" style="flex:1;padding:10px;background:rgba(59,139,255,.08);border:1px solid rgba(59,139,255,.3);border-radius:var(--rs);color:var(--blue);cursor:pointer;font-size:12px;font-weight:600">' + (pinSaved ? '🔒 تغيير PIN' : '🔓 تفعيل PIN') + '</button>' +
+    (pinSaved ? '<button onclick="removePin()" style="padding:10px 14px;background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.3);border-radius:var(--rs);color:var(--red);cursor:pointer;font-size:12px;font-weight:600">إزالة</button>' : '') +
+    '</div>';
 }
 
 function getFilt(s) {
@@ -679,7 +727,9 @@ function rAdd() {
     '<div id="code-box" style="display:' + (subType === 'code' ? 'block' : 'none') + '">' +
     '<label class="fl" style="margin-top:0">📱 الكود</label><input class="fi" type="text" id="fcode" placeholder="أدخل الكود هنا..."/></div>' +
     '<div id="m3u-url-box" style="display:' + (subType === 'm3u' ? 'block' : 'none') + '">' +
-    '<label class="fl" style="margin-top:0">🔗 رابط M3U المباشر</label><input class="fi" type="text" id="fm3u" placeholder="http://server.com:8080/get.php?username=X&password=Y&type=m3u"/></div>' +
+    '<label class="fl" style="margin-top:0">🔗 رابط M3U المباشر</label>' +
+    '<input class="fi" type="text" id="fm3u" placeholder="http://server.com:8080/get.php?username=X&password=Y&type=m3u" oninput="parseM3U(this.value)"/>' +
+    '<div id="m3u-parse-status" style="font-size:11px;color:var(--green);margin-top:4px;min-height:14px"></div></div>' +
     '<label class="fl"' + (subType === 'm3u' ? '' : ' style="margin-top:0"') + '>رابط السيرفر</label><input class="fi" type="text" id="fsrv" placeholder="http://server.com:8080"/>' +
     '<label class="fl">اسم المستخدم</label><input class="fi" type="text" id="fus" placeholder="username"/>' +
     '<label class="fl">كلمة المرور</label>' +
@@ -690,6 +740,31 @@ function rAdd() {
     '<label class="fl">📝 ملاحظات (اختياري)</label><textarea class="fi" id="fnote" rows="2" placeholder="مثال: زبون قديم، يدفع متأخر..." style="resize:none"></textarea>' +
     '<div class="prev">📅 البداية: <b>' + fd(s) + '</b><br>📅 النهاية: <b>' + fd(e) + '</b></div>' +
     '<button class="sbtn" onclick="addC()">✅ حفظ الاشتراك</button></div>';
+}
+
+function parseM3U(url) {
+  var st = document.getElementById('m3u-parse-status');
+  if (!url || url.length < 10) { if(st) st.textContent = ''; return; }
+  try {
+    var u = new URL(url);
+    var user = u.searchParams.get('username') || u.searchParams.get('user') || '';
+    var pass = u.searchParams.get('password') || u.searchParams.get('pass') || '';
+    var srv = u.origin + (u.port ? '' : '');
+    var filled = [];
+    if (srv && srv !== 'null') {
+      var srvEl = document.getElementById('fsrv');
+      if (srvEl && !srvEl.value) { srvEl.value = srv; filled.push('السيرفر'); }
+    }
+    if (user) {
+      var usEl = document.getElementById('fus');
+      if (usEl && !usEl.value) { usEl.value = user; filled.push('اليوزر'); }
+    }
+    if (pass) {
+      var pwEl = document.getElementById('fpw');
+      if (pwEl && !pwEl.value) { pwEl.value = pass; filled.push('الباسورد'); }
+    }
+    if (st) st.textContent = filled.length ? '✅ تم استخراج: ' + filled.join('، ') + ' تلقائياً!' : '';
+  } catch(e) { if(st) st.textContent = ''; }
 }
 
 function setD(d) { dur = d; render(); }
@@ -1200,9 +1275,126 @@ async function genWAMsg(id) {
   if(btn){ btn.textContent='✨ رسالة ذكية'; btn.disabled=false; }
 }
 
+// ===== PIN LOCK =====
+var pinInput = '';
+var pinSaved = localStorage.getItem('ibc_pin') || '';
+var pinMode = 'unlock'; // unlock | setup | confirm
+var pinTemp = '';
+
+function initLock() {
+  if (!pinSaved) { return; } // no PIN set → skip
+  document.getElementById('lock-screen').classList.add('show');
+  pinMode = 'unlock';
+  document.getElementById('lock-sub').textContent = 'أدخل رمز PIN';
+}
+
+function pinPress(v) {
+  if (!v) return;
+  if (pinInput.length >= 4) return;
+  pinInput += v;
+  updateDots();
+  if (pinInput.length === 4) setTimeout(checkPin, 150);
+}
+
+function pinDel() {
+  pinInput = pinInput.slice(0, -1);
+  updateDots();
+}
+
+function updateDots(err) {
+  for (var i = 0; i < 4; i++) {
+    var d = document.getElementById('d' + i);
+    d.classList.toggle('filled', i < pinInput.length);
+    d.classList.toggle('error', !!err);
+  }
+}
+
+function checkPin() {
+  if (pinMode === 'unlock') {
+    if (pinInput === pinSaved) {
+      document.getElementById('lock-screen').classList.remove('show');
+      pinInput = '';
+      updateDots();
+    } else {
+      updateDots(true);
+      document.getElementById('lock-sub').textContent = '❌ رمز خاطئ';
+      setTimeout(function() {
+        pinInput = ''; updateDots();
+        document.getElementById('lock-sub').textContent = 'أدخل رمز PIN';
+      }, 1000);
+    }
+  } else if (pinMode === 'setup') {
+    pinTemp = pinInput;
+    pinInput = '';
+    updateDots();
+    pinMode = 'confirm';
+    document.getElementById('lock-sub').textContent = 'أعد إدخال الرمز للتأكيد';
+  } else if (pinMode === 'confirm') {
+    if (pinInput === pinTemp) {
+      pinSaved = pinInput;
+      localStorage.setItem('ibc_pin', pinSaved);
+      pinInput = ''; pinTemp = '';
+      document.getElementById('lock-screen').classList.remove('show');
+      toast('✅ تم تفعيل قفل PIN!');
+      render();
+    } else {
+      updateDots(true);
+      document.getElementById('lock-sub').textContent = '❌ الرمز غير متطابق';
+      setTimeout(function() {
+        pinInput = ''; pinTemp = ''; pinMode = 'setup'; updateDots();
+        document.getElementById('lock-sub').textContent = 'أدخل رمز PIN جديد';
+      }, 1000);
+    }
+  }
+}
+
+function setupPin() {
+  pinMode = 'setup'; pinInput = '';
+  document.getElementById('lock-sub').textContent = 'أدخل رمز PIN جديد';
+  document.getElementById('lock-hint').textContent = '4 أرقام';
+  document.getElementById('lock-screen').classList.add('show');
+  updateDots();
+}
+
+function removePin() {
+  if (!confirm('إزالة قفل PIN؟')) return;
+  pinSaved = ''; localStorage.removeItem('ibc_pin');
+  toast('🔓 تم إزالة قفل PIN'); render();
+}
+
+// ===== PWA =====
+function setupPWA() {
+  var manifest = {
+    name: 'Islam Box Tech',
+    short_name: 'IslamBox',
+    description: 'إدارة اشتراكات IPTV',
+    start_url: '.',
+    display: 'standalone',
+    background_color: '#060d1a',
+    theme_color: '#060d1a',
+    dir: 'rtl',
+    lang: 'ar',
+    icons: [
+      { src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%233b8bff"/><text y=".9em" font-size="80">📺</text></svg>', sizes: '192x192', type: 'image/svg+xml' },
+      { src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%233b8bff"/><text y=".9em" font-size="80">📺</text></svg>', sizes: '512x512', type: 'image/svg+xml' }
+    ]
+  };
+  var blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  document.getElementById('manifest-placeholder').href = url;
+
+  if ('serviceWorker' in navigator) {
+    var sw = 'self.addEventListener("fetch",function(e){e.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request);}));});self.addEventListener("install",function(e){e.waitUntil(caches.open("ibc-v1").then(function(c){return c.addAll([location.href]);}));});';
+    var swBlob = new Blob([sw], {type:'application/javascript'});
+    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(function(){});
+  }
+}
+
 var savedPkgs = localStorage.getItem('ibc_pkgs');
 if (savedPkgs) PKGS = JSON.parse(savedPkgs);
+setupPWA();
 render();
+initLock();
 checkSt();
 askNotif();
 </script>
