@@ -596,26 +596,25 @@ function rPay() {
 function rCat() {
   var pkgs = getPkgs();
   var h = '<div class="ttl">📦 الكتالوج</div>' +
-    '<button onclick="go(\'mcat\')" style="width:100%;padding:10px;background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.3);border-radius:var(--rs);color:var(--purple);cursor:pointer;font-size:13px;font-weight:700;margin-bottom:14px">⚙️ إدارة الباقات</button>';
+    '<button onclick="go(\'mcat\')" style="width:100%;padding:9px;background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.3);border-radius:var(--rs);color:var(--purple);cursor:pointer;font-size:12px;font-weight:700;margin-bottom:12px">⚙️ إدارة الباقات</button>';
   pkgs.forEach(function(pkg) {
-    h += '<div style="margin-bottom:16px"><div class="cat-t">' + pkg.icon + ' ' + pkg.server + '</div>';
+    h += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden">' +
+      '<div class="cat-t" style="margin:0;border-radius:0;border-bottom:1px solid var(--border)">' + pkg.icon + ' ' + pkg.server + '</div>';
     pkg.plans.forEach(function(plan) {
       var msg = buildMsg([
-        'السلام عليكم 👋',
-        '',
-        'تفاصيل باقة ' + pkg.server + ' ' + plan.dur + ':',
-        '',
+        'السلام عليكم 👋', '',
+        'تفاصيل باقة ' + pkg.server + ' ' + plan.dur + ':', '',
         '💰 السعر: ' + plan.price.toLocaleString() + ' دج',
         '⏱️ المدة: ' + plan.dur,
-        '✅ جودة 4K',
-        '✅ أكثر من 10,000 قناة',
-        '✅ دعم 24/7',
-        '',
-        'للاشتراك راسلنا 💬',
-        '— Islam Box Tech Zeboudja'
+        '✅ جودة 4K', '✅ أكثر من 10,000 قناة', '✅ دعم 24/7', '',
+        'للاشتراك راسلنا 💬', '— Islam Box Tech Zeboudja'
       ]);
-      h += '<div class="pkg"><div class="pkg-top"><div><div class="pkg-n">' + pkg.icon + ' ' + plan.dur + '</div><div class="pkg-d">' + pkg.server + '</div></div><div class="pkg-pr">' + plan.price.toLocaleString() + ' دج</div></div>' +
-        '<div class="pkg-btns"><button class="pb pb-c" onclick="cpTxt(' + "'" + encodeURIComponent(msg) + "'" + ',this)">📋 نسخ</button><a class="pb pb-w" href="https://wa.me/?text=' + encodeURIComponent(msg) + '" target="_blank">💬 إرسال</a></div></div>';
+      h += '<div style="display:flex;align-items:center;padding:9px 12px;border-bottom:1px solid var(--border);gap:8px">' +
+        '<span style="flex:1;font-size:13px;font-weight:700">' + plan.dur + '</span>' +
+        '<span style="font-size:14px;font-weight:900;color:var(--green)">' + plan.price.toLocaleString() + ' دج</span>' +
+        '<button class="pb pb-c" style="padding:6px 10px;font-size:11px;flex:none" onclick="cpTxt(\'' + encodeURIComponent(msg) + '\',this)">📋</button>' +
+        '<a class="pb pb-w" style="padding:6px 10px;font-size:11px;flex:none;text-decoration:none" href="https://wa.me/?text=' + encodeURIComponent(msg) + '" target="_blank">💬</a>' +
+        '</div>';
     });
     h += '</div>';
   });
