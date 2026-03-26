@@ -11,11 +11,12 @@
 <link rel="manifest" id="manifest-placeholder"/>
 <title>Islam Box Tech</title>
 <style>
-:root{--bg:#060d1a;--bg2:#0b1525;--bg3:#0f1d30;--border:#1a3050;--blue:#3b8bff;--blue2:#1a5fe0;--green:#00e676;--orange:#ff9100;--red:#ff4444;--purple:#c084fc;--text:#e8f0fe;--text2:#8aa4c8;--text3:#4a6480;--r:14px;--rs:8px}
+:root{--bg:#060d1a;--bg2:#0b1525;--bg3:#0f1d30;--border:#1a3050;--blue:#3b8bff;--blue2:#1a5fe0;--green:#00e676;--orange:#ff9100;--red:#ff4444;--purple:#c084fc;--text:#e8f0fe;--text2:#8aa4c8;--text3:#4a6480;--r:14px;--rs:8px;--hdr:#0a1628}
+body.light{--bg:#f0f4ff;--bg2:#ffffff;--bg3:#e8eef8;--border:#c8d8f0;--blue:#1a5fe0;--blue2:#1248b8;--green:#00a854;--orange:#e07800;--red:#d93030;--purple:#8b5cf6;--text:#1a2340;--text2:#3a5278;--text3:#8899bb;--hdr:#dce8ff}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Tahoma,Arial,sans-serif;direction:rtl;min-height:100vh}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Tahoma,Arial,sans-serif;direction:rtl;min-height:100vh;transition:background .3s,color .3s}
 input,select,textarea,button{font-family:inherit;direction:rtl;outline:none}
-#hdr{background:#0a1628;border-bottom:1px solid var(--border);padding:12px 14px 0;position:sticky;top:0;z-index:100}
+#hdr{background:var(--hdr);border-bottom:1px solid var(--border);padding:12px 14px 0;position:sticky;top:0;z-index:100}
 .hdr-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .logo-wrap{display:flex;align-items:center;gap:8px}
 .logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px}
@@ -204,6 +205,7 @@ select.fi{cursor:pointer}
       <div><div class="logo-text">Islam Box Tech</div><div class="logo-sub">Zeboudja — إدارة الاشتراكات</div></div>
     </div>
     <div class="hdr-btns">
+      <button class="hdr-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
       <button class="hdr-btn" onclick="expBk()">💾</button>
       <button class="hdr-btn" onclick="document.getElementById('impf').click()">📥</button>
       <input type="file" id="impf" accept=".json" style="display:none" onchange="impBk(event)"/>
@@ -321,6 +323,12 @@ var PKGS = [
     { dur: '12 شهر', price: 2200, months: 12 }
   ]}
 ];
+
+function toggleTheme() {
+  var isLight = document.body.classList.toggle('light');
+  localStorage.setItem('ibc_theme', isLight ? 'light' : 'dark');
+  document.getElementById('theme-btn').textContent = isLight ? '☀️' : '🌙';
+}
 
 function sv() { localStorage.setItem('ibc', JSON.stringify(C)); }
 function getPkgs() { return JSON.parse(localStorage.getItem('ibc_pkgs') || 'null') || PKGS; }
@@ -681,24 +689,26 @@ function rMCat() {
     '<button onclick="addServer()" style="width:100%;margin-top:12px;padding:11px;background:linear-gradient(135deg,var(--blue2),#6d28d9);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-weight:800;font-size:13px">✅ إضافة السيرفر</button></div>';
 
   pkgs.forEach(function(pkg, pi) {
-    h += '<div class="fw" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">' +
-      '<div style="font-size:14px;font-weight:800">' + pkg.icon + ' ' + pkg.server + '</div>' +
-      '<button onclick="delServer(' + pi + ')" style="padding:5px 10px;background:rgba(255,68,68,.1);color:var(--red);border:1px solid rgba(255,68,68,.3);border-radius:6px;cursor:pointer;font-size:11px">🗑️ حذف</button></div>';
+    h += '<div class="fw" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">' +
+      '<div style="font-size:13px;font-weight:800">' + pkg.icon + ' ' + pkg.server + '</div>' +
+      '<button onclick="delServer(' + pi + ')" style="padding:4px 8px;background:rgba(255,68,68,.1);color:var(--red);border:1px solid rgba(255,68,68,.3);border-radius:6px;cursor:pointer;font-size:11px">🗑️</button></div>' +
+      '<div style="display:flex;gap:5px;font-size:9px;color:var(--text3);padding-bottom:4px;border-bottom:1px solid var(--border)">' +
+      '<span style="flex:1">المدة</span><span style="width:62px;text-align:center">سعر</span><span style="width:58px;text-align:center">تكلفة</span><span style="width:32px;text-align:center">ربح</span><span style="width:30px"></span></div>';
     pkg.plans.forEach(function(plan, pli) {
       var profit = plan.price - (plan.cost || 0);
-      h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;gap:6px">' +
-        '<span style="flex:1">' + plan.dur + '</span>' +
-        '<input type="number" value="' + plan.price + '" onchange="editPlan(' + pi + ',' + pli + ',\'price\',this.value)" style="width:70px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 6px;color:var(--green);font-weight:700;font-size:12px;text-align:center"/>' +
-        '<input type="number" value="' + (plan.cost||0) + '" onchange="editPlan(' + pi + ',' + pli + ',\'cost\',this.value)" style="width:65px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 6px;color:var(--orange);font-size:12px;text-align:center" placeholder="تكلفة"/>' +
-        '<span style="color:var(--blue);font-weight:700;font-size:11px;white-space:nowrap">=' + profit.toLocaleString() + '</span>' +
-        '<button onclick="delPlan(' + pi + ',' + pli + ')" style="padding:4px 8px;background:rgba(255,68,68,.1);color:var(--red);border:1px solid rgba(255,68,68,.3);border-radius:5px;cursor:pointer;font-size:11px">🗑️</button></div>';
+      h += '<div style="display:flex;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);gap:5px">' +
+        '<span style="flex:1;font-size:11px;font-weight:600">' + plan.dur + '</span>' +
+        '<input type="number" value="' + plan.price + '" onchange="editPlan(' + pi + ',' + pli + ',\'price\',this.value)" style="width:62px;background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:3px 5px;color:var(--green);font-weight:700;font-size:11px;text-align:center"/>' +
+        '<input type="number" value="' + (plan.cost||0) + '" onchange="editPlan(' + pi + ',' + pli + ',\'cost\',this.value)" style="width:58px;background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:3px 5px;color:var(--orange);font-size:11px;text-align:center"/>' +
+        '<span style="color:var(--blue);font-weight:700;font-size:10px;white-space:nowrap">='+profit.toLocaleString()+'</span>' +
+        '<button onclick="delPlan(' + pi + ',' + pli + ')" style="padding:3px 7px;background:rgba(255,68,68,.1);color:var(--red);border:1px solid rgba(255,68,68,.3);border-radius:5px;cursor:pointer;font-size:11px">🗑️</button></div>';
     });
-    h += '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:6px;margin-top:10px">' +
-      '<input class="fi" type="text" id="nd-' + pi + '" placeholder="المدة"/>' +
-      '<input class="fi" type="number" id="np-' + pi + '" placeholder="السعر"/>' +
-      '<input class="fi" type="number" id="nc-' + pi + '" placeholder="التكلفة"/>' +
-      '<input class="fi" type="number" id="nm-' + pi + '" placeholder="أشهر"/>' +
-      '</div><button onclick="addPlan(' + pi + ')" style="width:100%;margin-top:8px;padding:9px;background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.3);border-radius:var(--rs);cursor:pointer;font-weight:700;font-size:12px">➕ إضافة سعر</button></div>';
+    h += '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:5px;margin-top:8px">' +
+      '<input class="fi" type="text" id="nd-' + pi + '" placeholder="المدة" style="font-size:11px;padding:7px 8px"/>' +
+      '<input class="fi" type="number" id="np-' + pi + '" placeholder="سعر" style="font-size:11px;padding:7px 8px"/>' +
+      '<input class="fi" type="number" id="nc-' + pi + '" placeholder="تكلفة" style="font-size:11px;padding:7px 8px"/>' +
+      '<input class="fi" type="number" id="nm-' + pi + '" placeholder="أشهر" style="font-size:11px;padding:7px 8px"/>' +
+      '</div><button onclick="addPlan(' + pi + ')" style="width:100%;margin-top:6px;padding:7px;background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.3);border-radius:var(--rs);cursor:pointer;font-weight:700;font-size:11px">➕ إضافة</button></div>';
   });
   return h;
 }
@@ -756,6 +766,9 @@ function rAdd() {
     '<button class="lb' + (subType === 'mag' ? ' on' : '') + '" onclick="setType(\'mag\',this)">📺 MAG</button>' +
     '<button class="lb' + (subType === 'stalker' ? ' on' : '') + '" onclick="setType(\'stalker\',this)">🔌 Stalker</button>' +
     '</div>' +
+    '<label class="fl">مدة الاشتراك</label><div class="dr">' + db + '</div>' +
+    '<label class="fl">أو تاريخ انتهاء مخصص</label><input class="fi" type="date" id="fcustdate" oninput="setCustomDate(this.value)"/>' +
+    '<div class="prev" id="date-prev">📅 البداية: <b>' + fd(s) + '</b><br>📅 النهاية: <b>' + fd(e) + '</b></div>' +
     '<label class="fl">تصنيف الزبون</label>' +
     '<div style="display:flex;gap:6px;flex-wrap:wrap" id="cat-row">' +
     '<button class="lb' + (clientCat === 'normal' ? ' on' : '') + '" onclick="setCat(\'normal\',this)">👤 عادي</button>' +
@@ -776,9 +789,6 @@ function rAdd() {
     '<label class="fl">كلمة المرور</label>' +
     '<div style="position:relative"><input class="fi" type="password" id="fpw" placeholder="password" style="padding-left:40px"/>' +
     '<button type="button" onclick="tp()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px">👁</button></div></div>' +
-    '<label class="fl">مدة الاشتراك</label><div class="dr">' + db + '</div>' +
-    '<label class="fl">أو تاريخ انتهاء مخصص</label><input class="fi" type="date" id="fcustdate" oninput="setCustomDate(this.value)"/>' +
-    '<div class="prev" id="date-prev">📅 البداية: <b>' + fd(s) + '</b><br>📅 النهاية: <b>' + fd(e) + '</b></div>' +
     '<label class="fl">السعر (دج)</label><input class="fi" type="number" id="fpr" placeholder="1000"/>' +
     '<label class="fl">💵 تكلفة الاشتراك (دج)</label><input class="fi" type="number" id="fcost" placeholder="مثال: 500"/>' +
     '<label class="fl">📝 ملاحظات (اختياري)</label><textarea class="fi" id="fnote" rows="2" placeholder="مثال: زبون قديم، يدفع متأخر..." style="resize:none"></textarea>' +
@@ -1491,6 +1501,13 @@ function setupPWA() {
 
 var savedPkgs = localStorage.getItem('ibc_pkgs');
 if (savedPkgs) PKGS = JSON.parse(savedPkgs);
+if (localStorage.getItem('ibc_theme') === 'light') {
+  document.body.classList.add('light');
+  document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('theme-btn');
+    if (btn) btn.textContent = '☀️';
+  });
+}
 setupPWA();
 render();
 initLock();
