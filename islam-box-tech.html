@@ -239,6 +239,8 @@ select.fi{cursor:pointer}
       <button class="mt" onclick="setMT(this,'reminder')">⚠️ تذكير</button>
       <button class="mt" onclick="setMT(this,'expired')">❌ منتهي</button>
       <button class="mt" onclick="setMT(this,'active')">✅ نشط</button>
+      <button class="mt" onclick="setMT(this,'unpaid')">💰 لم يدفع</button>
+      <button class="mt" onclick="setMT(this,'paid')">🎉 بعد الدفع</button>
     </div>
     <textarea class="mta" id="mta" rows="8"></textarea>
     <div class="macts">
@@ -728,21 +730,13 @@ function delPlan(pi, pli) {
 
 function rAdd() {
   var s = new Date(), e = addM(s, dur);
+  var durs = [1, 3, 6, 12];
+  var db = durs.map(function(d) { return '<button class="db' + (dur === d ? ' on' : '') + '" onclick="setD(' + d + ')">' + (d === 1 ? 'شهر' : d === 12 ? 'سنة' : d + ' أشهر') + '</button>'; }).join('');
   var lfs = [{ v: 'ar', l: '🇩🇿 عربي' }, { v: 'fr', l: '🇫🇷 Français' }, { v: 'en', l: '🇬🇧 English' }, { v: 'es', l: '🇪🇸 Español' }];
   var lb = lfs.map(function(x) { return '<button class="lb' + (lang === x.v ? ' on' : '') + '" onclick="setL(\'' + x.v + '\',this)">' + x.l + '</button>'; }).join('');
-  var pkgsData = getPkgs();
-  var serverOpts = '<option value="">— اختر باقة من الكتالوج —</option>';
-  pkgsData.forEach(function(pkg, pi) {
-    pkg.plans.forEach(function(plan, pli) {
-      serverOpts += '<option value="' + pi + '_' + pli + '">' + pkg.icon + ' ' + pkg.server + ' — ' + plan.dur + ' (' + plan.price.toLocaleString() + ' دج)</option>';
-    });
-  });
   return '<div class="ttl">➕ زبون جديد</div>' +
     '<div class="fw">' +
-    '<label class="fl" style="margin-top:0">⚡ اختر من الكتالوج (يملأ تلقائياً)</label>' +
-    '<select class="fi" id="fplan-sel" onchange="autoFillPlan(this.value)">' + serverOpts + '</select>' +
-    '<div id="plan-fill-status" style="font-size:11px;color:var(--green);margin-top:4px;min-height:14px"></div>' +
-    '<label class="fl">اسم الزبون</label><input class="fi" type="text" id="fn" placeholder="أحمد بن علي"/>' +
+    '<label class="fl" style="margin-top:0">اسم الزبون</label><input class="fi" type="text" id="fn" placeholder="أحمد بن علي"/>' +
     '<label class="fl">رقم الهاتف</label><input class="fi" type="text" id="fph" placeholder="+213 550 000 000"/>' +
     '<label class="fl">اسم الاشتراك / الباقة</label><input class="fi" type="text" id="fsn" placeholder="Gold IPTV"/>' +
     '<label class="fl">نوع الاشتراك</label>' +
@@ -772,7 +766,8 @@ function rAdd() {
     '<label class="fl">كلمة المرور</label>' +
     '<div style="position:relative"><input class="fi" type="password" id="fpw" placeholder="password" style="padding-left:40px"/>' +
     '<button type="button" onclick="tp()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px">👁</button></div></div>' +
-    '<label class="fl">📅 تاريخ الانتهاء</label><input class="fi" type="date" id="fcustdate" oninput="setCustomDate(this.value)"/>' +
+    '<label class="fl">مدة الاشتراك</label><div class="dr">' + db + '</div>' +
+    '<label class="fl">أو تاريخ انتهاء مخصص</label><input class="fi" type="date" id="fcustdate" oninput="setCustomDate(this.value)"/>' +
     '<div class="prev" id="date-prev">📅 البداية: <b>' + fd(s) + '</b><br>📅 النهاية: <b>' + fd(e) + '</b></div>' +
     '<label class="fl">السعر (دج)</label><input class="fi" type="number" id="fpr" placeholder="1000"/>' +
     '<label class="fl">💵 تكلفة الاشتراك (دج)</label><input class="fi" type="number" id="fcost" placeholder="مثال: 500"/>' +
