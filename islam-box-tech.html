@@ -371,28 +371,36 @@ var MSGS = {
     e: function(n, s, dt) { return buildMsg(['السلام عليكم ' + n + ' 👋', '', 'اشتراكك' + s + ' قد انتهى ❌', '📅 انتهى: ' + dt, '', 'تواصل معنا للتجديد 💰', '', '— Islam Box Tech Zeboudja']); },
     a: function(n, s, dt) { return buildMsg(['السلام عليكم ' + n + ' 👋', '', 'شكراً على ثقتك 🙏', 'اشتراكك' + s + ' نشط ✅', '📅 ينتهي: ' + dt, '', '— Islam Box Tech Zeboudja']); },
     p: function(n, day) { return buildMsg(['السلام عليكم ' + n + ' 👋', '', 'تذكير بالدفع 💰', 'موعد تجديد اشتراكك يوم ' + day + ' من الشهر', '', 'تواصل معنا مسبقاً 😊', '', '— Islam Box Tech Zeboudja']); },
-    renew: function(n, s, pl, dt) { return buildMsg(['السلام عليكم ' + n + ' 👋', '', '✅ تم تجديد اشتراكك' + s + ' لمدة ' + pl, '📅 ينتهي: ' + dt, '', 'شكراً على ثقتك 🙏', '— Islam Box Tech Zeboudja']); }
+    renew: function(n, s, pl, dt) { return buildMsg(['السلام عليكم ' + n + ' 👋', '', '✅ تم تجديد اشتراكك' + s + ' لمدة ' + pl, '📅 ينتهي: ' + dt, '', 'شكراً على ثقتك 🙏', '— Islam Box Tech Zeboudja']); },
+    unpaid: function(n, s, day) { return buildMsg(['السلام عليكم ' + n + ' 👋', '', '💰 تذكير بالدفع', 'موعد تجديد اشتراكك' + s + (day ? ' كان يوم ' + day : '') + ' ولم نستلم دفعتك بعد', '', 'يرجى التواصل في أقرب وقت 🙏', '', '— Islam Box Tech Zeboudja']); },
+    paid: function(n, s, dt) { return buildMsg(['السلام عليكم ' + n + ' 👋', '', '✅ تم استلام دفعتك، شكراً جزيلاً 🙏', 'اشتراكك' + s + ' مفعّل حتى ' + dt, '', 'نتمنى لك مشاهدة ممتعة 📺', '', '— Islam Box Tech Zeboudja']); }
   },
   fr: {
     r: function(n, s, d, dt) { return buildMsg(['Bonjour ' + n + ' 👋', '', 'Rappel ⚠️', 'Votre abonnement' + s + ' expire dans ' + d + ' jours!', '📅 ' + dt, '', 'Renouvelez maintenant 📺💰', '', '— Islam Box Tech Zeboudja']); },
     e: function(n, s, dt) { return buildMsg(['Bonjour ' + n + ' 👋', '', 'Votre abonnement' + s + ' a expiré ❌', '📅 ' + dt, '', 'Contactez-nous 💰', '', '— Islam Box Tech Zeboudja']); },
     a: function(n, s, dt) { return buildMsg(['Bonjour ' + n + ' 👋', '', 'Merci 🙏', 'Votre abonnement' + s + ' est actif ✅', '📅 ' + dt, '', '— Islam Box Tech Zeboudja']); },
     p: function(n, day) { return buildMsg(['Bonjour ' + n + ' 👋', '', 'Rappel de paiement 💰', 'Renouvellement le ' + day + ' du mois', '', '— Islam Box Tech Zeboudja']); },
-    renew: function(n, s, pl, dt) { return buildMsg(['Bonjour ' + n + ' 👋', '', '✅ Abonnement' + s + ' renouvelé pour ' + pl, '📅 Expire: ' + dt, '', 'Merci 🙏', '— Islam Box Tech Zeboudja']); }
+    renew: function(n, s, pl, dt) { return buildMsg(['Bonjour ' + n + ' 👋', '', '✅ Abonnement' + s + ' renouvelé pour ' + pl, '📅 Expire: ' + dt, '', 'Merci 🙏', '— Islam Box Tech Zeboudja']); },
+    unpaid: function(n, s, day) { return buildMsg(['Bonjour ' + n + ' 👋', '', '💰 Rappel de paiement', 'Renouvellement' + s + (day ? ' prévu le ' + day : '') + ' non reçu', '', 'Merci de nous contacter 🙏', '', '— Islam Box Tech Zeboudja']); },
+    paid: function(n, s, dt) { return buildMsg(['Bonjour ' + n + ' 👋', '', '✅ Paiement reçu, merci! 🙏', 'Abonnement' + s + ' actif jusqu\'au ' + dt, '', 'Bonne lecture 📺', '', '— Islam Box Tech Zeboudja']); }
   },
   en: {
     r: function(n, s, d, dt) { return buildMsg(['Hello ' + n + ' 👋', '', 'Reminder ⚠️', 'Your subscription' + s + ' expires in ' + d + ' days!', '📅 ' + dt, '', 'Renew now 📺💰', '', '— Islam Box Tech Zeboudja']); },
     e: function(n, s, dt) { return buildMsg(['Hello ' + n + ' 👋', '', 'Your subscription' + s + ' expired ❌', '📅 ' + dt, '', 'Contact us 💰', '', '— Islam Box Tech Zeboudja']); },
     a: function(n, s, dt) { return buildMsg(['Hello ' + n + ' 👋', '', 'Thank you 🙏', 'Your subscription' + s + ' is active ✅', '📅 ' + dt, '', '— Islam Box Tech Zeboudja']); },
     p: function(n, day) { return buildMsg(['Hello ' + n + ' 👋', '', 'Payment reminder 💰', 'Renewal due on day ' + day, '', '— Islam Box Tech Zeboudja']); },
-    renew: function(n, s, pl, dt) { return buildMsg(['Hello ' + n + ' 👋', '', '✅ Subscription' + s + ' renewed for ' + pl, '📅 Expires: ' + dt, '', 'Thank you 🙏', '— Islam Box Tech Zeboudja']); }
+    renew: function(n, s, pl, dt) { return buildMsg(['Hello ' + n + ' 👋', '', '✅ Subscription' + s + ' renewed for ' + pl, '📅 Expires: ' + dt, '', 'Thank you 🙏', '— Islam Box Tech Zeboudja']); },
+    unpaid: function(n, s, day) { return buildMsg(['Hello ' + n + ' 👋', '', '💰 Payment reminder', 'Renewal' + s + (day ? ' due on day ' + day : '') + ' not received yet', '', 'Please contact us 🙏', '', '— Islam Box Tech Zeboudja']); },
+    paid: function(n, s, dt) { return buildMsg(['Hello ' + n + ' 👋', '', '✅ Payment received, thank you! 🙏', 'Subscription' + s + ' active until ' + dt, '', 'Enjoy 📺', '', '— Islam Box Tech Zeboudja']); }
   },
   es: {
     r: function(n, s, d, dt) { return buildMsg(['Hola ' + n + ' 👋', '', 'Recordatorio ⚠️', 'Tu suscripción' + s + ' vence en ' + d + ' días!', '📅 ' + dt, '', 'Renueva ahora 📺💰', '', '— Islam Box Tech Zeboudja']); },
     e: function(n, s, dt) { return buildMsg(['Hola ' + n + ' 👋', '', 'Tu suscripción' + s + ' expiró ❌', '📅 ' + dt, '', 'Contáctanos 💰', '', '— Islam Box Tech Zeboudja']); },
     a: function(n, s, dt) { return buildMsg(['Hola ' + n + ' 👋', '', 'Gracias 🙏', 'Tu suscripción' + s + ' está activa ✅', '📅 ' + dt, '', '— Islam Box Tech Zeboudja']); },
     p: function(n, day) { return buildMsg(['Hola ' + n + ' 👋', '', 'Recordatorio de pago 💰', 'Renovación el día ' + day, '', '— Islam Box Tech Zeboudja']); },
-    renew: function(n, s, pl, dt) { return buildMsg(['Hola ' + n + ' 👋', '', '✅ Suscripción' + s + ' renovada por ' + pl, '📅 Vence: ' + dt, '', 'Gracias 🙏', '— Islam Box Tech Zeboudja']); }
+    renew: function(n, s, pl, dt) { return buildMsg(['Hola ' + n + ' 👋', '', '✅ Suscripción' + s + ' renovada por ' + pl, '📅 Vence: ' + dt, '', 'Gracias 🙏', '— Islam Box Tech Zeboudja']); },
+    unpaid: function(n, s, day) { return buildMsg(['Hola ' + n + ' 👋', '', '💰 Recordatorio de pago', 'Renovación' + s + (day ? ' el día ' + day : '') + ' no recibida', '', 'Contáctenos 🙏', '', '— Islam Box Tech Zeboudja']); },
+    paid: function(n, s, dt) { return buildMsg(['Hola ' + n + ' 👋', '', '✅ Pago recibido, gracias! 🙏', 'Suscripción' + s + ' activa hasta ' + dt, '', 'Disfruta 📺', '', '— Islam Box Tech Zeboudja']); }
   }
 };
 
@@ -402,6 +410,8 @@ function wMsg(c, type) {
   if (type === 'reminder' || (!type && d >= 0 && d <= 7)) return m.r(c.name, sub, d, dt);
   if (type === 'expired' || (!type && d < 0)) return m.e(c.name, sub, dt);
   if (type === 'pay') return m.p(c.name, c.payDay || '');
+  if (type === 'unpaid') return m.unpaid(c.name, sub, c.payDay || '');
+  if (type === 'paid') return m.paid(c.name, sub, dt);
   return m.a(c.name, sub, dt);
 }
 
@@ -901,7 +911,8 @@ function rDet() {
     '<div class="dacts"><button class="bwa" onclick="openModal(' + c.id + ')">📩 واتساب</button><button class="bed" onclick="openEdit(' + c.id + ')">✏️ تعديل</button><button class="bdl" onclick="delC(' + c.id + ')">🗑</button></div>' +
     '<button onclick="copyAllInfo(' + c.id + ')" style="width:100%;margin-top:7px;padding:10px;background:rgba(59,139,255,.08);border:1px solid rgba(59,139,255,.3);border-radius:var(--rs);color:var(--blue);cursor:pointer;font-size:12px;font-weight:700">📋 نسخ كل البيانات</button>' +
     (c.note ? '<div style="background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.3);border-radius:var(--rs);padding:10px 12px;margin-top:7px;font-size:12px;color:var(--text2)">📝 ' + c.note + '</div>' : '') +
-    (d < 0 ? '<button class="brn" onclick="renew(' + c.id + ')">🔄 تجديد</button><button class="brw" onclick="renewWA(' + c.id + ')">🔄💬 تجديد + واتساب</button>' : '') +
+    (d < 0 ? '<button class="brn" onclick="renew(' + c.id + ')">🔄 تجديد</button><button class="brw" onclick="renewWA(' + c.id + ')">🔄💬 تجديد + واتساب</button>' +
+    '<button onclick="renewAll(' + c.id + ')" style="width:100%;margin-top:7px;padding:12px;background:linear-gradient(135deg,#065f46,#1e40af);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-size:14px;font-weight:800">⚡ تجديد + دفعة + واتساب دفعة واحدة</button>' : '') +
     '<button class="bpy" onclick="openPay(' + c.id + ')">💰 تسجيل دفعة</button></div>';
 }
 
@@ -988,6 +999,27 @@ function renew(id) {
   c.endDate = e2.toISOString().split('T')[0]; c.startDate = new Date().toISOString().split('T')[0];
   c.plan = m === 1 ? '1 شهر' : m === 12 ? '12 شهر' : m + ' أشهر';
   sv(); toast('✅ تم التجديد!'); render();
+}
+
+function renewAll(id) {
+  var c = C.find(function(x) { return x.id === id; }); if (!c) return;
+  var m = parseInt(prompt('كم شهراً للتجديد؟', '1')); if (isNaN(m) || m < 1) return;
+  var amt = parseInt(prompt('مبلغ الدفعة (دج)؟', c.price || '')); if (isNaN(amt) || amt < 1) return;
+  // تجديد
+  var e2 = addM(new Date(), m);
+  c.endDate = e2.toISOString().split('T')[0];
+  c.startDate = new Date().toISOString().split('T')[0];
+  c.plan = m === 1 ? '1 شهر' : m === 12 ? '12 شهر' : m + ' أشهر';
+  // تسجيل الدفعة
+  if (!c.payments) c.payments = [];
+  c.payments.push({ amount: amt, date: new Date().toISOString().split('T')[0], note: 'تجديد ' + c.plan });
+  sv();
+  // رسالة واتساب بعد الدفع
+  var mm = MSGS[c.lang || 'ar'] || MSGS.ar;
+  var sub = c.subName ? ' (' + c.subName + ')' : '';
+  var msg = mm.paid(c.name, sub, fd(c.endDate));
+  window.open(wl(c.phone, msg), '_blank');
+  toast('✅ تجديد + دفعة + واتساب — تم كل شيء!'); render();
 }
 
 function renewWA(id) {
